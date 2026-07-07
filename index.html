@@ -7,6 +7,7 @@
 <title>Renuevo</title>
 <link rel="icon" type="image/png" href="icon.png"/>
 <link rel="apple-touch-icon" href="icon.png"/>
+<link rel="manifest" href="manifest.json"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-app-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-auth-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-firestore-compat.min.js"></script>
@@ -868,6 +869,15 @@ function renderDashboard(){
 window.addEventListener('online',()=>$('offlineBanner').style.display='none');
 window.addEventListener('offline',()=>$('offlineBanner').style.display='block');
 if(!navigator.onLine)$('offlineBanner').style.display='block';
+
+// ---------- PWA Service Worker ----------
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(r=>console.log('SW registrado'))
+      .catch(e=>console.log('SW error:',e));
+  });
+}
 </script>
 </body>
 </html>
