@@ -535,17 +535,39 @@ $('btnCargarCatalogo').addEventListener('click',async()=>{
 });
 $('btnGuardarProd').addEventListener('click',async()=>{
   const id=$('prodId').value;
-  const data={nombre:$('prodNombre').value.trim(),categoria:$('prodCategoria').value.trim(),costoPorLitro:parseFloat($('prodCosto').value)||0,margen:parseFloat($('prodMargen').value)||0,stockMin:parseFloat($('prodStockMin').value)||0};
-  if(!data.nombre){alert('Nombre obligatorio');return;}
-  if(id){
-    if(!confirm(`¿Confirmas los cambios en "${data.nombre}"?\nCosto/L: $${data.costoPorLitro} | Margen: ${data.margen}%`))return;
-    await db.collection('productos').doc(id).update(data);
-  }else{
-    await db.collection('productos').add({...data,stockLitros:0});
+  const nombre=$('prodNombre').value.trim();
+  if(!nombre){alert('El nombre es obligatorio.');return;}
+  const data={
+    nombre,
+    categoria:$('prodCategoria').value.trim(),
+    costoPorLitro:parseFloat($('prodCosto').value)||0,
+    margen:parseFloat($('prodMargen').value)||0,
+    stockMin:parseFloat($('prodStockMin').value)||0
+  };
+  $('btnGuardarProd').disabled=true;
+  $('btnGuardarProd').textContent='Guardando...';
+  try{
+    if(id){
+      await db.collection('productos').doc(id).update(data);
+      $('prodPreview').textContent='✅ Producto actualizado correctamente.';
+      $('prodPreview').style.color='var(--green-d)';
+    }else{
+      const ref=await db.collection('productos').add({...data,stockLitros:0});
+      $('prodPreview').textContent='✅ Producto agregado. ID: '+ref.id;
+      $('prodPreview').style.color='var(--green-d)';
+    }
+    ['prodId','prodNombre','prodCategoria','prodCosto','prodMargen','prodStockMin'].forEach(f=>$(f).value='');
+    $('invFormTitle').textContent='➕ Agregar Producto';
+    $('btnCancelEditProd').classList.add('hide');
+    setTimeout(()=>{$('prodPreview').textContent='Precio de venta se calculará aquí';$('prodPreview').style.color='';},3000);
+  }catch(e){
+    $('prodPreview').textContent='❌ Error al guardar: '+e.message;
+    $('prodPreview').style.color='var(--red)';
+    console.error('Error guardando producto:',e);
+  }finally{
+    $('btnGuardarProd').disabled=false;
+    $('btnGuardarProd').textContent='💾 Guardar producto';
   }
-  ['prodId','prodNombre','prodCategoria','prodCosto','prodMargen','prodStockMin'].forEach(f=>$(f).value='');
-  $('invFormTitle').textContent='➕ Agregar Producto';$('btnCancelEditProd').classList.add('hide');
-  $('prodPreview').textContent='Precio de venta se calculará aquí';
 });
 $('btnCancelEditProd').addEventListener('click',()=>{
   ['prodId','prodNombre','prodCategoria','prodCosto','prodMargen','prodStockMin'].forEach(f=>$(f).value='');
