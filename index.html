@@ -488,7 +488,20 @@ auth.onAuthStateChanged(async user=>{
 });
 
 // ---------- REALTIME ----------
-function attachListeners(){
+async function recargarProductos(){
+  const snap=await db.collection('productos').get();
+  productos={};
+  snap.forEach(d=>productos[d.id]=d.data());
+  renderInvTable();
+  fillCompraProdSelect();
+  // actualizar selects de ventas si ya hay filas abiertas
+  document.querySelectorAll('.saleProd').forEach(s=>{
+    const v=s.value;
+    s.innerHTML='<option value="">– Producto –</option>'+Object.entries(productos).map(([id,p])=>`<option value="${id}">${p.nombre} (${(p.stockLitros||0).toFixed(1)}L disp.)</option>`).join('');
+    if(v)s.value=v;
+  });
+  renderDashboard();
+}
   db.collection('productos').onSnapshot(snap=>{
     productos={};
     snap.forEach(d=>productos[d.id]={...d.data(),_id:d.id});
@@ -530,7 +543,9 @@ $('btnCargarCatalogo').addEventListener('click',async()=>{
     const batch=db.batch();
     PULIZIA.forEach(p=>{const r=db.collection('productos').doc();batch.set(r,{nombre:p.nombre,categoria:p.categoria,costoPorLitro:p.costoPorLitro,margen:50,stockLitros:0,stockMin:5});});
     await batch.commit();
-    $('catalogoMsg').style.color='var(--green-d)';$('catalogoMsg').textContent='✅ 9 productos cargados.';
+    await recargarProductos();
+    $('catalogoMsg').style.color='var(--green-d)';
+    $('catalogoMsg').textContent='✅ 9 productos cargados y visibles en inventario.';
   }catch(e){$('catalogoMsg').style.color='var(--red)';$('catalogoMsg').textContent='Error: '+e.message;}
 });
 $('btnGuardarProd').addEventListener('click',async()=>{
@@ -549,13 +564,12 @@ $('btnGuardarProd').addEventListener('click',async()=>{
   try{
     if(id){
       await db.collection('productos').doc(id).update(data);
-      $('prodPreview').textContent='✅ Producto actualizado correctamente.';
-      $('prodPreview').style.color='var(--green-d)';
     }else{
-      const ref=await db.collection('productos').add({...data,stockLitros:0});
-      $('prodPreview').textContent='✅ Producto agregado. ID: '+ref.id;
-      $('prodPreview').style.color='var(--green-d)';
+      await db.collection('productos').add({...data,stockLitros:0});
     }
+    await recargarProductos();
+    $('prodPreview').textContent='✅ '+(id?'Producto actualizado.':'Producto agregado correctamente.');
+    $('prodPreview').style.color='var(--green-d)';
     ['prodId','prodNombre','prodCategoria','prodCosto','prodMargen','prodStockMin'].forEach(f=>$(f).value='');
     $('invFormTitle').textContent='➕ Agregar Producto';
     $('btnCancelEditProd').classList.add('hide');
@@ -592,9 +606,7 @@ $('btnRegistrarCompra').addEventListener('click',async()=>{
     const stockActual=parseFloat(p.stockLitros)||parseFloat(p.stock)||0;
     const nuevoStock=parseFloat((stockActual+litros).toFixed(3));
     await ref.update({stockLitros:nuevoStock});
-    // actualiza cache local inmediatamente
-    if(productos[pid]) productos[pid].stockLitros=nuevoStock;
-    renderInvTable();fillCompraProdSelect();
+    await recargarProductos();
     $('compraLitros').value='';$('compraCosto').value='';
     $('compraMsg').style.color='var(--green-d)';
     $('compraMsg').textContent=`✅ +${litros}L de "${p.nombre}". Stock actual: ${nuevoStock.toFixed(1)}L`;
