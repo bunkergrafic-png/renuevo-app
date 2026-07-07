@@ -348,7 +348,7 @@ const firebaseConfig={
 };
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(), db=firebase.firestore();
-try{db.enablePersistence({synchronizeTabs:true});}catch(e){}
+try{db.settings({cacheSizeBytes:firebase.firestore.CACHE_SIZE_UNLIMITED});db.enablePersistence({synchronizeTabs:true});}catch(e){}
 
 const $=id=>document.getElementById(id);
 let currentUser=null,currentRole=null;
@@ -527,13 +527,26 @@ function fillCompraProdSelect(){
   s.value=v;
 }
 $('btnRegistrarCompra').addEventListener('click',async()=>{
-  const pid=$('compraProducto').value,litros=parseFloat($('compraLitros').value)||0;
-  if(!pid||litros<=0){$('compraMsg').textContent='Selecciona producto y cantidad.';$('compraMsg').style.color='var(--red)';return;}
-  const p=productos[pid];
-  await db.collection('productos').doc(pid).update({stockLitros:(p.stockLitros||0)+litros});
-  await db.collection('compras').add({productoId:pid,nombre:p.nombre,litros,costo:parseFloat($('compraCosto').value)||0,fecha:Date.now(),by:currentUser.email});
-  $('compraLitros').value='';$('compraCosto').value='';
-  $('compraMsg').style.color='var(--green-d)';$('compraMsg').textContent=`✅ +${litros}L de ${p.nombre} agregados al inventario.`;
+  const pid=$('compraProducto').value;
+  const litros=parseFloat($('compraLitros').value)||0;
+  if(!pid){$('compraMsg').textContent='Selecciona un producto.';$('compraMsg').style.color='var(--red)';return;}
+  if(litros<=0){$('compraMsg').textContent='Ingresa una cantidad válida de litros.';$('compraMsg').style.color='var(--red)';return;}
+  try{
+    const ref=db.collection('productos').doc(pid);
+    const snap=await ref.get();
+    if(!snap.exists){$('compraMsg').textContent='Producto no encontrado.';$('compraMsg').style.color='var(--red)';return;}
+    const p=snap.data();
+    const stockActual=p.stockLitros||p.stock||0;
+    const nuevoStock=stockActual+litros;
+    await ref.update({stockLitros:nuevoStock});
+    await db.collection('compras').add({productoId:pid,nombre:p.nombre,litros,costo:parseFloat($('compraCosto').value)||0,fecha:Date.now(),by:currentUser.email});
+    $('compraLitros').value='';$('compraCosto').value='';
+    $('compraMsg').style.color='var(--green-d)';
+    $('compraMsg').textContent=`✅ +${litros}L de "${p.nombre}" agregados. Stock actual: ${nuevoStock.toFixed(1)}L`;
+  }catch(e){
+    $('compraMsg').style.color='var(--red)';
+    $('compraMsg').textContent='Error: '+e.message;
+  }
 });
 function renderInvTable(){
   const tb=$('invBody');if(!tb)return;
