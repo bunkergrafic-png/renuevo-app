@@ -129,9 +129,9 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
 <div id="sec-dashboard" class="section active">
   <div class="cards">
     <div class="card" style="cursor:pointer" onclick="showSection('inventario')"><div class="n" id="dCardProds">0</div><div class="l">📦 Productos</div></div>
-    <div class="card warn" style="cursor:pointer" onclick="showSection('inventario')"><div class="n" id="dCardBajo">0</div><div class="l">⚠️ Stock bajo — ver inventario</div></div>
+    <div class="card warn" style="cursor:pointer" onclick="showSection('inventario')"><div class="n" id="dCardBajo">0</div><div class="l">⚠️ Stock bajo</div></div>
     <div class="card" style="cursor:pointer" onclick="showSection('ventas')"><div class="n" id="dCardHoy">0</div><div class="l">🧾 Ventas hoy</div></div>
-    <div class="card alert" style="cursor:pointer" onclick="showSection('ventas');setTimeout(()=>{ventaFiltro='mora';renderVentas();document.querySelector('[data-filt=mora]').scrollIntoView({behavior:\'smooth\'})},300)"><div class="n" id="dCardMora">0</div><div class="l">🔴 En mora — ver deudas</div></div>
+    <div class="card alert" style="cursor:pointer" onclick="showSection('ventas');setTimeout(()=>{ventaFiltro='mora';renderVentas();},300)"><div class="n" id="dCardMora">0</div><div class="l">🔴 En mora</div></div>
     <div class="card" style="cursor:pointer" onclick="showSection('clientes')"><div class="n" id="dCardClientes">0</div><div class="l">👥 Clientes</div></div>
   </div>
   <div class="fb" style="cursor:pointer" onclick="showSection('inventario')"><h2>⚠️ Stock bajo — clic para ver inventario</h2><div id="dLowStock" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
