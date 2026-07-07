@@ -129,15 +129,15 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
 <!-- DASHBOARD -->
 <div id="sec-dashboard" class="section active">
   <div class="cards">
-    <div class="card"><div class="n" id="dCardProds">0</div><div class="l">Productos</div></div>
-    <div class="card warn"><div class="n" id="dCardBajo">0</div><div class="l">Stock bajo</div></div>
-    <div class="card"><div class="n" id="dCardHoy">0</div><div class="l">Ventas hoy</div></div>
-    <div class="card alert"><div class="n" id="dCardMora">0</div><div class="l">En mora</div></div>
-    <div class="card"><div class="n" id="dCardClientes">0</div><div class="l">Clientes</div></div>
+    <div class="card" style="cursor:pointer" onclick="showSection('inventario')"><div class="n" id="dCardProds">0</div><div class="l">📦 Productos</div></div>
+    <div class="card warn" style="cursor:pointer" onclick="showSection('inventario')"><div class="n" id="dCardBajo">0</div><div class="l">⚠️ Stock bajo — ver inventario</div></div>
+    <div class="card" style="cursor:pointer" onclick="showSection('ventas')"><div class="n" id="dCardHoy">0</div><div class="l">🧾 Ventas hoy</div></div>
+    <div class="card alert" style="cursor:pointer" onclick="showSection('ventas');setTimeout(()=>{ventaFiltro='mora';renderVentas();document.querySelector('[data-filt=mora]').scrollIntoView({behavior:\'smooth\'})},300)"><div class="n" id="dCardMora">0</div><div class="l">🔴 En mora — ver deudas</div></div>
+    <div class="card" style="cursor:pointer" onclick="showSection('clientes')"><div class="n" id="dCardClientes">0</div><div class="l">👥 Clientes</div></div>
   </div>
-  <div class="fb"><h2>⚠️ Stock bajo</h2><div id="dLowStock" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
-  <div class="fb"><h2>🕐 Pendientes de pago / Mora</h2><div id="dPendingPay" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
-  <div class="fb"><h2>🧾 Últimas ventas</h2><div id="dLastSales" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
+  <div class="fb" style="cursor:pointer" onclick="showSection('inventario')"><h2>⚠️ Stock bajo — clic para ver inventario</h2><div id="dLowStock" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
+  <div class="fb" style="cursor:pointer" onclick="showSection('ventas');setTimeout(()=>{ventaFiltro='pendiente';renderVentas();},300)"><h2>🕐 Pendientes de pago / Mora — clic para ver</h2><div id="dPendingPay" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
+  <div class="fb" style="cursor:pointer" onclick="showSection('ventas')"><h2>🧾 Últimas ventas — clic para ver todas</h2><div id="dLastSales" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
 </div>
 
 <!-- VENTAS -->
@@ -490,10 +490,21 @@ auth.onAuthStateChanged(async user=>{
 
 // ---------- REALTIME ----------
 function attachListeners(){
-  db.collection('productos').onSnapshot(snap=>{productos={};snap.forEach(d=>productos[d.id]=d.data());renderInvTable();renderDashboard();fillCompraProdSelect();});
+  db.collection('productos').onSnapshot(snap=>{
+    productos={};
+    snap.forEach(d=>productos[d.id]={...d.data(),_id:d.id});
+    renderInvTable();
+    renderDashboard();
+    fillCompraProdSelect();
+    document.querySelectorAll('.saleProd').forEach(s=>{
+      const v=s.value;
+      s.innerHTML='<option value="">– Producto –</option>'+Object.entries(productos).map(([id,p])=>`<option value="${id}">${p.nombre} (${(p.stockLitros||0).toFixed(1)}L disp.)</option>`).join('');
+      if(v)s.value=v;
+    });
+  },{includeMetadataChanges:false});
   db.collection('clientes').onSnapshot(snap=>{clientes={};snap.forEach(d=>clientes[d.id]=d.data());renderClientes();renderDashboard();fillClienteSelect();fillEditVentaClienteSelect();});
   db.collection('ventas').orderBy('fecha','desc').onSnapshot(snap=>{ventas={};snap.forEach(d=>ventas[d.id]=d.data());renderVentas();renderDashboard();});
-  db.collection('config').doc('tasas').onSnapshot(doc=>{if(doc.exists){tasas=doc.data().tasas||tasas;monedaPrincipal=doc.data().principal||'USD';}renderTasasUI();updateBcvBadge();});
+  db.collection('config').doc('tasas').onSnapshot(doc=>{if(doc.exists){tasas=doc.data().tasas||tasas;monedaPrincipal=doc.data().principal||'USD';}renderTasasUI();updateBcvBadge();renderInvTable();});
   db.collection('config').doc('wa').onSnapshot(doc=>{if(doc.exists)waConfig=doc.data();});
   if(currentRole==='admin'){db.collection('roles').onSnapshot(snap=>{const r=[];snap.forEach(d=>r.push({email:d.id,role:d.data().role}));renderUsers(r);});}
 }
@@ -547,19 +558,31 @@ function fillCompraProdSelect(){
   if(v)s.value=v;
 }
 $('btnRegistrarCompra').addEventListener('click',async()=>{
-  const pid=$('compraProducto').value,litros=parseFloat($('compraLitros').value)||0;
+  const pid=$('compraProducto').value;
+  const litros=parseFloat($('compraLitros').value)||0;
   if(!pid){$('compraMsg').textContent='Selecciona un producto.';$('compraMsg').style.color='var(--red)';return;}
   if(litros<=0){$('compraMsg').textContent='Ingresa una cantidad válida.';$('compraMsg').style.color='var(--red)';return;}
+  $('btnRegistrarCompra').disabled=true;$('btnRegistrarCompra').textContent='Guardando...';
   try{
     const ref=db.collection('productos').doc(pid);
-    const snap=await ref.get();if(!snap.exists)return;
+    const snap=await ref.get();
+    if(!snap.exists){$('compraMsg').textContent='Producto no encontrado.';$('compraMsg').style.color='var(--red)';return;}
     const p=snap.data();
-    const nuevo=(p.stockLitros||p.stock||0)+litros;
-    await ref.update({stockLitros:nuevo});
+    const stockActual=parseFloat(p.stockLitros)||parseFloat(p.stock)||0;
+    const nuevoStock=parseFloat((stockActual+litros).toFixed(3));
+    await ref.update({stockLitros:nuevoStock});
+    // actualiza cache local inmediatamente
+    if(productos[pid]) productos[pid].stockLitros=nuevoStock;
+    renderInvTable();fillCompraProdSelect();
     $('compraLitros').value='';$('compraCosto').value='';
     $('compraMsg').style.color='var(--green-d)';
-    $('compraMsg').textContent=`✅ +${litros}L de "${p.nombre}". Stock actual: ${nuevo.toFixed(1)}L`;
-  }catch(e){$('compraMsg').style.color='var(--red)';$('compraMsg').textContent='Error: '+e.message;}
+    $('compraMsg').textContent=`✅ +${litros}L de "${p.nombre}". Stock actual: ${nuevoStock.toFixed(1)}L`;
+  }catch(e){
+    $('compraMsg').style.color='var(--red)';
+    $('compraMsg').textContent='Error: '+e.message;
+  }finally{
+    $('btnRegistrarCompra').disabled=false;$('btnRegistrarCompra').textContent='➕ Agregar al inventario';
+  }
 });
 function renderInvTable(){
   const tb=$('invBody');if(!tb)return;
