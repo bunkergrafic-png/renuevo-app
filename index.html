@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Renuevo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-auth-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-firestore-compat.min.js"></script>
+<style>
+:root{--green:#1f7a4d;--green-d:#155c39;--gray:#6b7280;--border:#e2e5e9;--dark:#1c2b24;--bg:#f4f6f5;--red:#e74c3c;--yellow:#f5b301;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,Segoe UI,Roboto,sans-serif;}
+body{background:var(--bg);color:var(--dark);}
+.hide{display:none!important}
+/* login */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--green-d),var(--dark));padding:16px}
+.loginBox{background:#fff;border-radius:16px;padding:32px 26px;width:100%;max-width:360px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.loginBox h1{font-size:1.4rem;color:var(--green-d);text-align:center;margin-bottom:4px}
+.loginBox p{text-align:center;color:var(--gray);font-size:.8rem;margin-bottom:20px}
+.loginBox label{font-size:.75rem;color:var(--gray);display:block;margin:10px 0 4px}
+.loginBox input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:.9rem}
+.loginBox button{width:100%;margin-top:18px;padding:12px;border:none;border-radius:8px;background:var(--green);color:#fff;font-weight:700;font-size:.9rem;cursor:pointer}
+.loginBox button:active{background:var(--green-d)}
+#loginErr{color:var(--red);font-size:.78rem;margin-top:10px;text-align:center}
+#loginMode{text-align:center;margin-top:14px;font-size:.78rem;color:var(--green-d);cursor:pointer;text-decoration:underline}
+/* header/nav */
+header{background:var(--dark);color:#fff;display:flex;align-items:center;gap:10px;padding:10px 16px;position:sticky;top:0;z-index:50}
+.brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.brand img{height:34px;border-radius:6px}
+.brand strong{font-size:1rem;letter-spacing:.5px}
+.brand p{font-size:.68rem;color:#b8c2bd;margin:0}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{background:transparent;border:none;color:#cfd8d3;padding:8px 10px;border-radius:8px;font-size:.78rem;cursor:pointer;white-space:nowrap}
+nav button.active{background:var(--green);color:#fff}
+.ubadge{font-size:.7rem;background:#2b3d34;padding:6px 9px;border-radius:20px;color:#dfe7e3;white-space:nowrap}
+#hambBtn{display:none;background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer}
+#mobileNav{display:none;position:fixed;top:0;right:0;height:100vh;width:230px;background:var(--dark);z-index:100;padding:16px;flex-direction:column;gap:6px}
+#mobileNav button{background:#2b3d34;border:none;color:#fff;padding:10px;border-radius:8px;text-align:left;font-size:.85rem}
+#mobileNav.open{display:flex}
+main{max-width:1100px;margin:16px auto;padding:0 14px 60px}
+.section{display:none}
+.section.active{display:block}
+.fb{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+.fb h2{font-size:1.05rem;margin-bottom:12px;color:var(--green-d)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px}
+.card .n{font-size:1.5rem;font-weight:800;color:var(--green-d)}
+.card .l{font-size:.72rem;color:var(--gray)}
+.card.warn .n{color:var(--red)}
+label{font-size:.75rem;color:var(--gray);display:block;margin:8px 0 4px}
+input,select{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:8px;font-size:.85rem}
+.row{display:grid;gap:10px}
+.row.r2{grid-template-columns:1fr 1fr}
+.row.r3{grid-template-columns:1fr 1fr 1fr}
+.row.r4{grid-template-columns:1fr 1fr 1fr 1fr}
+.btn{border:none;border-radius:8px;padding:9px 14px;font-size:.8rem;cursor:pointer;font-weight:600}
+.btn-p{background:var(--green);color:#fff}
+.btn-s{background:#2f6fed;color:#fff}
+.btn-d{background:var(--red);color:#fff}
+.btn-w{background:var(--yellow);color:#333}
+.btn-o{background:#eef1ef;color:#333}
+.btn-sm{padding:6px 10px;font-size:.72rem}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{text-align:left;color:var(--gray);font-size:.7rem;text-transform:uppercase;padding:6px;border-bottom:1px solid var(--border)}
+td{padding:8px 6px;border-bottom:1px solid #f0f1f0}
+tr.lowstock{background:#fdecec}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.68rem;font-weight:700}
+.badge.ok{background:#e3f5ea;color:var(--green-d)}
+.badge.low{background:#fbe1e1;color:var(--red)}
+.info-note{background:#eef7f1;border:1px solid #cfe8da;border-radius:8px;padding:8px 10px;font-size:.75rem;color:#2c5c41;margin-bottom:10px}
+#offlineBanner{background:#f5b301;color:#3a2c00;text-align:center;font-size:.75rem;padding:6px;display:none}
+.saleItemRow{display:grid;grid-template-columns:2fr 70px 90px 30px;gap:6px;align-items:center;margin-bottom:6px}
+.totBox{background:#f4f6f5;border-radius:10px;padding:12px;margin-top:10px;font-size:.85rem}
+.totBox b{color:var(--green-d)}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="loginBox">
+    <h1>♻️ RENUEVO</h1>
+    <p>Sistema de ventas — productos de limpieza</p>
+    <label>Correo</label>
+    <input type="email" id="loginEmail" placeholder="tucorreo@ejemplo.com"/>
+    <label>Contraseña</label>
+    <input type="password" id="loginPass" placeholder="••••••••"/>
+    <button id="btnLogin">Ingresar</button>
+    <div id="loginErr"></div>
+    <div id="loginMode">Primera vez usando el sistema? Crear cuenta admin</div>
+  </div>
+</div>
+
+<div id="app" class="hide">
+<header>
+  <div class="brand">
+    <img src="https://placehold.co/34x34/1f7a4d/ffffff?text=R" id="brandLogo"/>
+    <div>
+      <strong>RENUEVO</strong>
+      <p id="userEmailTag">–</p>
+    </div>
+  </div>
+  <nav id="mainNav"></nav>
+  <span class="ubadge" id="bcvBadge" style="cursor:pointer">💱 Tasas</span>
+  <span class="ubadge" id="roleBadge">–</span>
+  <span class="ubadge" id="logoutBtn" style="cursor:pointer">Salir</span>
+  <button id="hambBtn">☰</button>
+</header>
+<div id="mobileNav"></div>
+
+<main>
+  <div id="offlineBanner">📡 Sin conexión — los cambios se sincronizarán al recuperar señal.</div>
+
+  <div id="sec-dashboard" class="section active">
+    <div class="cards">
+      <div class="card"><div class="n" id="cardProductos">0</div><div class="l">Productos activos</div></div>
+      <div class="card warn"><div class="n" id="cardBajoStock">0</div><div class="l">Alertas de stock bajo</div></div>
+      <div class="card"><div class="n" id="cardVentasHoy">0</div><div class="l">Ventas hoy</div></div>
+      <div class="card"><div class="n" id="cardClientes">0</div><div class="l">Clientes registrados</div></div>
+    </div>
+    <div class="fb">
+      <h2>⚠️ Productos con stock bajo</h2>
+      <div id="dashLowStockList" style="font-size:.85rem;color:var(--gray)">Cargando...</div>
+    </div>
+    <div class="fb">
+      <h2>🧾 Últimas ventas</h2>
+      <div id="dashLastSales" style="font-size:.85rem;color:var(--gray)">Cargando...</div>
+    </div>
+  </div>
+
+  <div id="sec-ventas" class="section">
+    <div class="fb">
+      <h2>🧾 Nueva Venta</h2>
+      <label>Cliente</label>
+      <select id="ventaCliente"><option value="">Consumidor final</option></select>
+      <div id="saleItems"></div>
+      <button class="btn btn-o btn-sm" id="btnAddSaleItem" style="margin-top:6px">➕ Agregar producto</button>
+      <label style="margin-top:10px">Forma de pago</label>
+      <select id="ventaPago"><option value="USD">Efectivo USD</option><option value="Bs">Pago móvil / Bs</option><option value="Otro">Otro</option></select>
+      <div class="totBox" id="ventaTotales">Agrega productos para ver el total</div>
+      <button class="btn btn-p" id="btnGuardarVenta" style="margin-top:12px">💾 Registrar venta</button>
+      <div id="ventaMsg" style="font-size:.75rem;margin-top:8px"></div>
+    </div>
+    <div class="fb">
+      <h2>📜 Historial de ventas</h2>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Fecha</th><th>Cliente</th><th>Items</th><th>Total USD</th><th>Total Bs</th><th>Pago</th></tr></thead>
+        <tbody id="ventasTableBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div id="sec-inventario" class="section">
+    <div class="fb">
+      <h2 id="invFormTitle">➕ Agregar Producto</h2>
+      <input type="hidden" id="prodId"/>
+      <div class="row r2">
+        <div><label>Nombre del producto</label><input id="prodNombre" placeholder="Ej: Jabón líquido 20L"/></div>
+        <div><label>Categoría</label><input id="prodCategoria" placeholder="Ej: Limpieza general"/></div>
+      </div>
+      <div class="row r4">
+        <div><label>Costo (USD)</label><input type="number" step="0.01" id="prodCosto" placeholder="8.90"/></div>
+        <div><label>Margen (%)</label><input type="number" step="1" id="prodMargen" placeholder="30"/></div>
+        <div><label>Stock actual</label><input type="number" id="prodStock" placeholder="0"/></div>
+        <div><label>Stock mínimo</label><input type="number" id="prodStockMin" placeholder="5"/></div>
+      </div>
+      <div class="info-note" id="prodPreview">Precio de venta se calculará aquí</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-p" id="btnGuardarProd">💾 Guardar producto</button>
+        <button class="btn btn-o hide" id="btnCancelEditProd">Cancelar edición</button>
+      </div>
+    </div>
+    <div class="fb">
+      <h2>📦 Inventario</h2>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Producto</th><th>Costo</th><th>Margen</th><th>Precio USD</th><th>Precio Bs</th><th>Stock</th><th></th></tr></thead>
+        <tbody id="invTableBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div id="sec-clientes" class="section">
+    <div class="fb">
+      <h2 id="cliFormTitle">➕ Agregar Cliente</h2>
+      <input type="hidden" id="cliId"/>
+      <div class="row r2">
+        <div><label>Nombre</label><input id="cliNombre" placeholder="Nombre completo"/></div>
+        <div><label>Teléfono</label><input id="cliTelefono" placeholder="04XX-XXXXXXX"/></div>
+      </div>
+      <label>Dirección / Notas</label>
+      <input id="cliNotas" placeholder="Opcional"/>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-p" id="btnGuardarCli">💾 Guardar cliente</button>
+        <button class="btn btn-o hide" id="btnCancelEditCli">Cancelar edición</button>
+      </div>
+    </div>
+    <div class="fb">
+      <h2>👥 Clientes</h2>
+      <table><thead><tr><th>Nombre</th><th>Teléfono</th><th>Notas</th><th></th></tr></thead><tbody id="cliTableBody"></tbody></table>
+    </div>
+  </div>
+
+  <div id="sec-tasas" class="section">
+    <div class="fb">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <strong style="font-size:.85rem">💱 Tasas de cambio (Bs por unidad)</strong>
+      </div>
+      <div id="tasasContainer" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-p btn-sm" id="btnAddTasa">➕ Agregar moneda</button>
+        <button class="btn btn-s btn-sm" id="btnSaveTasas">💾 Guardar tasas</button>
+        <span style="font-size:.7rem;color:var(--gray)" id="tasasFecha"></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-usuarios" class="section">
+    <div class="fb">
+      <h2>➕ Agregar Empleado</h2>
+      <div class="info-note">Crea la cuenta de acceso para un empleado. Quedará con rol "Vendedor" (sin ver costos ni márgenes).</div>
+      <div class="row r3">
+        <div><label>Correo</label><input id="empEmail" placeholder="empleado@correo.com"/></div>
+        <div><label>Contraseña temporal</label><input id="empPass" placeholder="mínimo 6 caracteres"/></div>
+        <div><label>Rol</label><select id="empRol"><option value="vendedor">Vendedor</option><option value="admin">Administrador</option></select></div>
+      </div>
+      <button class="btn btn-p" id="btnCrearEmpleado" style="margin-top:8px">Crear cuenta</button>
+      <div id="empMsg" style="font-size:.75rem;margin-top:8px"></div>
+    </div>
+    <div class="fb">
+      <h2>👤 Usuarios con acceso</h2>
+      <table><thead><tr><th>Correo</th><th>Rol</th><th></th></tr></thead><tbody id="usersTableBody"></tbody></table>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+// ============ CONFIGURA AQUÍ TU PROYECTO DE FIREBASE (Renuevo) ============
+const firebaseConfig = {
+  apiKey: "AIzaSyDG-W82BwNZWYSBqhacsHRx4QoJgk0Xyow",
+  authDomain: "renuevo-app-c35be.firebaseapp.com",
+  projectId: "renuevo-app-c35be",
+  storageBucket: "renuevo-app-c35be.firebasestorage.app",
+  messagingSenderId: "405969009551",
+  appId: "1:405969009551:web:e020789693262b7a5fa9fa"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+try{ db.enablePersistence({synchronizeTabs:true}); }catch(e){}
+
+const $=id=>document.getElementById(id);
+let currentUser=null, currentRole=null;
+let productos={}, clientes={}, ventas={}, tasas={USD:{valor:1}}, monedaPrincipal='USD';
+let saleItemCount=0;
+
+// ---------- Nav ----------
+const NAV=[
+  {id:'dashboard',label:'📊 Dashboard',roles:['admin','vendedor']},
+  {id:'ventas',label:'🧾 Ventas',roles:['admin','vendedor']},
+  {id:'inventario',label:'📦 Inventario',roles:['admin','vendedor']},
+  {id:'clientes',label:'👥 Clientes',roles:['admin','vendedor']},
+  {id:'tasas',label:'💱 Tasas',roles:['admin']},
+  {id:'usuarios',label:'👤 Usuarios',roles:['admin']}
+];
+function buildNav(){
+  const perms=NAV.filter(n=>n.roles.includes(currentRole));
+  $('mainNav').innerHTML=perms.map(n=>`<button data-s="${n.id}">${n.label}</button>`).join('');
+  $('mobileNav').innerHTML=perms.map(n=>`<button data-s="${n.id}">${n.label}</button>`).join('');
+  document.querySelectorAll('#mainNav button,#mobileNav button').forEach(b=>{
+    b.addEventListener('click',()=>{showSection(b.dataset.s); $('mobileNav').classList.remove('open');});
+  });
+  showSection('dashboard');
+}
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('#mainNav button,#mobileNav button').forEach(b=>b.classList.toggle('active',b.dataset.s===id));
+  const s=$('sec-'+id); if(s)s.classList.add('active');
+  if(id==='dashboard')renderDashboard();
+  if(id==='inventario')renderInventarioTable();
+  if(id==='clientes')renderClientesTable();
+  if(id==='ventas')renderVentasTable();
+  if(id==='usuarios')renderUsersTable();
+}
+$('hambBtn').addEventListener('click',()=>$('mobileNav').classList.toggle('open'));
+
+// ---------- Auth ----------
+let creatingAccountMode=false;
+$('loginMode').addEventListener('click',()=>{
+  creatingAccountMode=!creatingAccountMode;
+  $('loginMode').textContent=creatingAccountMode?'Ya tengo cuenta, ir a ingresar':'Primera vez usando el sistema? Crear cuenta admin';
+  $('btnLogin').textContent=creatingAccountMode?'Crear cuenta admin':'Ingresar';
+});
+$('btnLogin').addEventListener('click', async ()=>{
+  const email=$('loginEmail').value.trim(), pass=$('loginPass').value;
+  $('loginErr').textContent='';
+  if(!email||!pass){$('loginErr').textContent='Completa correo y contraseña.';return;}
+  try{
+    if(creatingAccountMode){
+      const cred=await auth.createUserWithEmailAndPassword(email,pass);
+      await db.collection('roles').doc(email.toLowerCase()).set({role:'admin',createdAt:Date.now()});
+    }else{
+      await auth.signInWithEmailAndPassword(email,pass);
+    }
+  }catch(e){ $('loginErr').textContent=traducirError(e.code); }
+});
+function traducirError(code){
+  const m={'auth/email-already-in-use':'Ese correo ya tiene una cuenta.','auth/invalid-email':'Correo inválido.','auth/weak-password':'Contraseña muy débil (mínimo 6 caracteres).','auth/user-not-found':'Usuario no encontrado.','auth/wrong-password':'Contraseña incorrecta.','auth/invalid-credential':'Correo o contraseña incorrectos.'};
+  return m[code]||('Error: '+code);
+}
+$('logoutBtn').addEventListener('click',()=>auth.signOut());
+
+auth.onAuthStateChanged(async user=>{
+  if(user){
+    currentUser=user;
+    const roleDoc=await db.collection('roles').doc(user.email.toLowerCase()).get();
+    if(!roleDoc.exists){
+      $('loginErr').textContent='Esta cuenta no tiene un rol asignado. Contacta al administrador.';
+      await auth.signOut(); return;
+    }
+    currentRole=roleDoc.data().role;
+    $('loginScreen').classList.add('hide');
+    $('app').classList.remove('hide');
+    $('userEmailTag').textContent=user.email;
+    $('roleBadge').textContent=currentRole==='admin'?'Admin':'Vendedor';
+    document.querySelectorAll('.only-admin').forEach(el=>el.style.display=currentRole==='admin'?'':'none');
+    buildNav();
+    attachDataListeners();
+  }else{
+    currentUser=null; currentRole=null;
+    $('app').classList.add('hide');
+    $('loginScreen').classList.remove('hide');
+  }
+});
+
+// ---------- Realtime data ----------
+function attachDataListeners(){
+  db.collection('productos').onSnapshot(snap=>{
+    productos={}; snap.forEach(d=>productos[d.id]=d.data());
+    renderInventarioTable(); renderDashboard(); fillProductSelects();
+  });
+  db.collection('clientes').onSnapshot(snap=>{
+    clientes={}; snap.forEach(d=>clientes[d.id]=d.data());
+    renderClientesTable(); renderDashboard(); fillClienteSelect();
+  });
+  db.collection('ventas').orderBy('fecha','desc').onSnapshot(snap=>{
+    ventas={}; snap.forEach(d=>ventas[d.id]=d.data());
+    renderVentasTable(); renderDashboard();
+  });
+  db.collection('config').doc('tasas').onSnapshot(doc=>{
+    if(doc.exists){ tasas=doc.data().tasas||tasas; monedaPrincipal=doc.data().principal||'USD'; }
+    renderTasasUI();
+  });
+  if(currentRole==='admin'){
+    db.collection('roles').onSnapshot(snap=>{
+      const rows=[]; snap.forEach(d=>rows.push({email:d.id,role:d.data().role}));
+      renderUsersTable(rows);
+    });
+  }
+}
+
+// ---------- Inventario ----------
+function calcPrecioUSD(costo,margen){ return costo*(1+ (margen||0)/100); }
+['prodCosto','prodMargen'].forEach(id=>{
+  document.addEventListener('input',e=>{
+    if(e.target.id==='prodCosto'||e.target.id==='prodMargen'){
+      const c=parseFloat($('prodCosto').value)||0, m=parseFloat($('prodMargen').value)||0;
+      const p=calcPrecioUSD(c,m); const bs=(tasas[monedaPrincipal]?.valor||0)*p;
+      $('prodPreview').textContent=`Precio de venta: $${p.toFixed(2)} USD  (Bs ${bs.toLocaleString('es-VE',{maximumFractionDigits:2})})`;
+    }
+  });
+});
+$('btnGuardarProd').addEventListener('click', async ()=>{
+  const id=$('prodId').value;
+  const data={
+    nombre:$('prodNombre').value.trim(),
+    categoria:$('prodCategoria').value.trim(),
+    costo:parseFloat($('prodCosto').value)||0,
+    margen:parseFloat($('prodMargen').value)||0,
+    stock:parseInt($('prodStock').value)||0,
+    stockMin:parseInt($('prodStockMin').value)||0
+  };
+  if(!data.nombre){alert('Ponle nombre al producto');return;}
+  if(id){ await db.collection('productos').doc(id).update(data); }
+  else{ await db.collection('productos').add(data); }
+  ['prodId','prodNombre','prodCategoria','prodCosto','prodMargen','prodStock','prodStockMin'].forEach(f=>$(f).value='');
+  $('prodPreview').textContent='Precio de venta se calculará aquí';
+  $('invFormTitle').textContent='➕ Agregar Producto';
+  $('btnCancelEditProd').classList.add('hide');
+});
+$('btnCancelEditProd').addEventListener('click',()=>{
+  ['prodId','prodNombre','prodCategoria','prodCosto','prodMargen','prodStock','prodStockMin'].forEach(f=>$(f).value='');
+  $('invFormTitle').textContent='➕ Agregar Producto';
+  $('btnCancelEditProd').classList.add('hide');
+});
+function renderInventarioTable(){
+  const tb=$('invTableBody'); if(!tb)return;
+  const isAdmin=currentRole==='admin';
+  tb.innerHTML=Object.entries(productos).map(([id,p])=>{
+    const precio=calcPrecioUSD(p.costo,p.margen);
+    const bs=(tasas[monedaPrincipal]?.valor||0)*precio;
+    const low=p.stock<=p.stockMin;
+    return `<tr class="${low?'lowstock':''}">
+      <td>${p.nombre}<br><span style="color:var(--gray);font-size:.68rem">${p.categoria||''}</span></td>
+      <td>${isAdmin?'$'+p.costo.toFixed(2):'—'}</td>
+      <td>${isAdmin?p.margen+'%':'—'}</td>
+      <td>$${precio.toFixed(2)}</td>
+      <td>Bs ${bs.toLocaleString('es-VE',{maximumFractionDigits:2})}</td>
+      <td>${p.stock} <span class="badge ${low?'low':'ok'}">${low?'BAJO':'OK'}</span></td>
+      <td>${isAdmin?`<button class="btn btn-sm btn-o" data-edit-prod="${id}">✏️</button> <button class="btn btn-sm btn-d" data-del-prod="${id}">🗑️</button>`:''}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" style="color:var(--gray)">Sin productos aún.</td></tr>';
+  tb.querySelectorAll('[data-edit-prod]').forEach(b=>b.addEventListener('click',()=>{
+    const p=productos[b.dataset.editProd];
+    $('prodId').value=b.dataset.editProd; $('prodNombre').value=p.nombre; $('prodCategoria').value=p.categoria||'';
+    $('prodCosto').value=p.costo; $('prodMargen').value=p.margen; $('prodStock').value=p.stock; $('prodStockMin').value=p.stockMin;
+    $('invFormTitle').textContent='✏️ Editar Producto'; $('btnCancelEditProd').classList.remove('hide');
+    const precio=calcPrecioUSD(p.costo,p.margen); const bs=(tasas[monedaPrincipal]?.valor||0)*precio;
+    $('prodPreview').textContent=`Precio de venta: $${precio.toFixed(2)} USD  (Bs ${bs.toLocaleString('es-VE',{maximumFractionDigits:2})})`;
+  }));
+  tb.querySelectorAll('[data-del-prod]').forEach(b=>b.addEventListener('click',async()=>{
+    if(confirm('¿Eliminar este producto?')) await db.collection('productos').doc(b.dataset.delProd).delete();
+  }));
+}
+
+// ---------- Clientes ----------
+$('btnGuardarCli').addEventListener('click', async()=>{
+  const id=$('cliId').value;
+  const data={nombre:$('cliNombre').value.trim(),telefono:$('cliTelefono').value.trim(),notas:$('cliNotas').value.trim()};
+  if(!data.nombre){alert('Ponle nombre al cliente');return;}
+  if(id) await db.collection('clientes').doc(id).update(data);
+  else await db.collection('clientes').add(data);
+  ['cliId','cliNombre','cliTelefono','cliNotas'].forEach(f=>$(f).value='');
+  $('cliFormTitle').textContent='➕ Agregar Cliente'; $('btnCancelEditCli').classList.add('hide');
+});
+$('btnCancelEditCli').addEventListener('click',()=>{
+  ['cliId','cliNombre','cliTelefono','cliNotas'].forEach(f=>$(f).value='');
+  $('cliFormTitle').textContent='➕ Agregar Cliente'; $('btnCancelEditCli').classList.add('hide');
+});
+function renderClientesTable(){
+  const tb=$('cliTableBody'); if(!tb)return;
+  tb.innerHTML=Object.entries(clientes).map(([id,c])=>`<tr>
+    <td>${c.nombre}</td><td>${c.telefono||''}</td><td>${c.notas||''}</td>
+    <td><button class="btn btn-sm btn-o" data-edit-cli="${id}">✏️</button> <button class="btn btn-sm btn-d" data-del-cli="${id}">🗑️</button></td>
+  </tr>`).join('') || '<tr><td colspan="4" style="color:var(--gray)">Sin clientes aún.</td></tr>';
+  tb.querySelectorAll('[data-edit-cli]').forEach(b=>b.addEventListener('click',()=>{
+    const c=clientes[b.dataset.editCli];
+    $('cliId').value=b.dataset.editCli; $('cliNombre').value=c.nombre; $('cliTelefono').value=c.telefono||''; $('cliNotas').value=c.notas||'';
+    $('cliFormTitle').textContent='✏️ Editar Cliente'; $('btnCancelEditCli').classList.remove('hide');
+  }));
+  tb.querySelectorAll('[data-del-cli]').forEach(b=>b.addEventListener('click',async()=>{
+    if(confirm('¿Eliminar este cliente?')) await db.collection('clientes').doc(b.dataset.delCli).delete();
+  }));
+}
+function fillClienteSelect(){
+  const sel=$('ventaCliente'); const cur=sel.value;
+  sel.innerHTML='<option value="">Consumidor final</option>'+Object.entries(clientes).map(([id,c])=>`<option value="${id}">${c.nombre}</option>`).join('');
+  sel.value=cur;
+}
+
+// ---------- Tasas ----------
+function renderTasasUI(){
+  const cont=$('tasasContainer'); if(!cont)return;
+  cont.innerHTML=Object.entries(tasas).map(([code,t])=>`
+    <div class="fb" style="padding:8px;margin:0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong style="font-size:.8rem">${code} ${code===monedaPrincipal?'⭐':''}</strong>
+        ${code!==monedaPrincipal?`<button class="btn btn-sm btn-o" data-setprincipal="${code}">Usar</button>`:''}
+      </div>
+      <input type="number" step="0.01" value="${t.valor}" data-tasa="${code}" style="margin-top:6px"/>
+      ${code!=='USD'?`<button class="btn btn-sm btn-d" data-deltasa="${code}" style="margin-top:6px">🗑️</button>`:''}
+    </div>`).join('');
+  cont.querySelectorAll('[data-tasa]').forEach(i=>i.addEventListener('input',()=>{tasas[i.dataset.tasa].valor=parseFloat(i.value)||0;}));
+  cont.querySelectorAll('[data-deltasa]').forEach(b=>b.addEventListener('click',()=>{delete tasas[b.dataset.deltasa];renderTasasUI();}));
+  cont.querySelectorAll('[data-setprincipal]').forEach(b=>b.addEventListener('click',()=>{monedaPrincipal=b.dataset.setprincipal;renderTasasUI();renderInventarioTable();}));
+  updateBcvBadge();
+}
+$('btnAddTasa').addEventListener('click',()=>{
+  const code=prompt('Código de moneda (ej: EUR, COP):'); if(!code)return;
+  tasas[code.toUpperCase()]={valor:0}; renderTasasUI();
+});
+$('btnSaveTasas').addEventListener('click', async()=>{
+  await db.collection('config').doc('tasas').set({tasas,principal:monedaPrincipal,updatedAt:Date.now()});
+  $('tasasFecha').textContent='Guardado: '+new Date().toLocaleString('es-VE');
+});
+function updateBcvBadge(){
+  const b=$('bcvBadge'); if(!b)return;
+  const t=tasas[monedaPrincipal];
+  b.textContent=(t&&t.valor)?`💱 ${monedaPrincipal}=Bs ${t.valor.toLocaleString('es-VE',{maximumFractionDigits:2})}`:'💱 Tasas';
+}
+$('bcvBadge').addEventListener('click',()=>{ if(currentRole==='admin') showSection('tasas'); });
+
+// ---------- Ventas ----------
+function fillProductSelects(){
+  document.querySelectorAll('.saleProdSelect').forEach(sel=>{
+    const cur=sel.value;
+    sel.innerHTML='<option value="">– Producto –</option>'+Object.entries(productos).map(([id,p])=>`<option value="${id}">${p.nombre} (stock:${p.stock})</option>`).join('');
+    sel.value=cur;
+  });
+}
+function addSaleItemRow(){
+  saleItemCount++;
+  const rowId='si'+saleItemCount;
+  const div=document.createElement('div');
+  div.className='saleItemRow'; div.id=rowId;
+  div.innerHTML=`<select class="saleProdSelect"><option value="">– Producto –</option>${Object.entries(productos).map(([id,p])=>`<option value="${id}">${p.nombre} (stock:${p.stock})</option>`).join('')}</select>
+    <input type="number" min="1" value="1" class="saleQty"/>
+    <span class="saleSubtotal" style="font-size:.75rem;color:var(--gray)">$0.00</span>
+    <button class="btn btn-sm btn-d" onclick="document.getElementById('${rowId}').remove();calcVentaTotales();">✕</button>`;
+  $('saleItems').appendChild(div);
+  div.querySelector('.saleProdSelect').addEventListener('change',calcVentaTotales);
+  div.querySelector('.saleQty').addEventListener('input',calcVentaTotales);
+}
+$('btnAddSaleItem').addEventListener('click',addSaleItemRow);
+function calcVentaTotales(){
+  let totalUSD=0;
+  document.querySelectorAll('.saleItemRow').forEach(row=>{
+    const pid=row.querySelector('.saleProdSelect').value;
+    const qty=parseInt(row.querySelector('.saleQty').value)||0;
+    const p=productos[pid];
+    const sub=p?calcPrecioUSD(p.costo,p.margen)*qty:0;
+    row.querySelector('.saleSubtotal').textContent='$'+sub.toFixed(2);
+    totalUSD+=sub;
+  });
+  const bs=(tasas[monedaPrincipal]?.valor||0)*totalUSD;
+  $('ventaTotales').innerHTML=`Total: <b>$${totalUSD.toFixed(2)} USD</b> &nbsp;|&nbsp; <b>Bs ${bs.toLocaleString('es-VE',{maximumFractionDigits:2})}</b>`;
+  return {totalUSD,bs};
+}
+$('btnGuardarVenta').addEventListener('click', async()=>{
+  const items=[];
+  document.querySelectorAll('.saleItemRow').forEach(row=>{
+    const pid=row.querySelector('.saleProdSelect').value;
+    const qty=parseInt(row.querySelector('.saleQty').value)||0;
+    if(pid&&qty>0) items.push({productoId:pid,nombre:productos[pid]?.nombre,cantidad:qty,precioUSD:calcPrecioUSD(productos[pid].costo,productos[pid].margen)});
+  });
+  if(items.length===0){$('ventaMsg').textContent='Agrega al menos un producto.';$('ventaMsg').style.color='var(--red)';return;}
+  for(const it of items){
+    if((productos[it.productoId]?.stock||0)<it.cantidad){
+      $('ventaMsg').textContent=`Stock insuficiente de "${it.nombre}".`; $('ventaMsg').style.color='var(--red)'; return;
+    }
+  }
+  const {totalUSD,bs}=calcVentaTotales();
+  const clienteId=$('ventaCliente').value;
+  await db.collection('ventas').add({
+    fecha:Date.now(), clienteId:clienteId||null, clienteNombre:clienteId?clientes[clienteId]?.nombre:'Consumidor final',
+    items, totalUSD, totalBs:bs, pago:$('ventaPago').value, vendedor:currentUser.email
+  });
+  for(const it of items){
+    await db.collection('productos').doc(it.productoId).update({stock:productos[it.productoId].stock-it.cantidad});
+  }
+  $('saleItems').innerHTML=''; $('ventaTotales').textContent='Agrega productos para ver el total';
+  $('ventaMsg').style.color='var(--green-d)'; $('ventaMsg').textContent='✅ Venta registrada correctamente.';
+});
+function renderVentasTable(){
+  const tb=$('ventasTableBody'); if(!tb)return;
+  tb.innerHTML=Object.entries(ventas).map(([id,v])=>`<tr>
+    <td>${new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})}</td>
+    <td>${v.clienteNombre||'Consumidor final'}</td>
+    <td>${(v.items||[]).map(i=>i.nombre+' x'+i.cantidad).join(', ')}</td>
+    <td>$${(v.totalUSD||0).toFixed(2)}</td>
+    <td>Bs ${(v.totalBs||0).toLocaleString('es-VE',{maximumFractionDigits:2})}</td>
+    <td>${v.pago||''}</td>
+  </tr>`).join('') || '<tr><td colspan="6" style="color:var(--gray)">Sin ventas aún.</td></tr>';
+}
+
+// ---------- Dashboard ----------
+function renderDashboard(){
+  const prods=Object.values(productos);
+  $('cardProductos').textContent=prods.length;
+  const low=prods.filter(p=>p.stock<=p.stockMin);
+  $('cardBajoStock').textContent=low.length;
+  $('cardClientes').textContent=Object.keys(clientes).length;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const ventasHoy=Object.values(ventas).filter(v=>v.fecha>=today.getTime());
+  $('cardVentasHoy').textContent=ventasHoy.length;
+  $('dashLowStockList').innerHTML=low.length? low.map(p=>`• ${p.nombre} (stock: ${p.stock}, mínimo: ${p.stockMin})`).join('<br>') : 'Todo el inventario está en niveles saludables ✅';
+  const last=Object.values(ventas).slice(0,5);
+  $('dashLastSales').innerHTML=last.length? last.map(v=>`• ${new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})} — ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)}`).join('<br>') : 'Sin ventas registradas aún.';
+}
+
+// ---------- Usuarios (admin) ----------
+$('btnCrearEmpleado').addEventListener('click', async()=>{
+  const email=$('empEmail').value.trim(), pass=$('empPass').value, rol=$('empRol').value;
+  $('empMsg').textContent='';
+  if(!email||pass.length<6){$('empMsg').textContent='Correo válido y contraseña de mínimo 6 caracteres.';$('empMsg').style.color='var(--red)';return;}
+  try{
+    const secondaryApp=firebase.initializeApp(firebaseConfig,'Secondary'+Date.now());
+    await secondaryApp.auth().createUserWithEmailAndPassword(email,pass);
+    await secondaryApp.auth().signOut();
+    await secondaryApp.delete();
+    await db.collection('roles').doc(email.toLowerCase()).set({role:rol,createdAt:Date.now(),creadoPor:currentUser.email});
+    $('empMsg').style.color='var(--green-d)'; $('empMsg').textContent='✅ Cuenta creada. Comparte el correo y contraseña con el empleado.';
+    $('empEmail').value=''; $('empPass').value='';
+  }catch(e){ $('empMsg').style.color='var(--red)'; $('empMsg').textContent=traducirError(e.code); }
+});
+function renderUsersTable(rows){
+  const tb=$('usersTableBody'); if(!tb)return;
+  tb.innerHTML=(rows||[]).map(r=>`<tr>
+    <td>${r.email}</td><td>${r.role==='admin'?'Administrador':'Vendedor'}</td>
+    <td>${r.email!==currentUser.email?`<button class="btn btn-sm btn-d" data-del-user="${r.email}">Revocar acceso</button>`:'<span style="color:var(--gray);font-size:.7rem">(tú)</span>'}</td>
+  </tr>`).join('');
+  tb.querySelectorAll('[data-del-user]').forEach(b=>b.addEventListener('click',async()=>{
+    if(confirm('¿Revocar el acceso de '+b.dataset.delUser+'?')) await db.collection('roles').doc(b.dataset.delUser).delete();
+  }));
+}
+
+// ---------- Offline banner ----------
+window.addEventListener('online',()=>$('offlineBanner').style.display='none');
+window.addEventListener('offline',()=>$('offlineBanner').style.display='block');
+if(!navigator.onLine) $('offlineBanner').style.display='block';
+</script>
+</body>
+</html>
