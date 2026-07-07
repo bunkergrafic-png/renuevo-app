@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <meta name="theme-color" content="#1f7a4d"/>
 <title>Renuevo</title>
-<link rel="icon" id="faviconLink"/>
-<link rel="apple-touch-icon" id="appleIconLink"/>
+<link rel="icon" type="image/png" href="icon.png"/>
+<link rel="apple-touch-icon" href="icon.png"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-app-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-auth-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-firestore-compat.min.js"></script>
@@ -539,15 +539,18 @@ function renderInvTable(){
   const tb=$('invBody');if(!tb)return;
   const isAdmin=currentRole==='admin';
   tb.innerHTML=Object.entries(productos).map(([id,p])=>{
-    const pl=calcPrecioLitro(p);const bs=(tasas[monedaPrincipal]?.valor||0)*pl;
-    const low=(p.stockLitros||0)<=(p.stockMin||0);
+    const pl=calcPrecioLitro(p);
+    const bs=(tasas[monedaPrincipal]?.valor||0)*pl;
+    const stock=p.stockLitros||p.stock||0;
+    const stockMin=p.stockMin||0;
+    const low=stock<=stockMin;
     return `<tr class="${low?'lowstock':''}">
       <td>${p.nombre}<br><span style="color:var(--gray);font-size:.67rem">${p.categoria||''}</span></td>
       <td>${isAdmin?'$'+p.costoPorLitro.toFixed(3):'—'}</td>
       <td>${isAdmin?p.margen+'%':'—'}</td>
-      <td>$${pl.toFixed(3)}</td>
+      <td>${pl.toFixed(3)}</td>
       <td>Bs ${bs.toLocaleString('es-VE',{maximumFractionDigits:2})}</td>
-      <td>${(p.stockLitros||0).toFixed(1)}L</td>
+      <td>${stock.toFixed(1)}L</td>
       <td><span class="badge ${low?'badge-low':'badge-ok'}">${low?'BAJO':'OK'}</span></td>
       <td>${isAdmin?`<button class="btn btn-sm btn-o" data-ep="${id}">✏️</button> <button class="btn btn-sm btn-d" data-dp="${id}">🗑️</button>`:''}</td>
     </tr>`;
@@ -560,7 +563,10 @@ function renderInvTable(){
   }));
   tb.querySelectorAll('[data-dp]').forEach(b=>b.addEventListener('click',async()=>{if(confirm('¿Eliminar?'))await db.collection('productos').doc(b.dataset.dp).delete();}));
 }
-function calcPrecioLitro(p){return (p.costoPorLitro||0)*(1+(p.margen||0)/100);}
+function calcPrecioLitro(p){
+  const costo=p.costoPorLitro||p.costo||0;
+  return costo*(1+(p.margen||0)/100);
+}
 
 // ---------- VENTAS ----------
 let saleCount=0;
