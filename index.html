@@ -132,6 +132,17 @@ tr.lowstock{background:#fdecec}
       <h2>🧾 Nueva Venta</h2>
       <label>Cliente</label>
       <select id="ventaCliente"><option value="">Consumidor final</option></select>
+      <div id="nuevoClienteBox" class="hide" style="margin-top:8px;padding:10px;background:#f4f6f5;border-radius:8px">
+        <div class="row r2">
+          <div><label>Nombre</label><input id="ncNombre" placeholder="Nombre"/></div>
+          <div><label>Apellido</label><input id="ncApellido" placeholder="Apellido"/></div>
+        </div>
+        <div class="row r2">
+          <div><label>Cédula</label><input id="ncCedula" placeholder="V-12345678"/></div>
+          <div><label>Teléfono (opcional)</label><input id="ncTelefono" placeholder="04XX-XXXXXXX"/></div>
+        </div>
+        <button class="btn btn-p btn-sm" id="btnGuardarNC" style="margin-top:8px">Guardar y usar este cliente</button>
+      </div>
       <div id="saleItems"></div>
       <button class="btn btn-o btn-sm" id="btnAddSaleItem" style="margin-top:6px">➕ Agregar producto</button>
       <label style="margin-top:10px">Forma de pago</label>
@@ -171,6 +182,8 @@ tr.lowstock{background:#fdecec}
     </div>
     <div class="fb">
       <h2>📦 Inventario</h2>
+      <button class="btn btn-o btn-sm" id="btnCargarCatalogo" style="margin-bottom:10px">📥 Cargar catálogo inicial Pulizia (9 productos, margen 50%)</button>
+      <div id="catalogoMsg" style="font-size:.75rem;margin-bottom:8px"></div>
       <div style="overflow-x:auto"><table>
         <thead><tr><th>Producto</th><th>Costo</th><th>Margen</th><th>Precio USD</th><th>Precio Bs</th><th>Stock</th><th></th></tr></thead>
         <tbody id="invTableBody"></tbody>
@@ -182,12 +195,15 @@ tr.lowstock{background:#fdecec}
     <div class="fb">
       <h2 id="cliFormTitle">➕ Agregar Cliente</h2>
       <input type="hidden" id="cliId"/>
-      <div class="row r2">
-        <div><label>Nombre</label><input id="cliNombre" placeholder="Nombre completo"/></div>
-        <div><label>Teléfono</label><input id="cliTelefono" placeholder="04XX-XXXXXXX"/></div>
+      <div class="row r3">
+        <div><label>Nombre</label><input id="cliNombre" placeholder="Nombre"/></div>
+        <div><label>Apellido</label><input id="cliApellido" placeholder="Apellido"/></div>
+        <div><label>Cédula</label><input id="cliCedula" placeholder="V-12345678"/></div>
       </div>
-      <label>Dirección / Notas</label>
-      <input id="cliNotas" placeholder="Opcional"/>
+      <div class="row r2">
+        <div><label>Teléfono (opcional)</label><input id="cliTelefono" placeholder="04XX-XXXXXXX"/></div>
+        <div><label>Dirección / Notas (opcional)</label><input id="cliNotas" placeholder="Opcional"/></div>
+      </div>
       <div style="display:flex;gap:8px;margin-top:10px">
         <button class="btn btn-p" id="btnGuardarCli">💾 Guardar cliente</button>
         <button class="btn btn-o hide" id="btnCancelEditCli">Cancelar edición</button>
@@ -195,7 +211,7 @@ tr.lowstock{background:#fdecec}
     </div>
     <div class="fb">
       <h2>👥 Clientes</h2>
-      <table><thead><tr><th>Nombre</th><th>Teléfono</th><th>Notas</th><th></th></tr></thead><tbody id="cliTableBody"></tbody></table>
+      <table><thead><tr><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th></th></tr></thead><tbody id="cliTableBody"></tbody></table>
     </div>
   </div>
 
@@ -203,7 +219,9 @@ tr.lowstock{background:#fdecec}
     <div class="fb">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
         <strong style="font-size:.85rem">💱 Tasas de cambio (Bs por unidad)</strong>
+        <button class="btn btn-sm btn-p" id="btnAutoTasas">🔄 Auto BCV / Euro</button>
       </div>
+      <div class="info-note">La tasa de USDT no tiene una API pública confiable para actualizar sola desde el navegador — actualízala manualmente aquí (revisando Binance P2P u otra referencia).</div>
       <div id="tasasContainer" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px"></div>
       <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center">
         <button class="btn btn-p btn-sm" id="btnAddTasa">➕ Agregar moneda</button>
@@ -251,7 +269,7 @@ try{ db.enablePersistence({synchronizeTabs:true}); }catch(e){}
 
 const $=id=>document.getElementById(id);
 let currentUser=null, currentRole=null;
-let productos={}, clientes={}, ventas={}, tasas={USD:{valor:1}}, monedaPrincipal='USD';
+let productos={}, clientes={}, ventas={}, tasas={USD:{valor:0},EUR:{valor:0},USDT:{valor:0}}, monedaPrincipal='USD';
 let saleItemCount=0;
 
 // ---------- Nav ----------
@@ -423,29 +441,56 @@ function renderInventarioTable(){
   }));
 }
 
+// ---------- Carga inicial catálogo Pulizia ----------
+const PULIZIA_CATALOG=[
+  {nombre:'Jabón Líquido 20L',categoria:'Limpieza general',costo:13.90},
+  {nombre:'Cloro 20L',categoria:'Limpieza general',costo:8.90},
+  {nombre:'Desinfectante Standard 20L',categoria:'Desinfectantes',costo:8.90},
+  {nombre:'Desinfectante Concentrado 20L',categoria:'Desinfectantes',costo:11.00},
+  {nombre:'Suavizante 20L',categoria:'Ropa',costo:13.90},
+  {nombre:'Cera para Pisos 20L',categoria:'Pisos',costo:13.90},
+  {nombre:'Desengrasante 20L',categoria:'Cocina',costo:8.00},
+  {nombre:'Limpia Cerámica (por litro)',categoria:'Pisos',costo:1.00},
+  {nombre:'Jabón Tipo Ariel',categoria:'Ropa',costo:14.50}
+];
+$('btnCargarCatalogo').addEventListener('click', async()=>{
+  if(!confirm('Esto agregará 9 productos nuevos al inventario con costo de Pulizia y 50% de margen (editable después). ¿Continuar?'))return;
+  $('catalogoMsg').textContent='Cargando...'; $('catalogoMsg').style.color='var(--gray)';
+  try{
+    const batch=db.batch();
+    PULIZIA_CATALOG.forEach(p=>{
+      const ref=db.collection('productos').doc();
+      batch.set(ref,{nombre:p.nombre,categoria:p.categoria,costo:p.costo,margen:50,stock:0,stockMin:2});
+    });
+    await batch.commit();
+    $('catalogoMsg').style.color='var(--green-d)';
+    $('catalogoMsg').textContent='✅ 9 productos cargados. Ahora ajusta el stock real de cada uno.';
+  }catch(e){ $('catalogoMsg').style.color='var(--red)'; $('catalogoMsg').textContent='Error: '+e.message; }
+});
+
 // ---------- Clientes ----------
 $('btnGuardarCli').addEventListener('click', async()=>{
   const id=$('cliId').value;
-  const data={nombre:$('cliNombre').value.trim(),telefono:$('cliTelefono').value.trim(),notas:$('cliNotas').value.trim()};
-  if(!data.nombre){alert('Ponle nombre al cliente');return;}
+  const data={nombre:$('cliNombre').value.trim(),apellido:$('cliApellido').value.trim(),cedula:$('cliCedula').value.trim(),telefono:$('cliTelefono').value.trim(),notas:$('cliNotas').value.trim()};
+  if(!data.nombre||!data.apellido||!data.cedula){alert('Nombre, apellido y cédula son obligatorios.');return;}
   if(id) await db.collection('clientes').doc(id).update(data);
   else await db.collection('clientes').add(data);
-  ['cliId','cliNombre','cliTelefono','cliNotas'].forEach(f=>$(f).value='');
+  ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliNotas'].forEach(f=>$(f).value='');
   $('cliFormTitle').textContent='➕ Agregar Cliente'; $('btnCancelEditCli').classList.add('hide');
 });
 $('btnCancelEditCli').addEventListener('click',()=>{
-  ['cliId','cliNombre','cliTelefono','cliNotas'].forEach(f=>$(f).value='');
+  ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliNotas'].forEach(f=>$(f).value='');
   $('cliFormTitle').textContent='➕ Agregar Cliente'; $('btnCancelEditCli').classList.add('hide');
 });
 function renderClientesTable(){
   const tb=$('cliTableBody'); if(!tb)return;
   tb.innerHTML=Object.entries(clientes).map(([id,c])=>`<tr>
-    <td>${c.nombre}</td><td>${c.telefono||''}</td><td>${c.notas||''}</td>
+    <td>${c.nombre} ${c.apellido||''}</td><td>${c.cedula||''}</td><td>${c.telefono||''}</td>
     <td><button class="btn btn-sm btn-o" data-edit-cli="${id}">✏️</button> <button class="btn btn-sm btn-d" data-del-cli="${id}">🗑️</button></td>
   </tr>`).join('') || '<tr><td colspan="4" style="color:var(--gray)">Sin clientes aún.</td></tr>';
   tb.querySelectorAll('[data-edit-cli]').forEach(b=>b.addEventListener('click',()=>{
     const c=clientes[b.dataset.editCli];
-    $('cliId').value=b.dataset.editCli; $('cliNombre').value=c.nombre; $('cliTelefono').value=c.telefono||''; $('cliNotas').value=c.notas||'';
+    $('cliId').value=b.dataset.editCli; $('cliNombre').value=c.nombre; $('cliApellido').value=c.apellido||''; $('cliCedula').value=c.cedula||''; $('cliTelefono').value=c.telefono||''; $('cliNotas').value=c.notas||'';
     $('cliFormTitle').textContent='✏️ Editar Cliente'; $('btnCancelEditCli').classList.remove('hide');
   }));
   tb.querySelectorAll('[data-del-cli]').forEach(b=>b.addEventListener('click',async()=>{
@@ -454,9 +499,20 @@ function renderClientesTable(){
 }
 function fillClienteSelect(){
   const sel=$('ventaCliente'); const cur=sel.value;
-  sel.innerHTML='<option value="">Consumidor final</option>'+Object.entries(clientes).map(([id,c])=>`<option value="${id}">${c.nombre}</option>`).join('');
+  sel.innerHTML='<option value="">Consumidor final</option><option value="__nuevo__">➕ Nuevo cliente...</option>'+Object.entries(clientes).map(([id,c])=>`<option value="${id}">${c.nombre} ${c.apellido||''} — ${c.cedula||''}</option>`).join('');
   sel.value=cur;
 }
+$('ventaCliente').addEventListener('change',()=>{
+  $('nuevoClienteBox').classList.toggle('hide',$('ventaCliente').value!=='__nuevo__');
+});
+$('btnGuardarNC').addEventListener('click', async()=>{
+  const nombre=$('ncNombre').value.trim(), apellido=$('ncApellido').value.trim(), cedula=$('ncCedula').value.trim(), telefono=$('ncTelefono').value.trim();
+  if(!nombre||!apellido||!cedula){alert('Nombre, apellido y cédula son obligatorios.');return;}
+  const ref=await db.collection('clientes').add({nombre,apellido,cedula,telefono,notas:''});
+  ['ncNombre','ncApellido','ncCedula','ncTelefono'].forEach(f=>$(f).value='');
+  $('nuevoClienteBox').classList.add('hide');
+  setTimeout(()=>{ fillClienteSelect(); $('ventaCliente').value=ref.id; },600);
+});
 
 // ---------- Tasas ----------
 function renderTasasUI(){
@@ -478,6 +534,22 @@ function renderTasasUI(){
 $('btnAddTasa').addEventListener('click',()=>{
   const code=prompt('Código de moneda (ej: EUR, COP):'); if(!code)return;
   tasas[code.toUpperCase()]={valor:0}; renderTasasUI();
+});
+$('btnAutoTasas').addEventListener('click', async()=>{
+  $('tasasFecha').textContent='Consultando BCV...';
+  try{
+    const [rD,rE]=await Promise.all([
+      fetch('https://ve.dolarapi.com/v1/dolares/oficial'),
+      fetch('https://ve.dolarapi.com/v1/euros/oficial')
+    ]);
+    const dD=await rD.json(), dE=await rE.json();
+    tasas.USD=tasas.USD||{}; tasas.USD.valor=dD.promedio||dD.venta||tasas.USD.valor;
+    tasas.EUR=tasas.EUR||{}; tasas.EUR.valor=dE.promedio||dE.venta||tasas.EUR.valor;
+    renderTasasUI();
+    $('tasasFecha').textContent='✅ Tasa BCV/Euro obtenida: '+new Date().toLocaleString('es-VE')+'. Recuerda presionar "Guardar tasas".';
+  }catch(e){
+    $('tasasFecha').textContent='No se pudo conectar (sin internet o el servicio no respondió). Ingresa las tasas manualmente.';
+  }
 });
 $('btnSaveTasas').addEventListener('click', async()=>{
   await db.collection('config').doc('tasas').set({tasas,principal:monedaPrincipal,updatedAt:Date.now()});
@@ -549,7 +621,8 @@ $('btnGuardarVenta').addEventListener('click', async()=>{
     await db.collection('productos').doc(it.productoId).update({stock:productos[it.productoId].stock-it.cantidad});
   }
   $('saleItems').innerHTML=''; $('ventaTotales').textContent='Agrega productos para ver el total';
-  $('ventaMsg').style.color='var(--green-d)'; $('ventaMsg').textContent='✅ Venta registrada correctamente.';
+  $('ventaMsg').style.color='var(--green-d)';
+  $('ventaMsg').textContent = navigator.onLine ? '✅ Venta registrada correctamente.' : '✅ Venta guardada localmente. Se sincronizará automáticamente cuando vuelva la conexión.';
 });
 function renderVentasTable(){
   const tb=$('ventasTableBody'); if(!tb)return;
