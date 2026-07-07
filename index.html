@@ -167,6 +167,18 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
       <option value="Efectivo Bs">Efectivo Bs</option>
       <option value="Transferencia">Transferencia</option>
     </select>
+    <label style="margin-top:10px">Estado del pago</label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+      <label style="display:flex;align-items:center;gap:6px;font-size:.85rem;cursor:pointer;background:#e3f5ea;padding:8px 14px;border-radius:8px;border:2px solid transparent" id="lblPagado">
+        <input type="radio" name="estadoPago" value="pagado" style="width:auto"/> ✅ Paga ahora
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:.85rem;cursor:pointer;background:#fff3cd;padding:8px 14px;border-radius:8px;border:2px solid transparent" id="lblPendiente">
+        <input type="radio" name="estadoPago" value="pendiente" checked style="width:auto"/> ⏳ Pago pendiente
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:.85rem;cursor:pointer;background:#fbe1e1;padding:8px 14px;border-radius:8px;border:2px solid transparent" id="lblMora">
+        <input type="radio" name="estadoPago" value="mora" style="width:auto"/> 🔴 Fiado / Mora
+      </label>
+    </div>
     <div class="totBox" id="ventaTotales">Agrega productos para ver el total</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
       <button class="btn btn-p" id="btnGuardarVenta">💾 Registrar venta</button>
@@ -320,7 +332,10 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <button class="btn btn-p btn-sm" id="btnGenerarReporte" style="margin-top:8px">📊 Generar reporte</button>
   </div>
   <div class="fb hide" id="reporteResult">
-    <h2>Resultados</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h2 style="margin:0">Resultados</h2>
+      <button class="btn btn-s btn-sm" onclick="imprimirReporte()">🖨️ Imprimir / PDF</button>
+    </div>
     <div class="cards">
       <div class="card"><div class="n" id="repTotalVentas">0</div><div class="l">Total ventas</div></div>
       <div class="card"><div class="n" id="repTotalUSD">$0</div><div class="l">Ingresos USD</div></div>
@@ -512,8 +527,12 @@ $('btnGuardarProd').addEventListener('click',async()=>{
   const id=$('prodId').value;
   const data={nombre:$('prodNombre').value.trim(),categoria:$('prodCategoria').value.trim(),costoPorLitro:parseFloat($('prodCosto').value)||0,margen:parseFloat($('prodMargen').value)||0,stockMin:parseFloat($('prodStockMin').value)||0};
   if(!data.nombre){alert('Nombre obligatorio');return;}
-  if(id){await db.collection('productos').doc(id).update(data);}
-  else{await db.collection('productos').add({...data,stockLitros:0});}
+  if(id){
+    if(!confirm(`¿Confirmas los cambios en "${data.nombre}"?\n\nCosto/L: ${data.costoPorLitro}\nMargen: ${data.margen}%\nStock mínimo: ${data.stockMin}L`))return;
+    await db.collection('productos').doc(id).update(data);
+  }else{
+    await db.collection('productos').add({...data,stockLitros:0});
+  }
   ['prodId','prodNombre','prodCategoria','prodCosto','prodMargen','prodStockMin'].forEach(f=>$(f).value='');
   $('invFormTitle').textContent='➕ Agregar Producto';$('btnCancelEditProd').classList.add('hide');
   $('prodPreview').textContent='Precio de venta se calculará aquí';
@@ -540,7 +559,8 @@ $('btnRegistrarCompra').addEventListener('click',async()=>{
     const stockActual=p.stockLitros||p.stock||0;
     const nuevoStock=stockActual+litros;
     await ref.update({stockLitros:nuevoStock});
-    await db.collection('compras').add({productoId:pid,nombre:p.nombre,litros,costo:parseFloat($('compraCosto').value)||0,fecha:Date.now(),by:currentUser.email});
+    // registrar compra sin coleccion separada para evitar permisos
+    // se refleja directo en el stock del producto
     $('compraLitros').value='';$('compraCosto').value='';
     $('compraMsg').style.color='var(--green-d)';
     $('compraMsg').textContent=`✅ +${litros}L de "${p.nombre}" agregados. Stock actual: ${nuevoStock.toFixed(1)}L`;
@@ -676,7 +696,8 @@ $('btnGuardarVenta').addEventListener('click',async()=>{
   }
   const cliId=$('ventaCliente').value;
   const cli=clientes[cliId];
-  await db.collection('ventas').add({fecha:Date.now(),clienteId:cliId||null,clienteNombre:cli?`${cli.nombre} ${cli.apellido||''}`:'Consumidor final',clienteTel:cli?.telefono||'',items,totalUSD,totalBs,tasaBCV:tasa,pago:$('ventaPago').value,estado:'pendiente',vendedor:currentUser.email});
+  const estadoPago=document.querySelector('input[name="estadoPago"]:checked')?.value||'pendiente';
+  await db.collection('ventas').add({fecha:Date.now(),clienteId:cliId||null,clienteNombre:cli?`${cli.nombre} ${cli.apellido||''}`:'Consumidor final',clienteTel:cli?.telefono||'',items,totalUSD,totalBs,tasaBCV:tasa,pago:$('ventaPago').value,estado:estadoPago,fechaPago:estadoPago==='pagado'?Date.now():null,tasaPago:estadoPago==='pagado'?tasa:null,vendedor:currentUser.email});
   for(const it of items){await db.collection('productos').doc(it.productoId).update({stockLitros:(productos[it.productoId].stockLitros||0)-it.litros});}
   $('saleItems').innerHTML='';$('ventaTotales').textContent='Agrega productos para ver el total';$('waPreview').classList.add('hide');$('btnPreviewWA').style.display='none';
   $('ventaMsg').style.color='var(--green-d)';$('ventaMsg').textContent=navigator.onLine?'✅ Venta registrada.':'✅ Guardada localmente. Se sincronizará al reconectar.';
@@ -863,6 +884,45 @@ function renderDashboard(){
   $('dPendingPay').innerHTML=pend.length?pend.map(([,v])=>`• ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)} — <span class="badge ${v.estado==='mora'?'badge-mora':'badge-pending'}">${v.estado}</span>`).join('<br>'):'✅ Sin pagos pendientes.';
   const last=Object.values(ventas).slice(0,5);
   $('dLastSales').innerHTML=last.length?last.map(v=>`• ${new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})} — ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)}`).join('<br>'):'Sin ventas aún.';
+}
+
+// ---------- IMPRIMIR REPORTE ----------
+function imprimirReporte(){
+  const desde=$('repDesde').value, hasta=$('repHasta').value;
+  const contenido=`
+    <html><head><title>Reporte Renuevo</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:20px;font-size:12px}
+      h1{color:#1f7a4d;margin-bottom:4px}
+      p{color:#666;margin-bottom:16px}
+      .cards{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+      .card{border:1px solid #ddd;border-radius:8px;padding:10px 16px;min-width:100px}
+      .card .n{font-size:1.4rem;font-weight:800;color:#1f7a4d}
+      .card .l{font-size:.7rem;color:#666}
+      table{width:100%;border-collapse:collapse}
+      th{background:#1f7a4d;color:#fff;padding:6px;text-align:left;font-size:11px}
+      td{padding:6px;border-bottom:1px solid #eee;font-size:11px}
+      @media print{button{display:none}}
+    </style></head><body>
+    <h1>♻️ Renuevo — Reporte de Ventas</h1>
+    <p>Período: ${desde} al ${hasta} &nbsp;|&nbsp; Generado: ${new Date().toLocaleString('es-VE')}</p>
+    <div class="cards">
+      <div class="card"><div class="n">${$('repTotalVentas').textContent}</div><div class="l">Total ventas</div></div>
+      <div class="card"><div class="n">${$('repTotalUSD').textContent}</div><div class="l">Ingresos USD</div></div>
+      <div class="card"><div class="n">${$('repTotalBs').textContent}</div><div class="l">Ingresos Bs</div></div>
+      <div class="card"><div class="n" style="color:#856404">${$('repPendientes').textContent}</div><div class="l">Pendientes</div></div>
+      <div class="card"><div class="n" style="color:#e74c3c">${$('repMora').textContent}</div><div class="l">En mora</div></div>
+    </div>
+    <table>
+      <thead><tr><th>Fecha</th><th>Cliente</th><th>Total USD</th><th>Total Bs</th><th>Estado</th></tr></thead>
+      <tbody>${$('repBody').innerHTML}</tbody>
+    </table>
+    </body></html>`;
+  const win=window.open('','_blank');
+  win.document.write(contenido);
+  win.document.close();
+  win.focus();
+  setTimeout(()=>win.print(),500);
 }
 
 // ---------- OFFLINE ----------
