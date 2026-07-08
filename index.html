@@ -93,7 +93,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <button id="btnLogin">Ingresar</button>
     <div id="loginErr"></div>
     <div id="loginMode">¿Primera vez? Crear cuenta admin</div>
-    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v74</div>
+    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v64</div>
   </div>
 </div>
 
@@ -1264,24 +1264,26 @@ $('btnGenerarReporte').addEventListener('click',()=>{
   $('repTotalUSD').textContent='
 function imprimirReporte(){
   const win=window.open('','_blank');
-  win.document.write(`<html><head><title>Reporte Renuevo</title>
-  <style>body{font-family:Arial,sans-serif;padding:20px;font-size:12px}h1{color:#1f7a4d}
-  .cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.card{border:1px solid #ddd;border-radius:8px;padding:10px 14px}
-  .n{font-size:1.3rem;font-weight:800;color:#1f7a4d}.l{font-size:.7rem;color:#666}
-  table{width:100%;border-collapse:collapse}th{background:#1f7a4d;color:#fff;padding:6px;text-align:left}td{padding:6px;border-bottom:1px solid #eee}
-  </style></head><body>
-  <h1>♻️ Renuevo — Reporte de Ventas</h1>
-  <p>Generado: ${new Date().toLocaleString('es-VE')}</p>
-  <div class="cards">
-    <div class="card"><div class="n">${$('repTotalVentas').textContent}</div><div class="l">Ventas</div></div>
-    <div class="card"><div class="n">${$('repTotalUSD').textContent}</div><div class="l">Ingresos USD</div></div>
-    <div class="card"><div class="n">${$('repTotalBs').textContent}</div><div class="l">Ingresos Bs</div></div>
-    <div class="card"><div class="n">${$('repPendientes').textContent}</div><div class="l">Pendientes</div></div>
-    <div class="card"><div class="n">${$('repMora').textContent}</div><div class="l">Mora</div></div>
-  </div>
-  <table><thead><tr><th>Fecha</th><th>Cliente</th><th>USD</th><th>Bs</th><th>Estado</th></tr></thead>
-  <tbody>${$('repBody').innerHTML}</tbody></table>
-  </body></html>`);
+  const html='<html><head><title>Reporte Renuevo</title>'
+    +'<style>body{font-family:Arial,sans-serif;padding:20px;font-size:12px}h1{color:#1f7a4d}'
+    +'.cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.card{border:1px solid #ddd;border-radius:8px;padding:10px 14px}'
+    +'.n{font-size:1.3rem;font-weight:800;color:#1f7a4d}.l{font-size:.7rem;color:#666}'
+    +'table{width:100%;border-collapse:collapse}th{background:#1f7a4d;color:#fff;padding:6px;text-align:left}td{padding:6px;border-bottom:1px solid #eee}'
+    +'</style></head><body>'
+    +'<h1>Renuevo — Reporte de Ventas</h1>'
+    +'<p>'+$('repResumen').textContent+' | Generado: '+new Date().toLocaleString('es-VE')+'</p>'
+    +'<div class="cards">'
+    +'<div class="card"><div class="n">'+$('repTotalVentas').textContent+'</div><div class="l">Ventas</div></div>'
+    +'<div class="card"><div class="n">'+$('repTotalUSD').textContent+'</div><div class="l">Ingresos USD</div></div>'
+    +'<div class="card"><div class="n">'+$('repTotalBs').textContent+'</div><div class="l">Ingresos Bs</div></div>'
+    +'<div class="card"><div class="n">'+$('repPendientes').textContent+'</div><div class="l">Pendientes</div></div>'
+    +'<div class="card"><div class="n">'+$('repMora').textContent+'</div><div class="l">Mora</div></div>'
+    +'<div class="card"><div class="n">'+$('repUSDPendiente').textContent+'</div><div class="l">USD por cobrar</div></div>'
+    +'</div>'
+    +'<table><thead><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>USD</th><th>Bs</th><th>Estado</th></tr></thead>'
+    +'<tbody>'+$('repBody').innerHTML+'</tbody></table>'
+    +'</body></html>';
+  win.document.write(html);
   win.document.close();
   setTimeout(()=>win.print(),500);
 }
