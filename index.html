@@ -93,7 +93,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <button id="btnLogin">Ingresar</button>
     <div id="loginErr"></div>
     <div id="loginMode">¿Primera vez? Crear cuenta admin</div>
-    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v60</div>
+    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v64</div>
   </div>
 </div>
 
@@ -506,13 +506,8 @@ auth.onAuthStateChanged(async user=>{
 
 // REALTIME LISTENERS
 function attachListeners(){
-  db.collection('productos').onSnapshot(snap=>{
-    productos={};
-    snap.forEach(d=>productos[d.id]=d.data());
-    renderInvTable();
-    fillCompraProdSelect();
-    renderDashboard();
-  });
+  // Productos: solo carga inicial directa, sin onSnapshot
+  recargarProductos();
   db.collection('clientes').onSnapshot(snap=>{
     clientes={};
     snap.forEach(d=>clientes[d.id]=d.data());
