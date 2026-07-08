@@ -79,20 +79,20 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
 .est-btn.pagado{background:#e3f5ea;color:var(--green-d)}.est-btn.pagado.active{border-color:var(--green-d)}
 .est-btn.pendiente{background:#fff3cd;color:#856404}.est-btn.pendiente.active{border-color:#856404}
 .est-btn.mora{background:#fbe1e1;color:var(--red)}.est-btn.mora.active{border-color:var(--red)}
+.sello{font-size:1.4rem;cursor:default}
 @media(max-width:700px){nav{display:none}#hambBtn{display:block}.r3{grid-template-columns:1fr 1fr}.r2{grid-template-columns:1fr}.ubadge{display:none}}
 </style>
 </head>
 <body>
-
 <div id="loginScreen">
   <div class="loginBox">
     <img src="logo.png" alt="Renuevo" onerror="this.style.display='none';document.getElementById('loginTitle').style.display='block'"/>
     <h1 id="loginTitle" style="display:none">RENUEVO</h1>
     <label>Correo</label><input type="email" id="loginEmail" placeholder="tucorreo@ejemplo.com"/>
-    <label>Contraseña</label><input type="password" id="loginPass" placeholder="••••••••"/>
+    <label>Contrasena</label><input type="password" id="loginPass" placeholder="********"/>
     <button id="btnLogin">Ingresar</button>
     <div id="loginErr"></div>
-    <div id="loginMode">¿Primera vez? Crear cuenta admin</div>
+    <div id="loginMode">Primera vez? Crear cuenta admin</div>
     <div style="margin-top:16px;font-size:.65rem;color:#aaa">v79</div>
   </div>
 </div>
@@ -101,68 +101,66 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
 <header>
   <div class="brand">
     <img src="icon.png" onerror="this.style.display='none'"/>
-    <div><strong>RENUEVO</strong><p id="userEmailTag">–</p></div>
+    <div><strong>RENUEVO</strong><p id="userEmailTag">-</p></div>
   </div>
   <nav id="mainNav"></nav>
-  <span class="ubadge" id="bcvBadge">💱 –</span>
-  <span class="ubadge" id="roleBadge">–</span>
+  <span class="ubadge" id="bcvBadge">- Tasas</span>
+  <span class="ubadge" id="roleBadge">-</span>
   <span class="ubadge" id="logoutBtn">Salir</span>
-  <button id="hambBtn">☰</button>
+  <button id="hambBtn">&#9776;</button>
 </header>
 
 <div id="mobileMenu">
   <div id="mobileDrawer">
-    <button class="closeBtn" id="closeDrawer">✕</button>
+    <button class="closeBtn" id="closeDrawer">&#10005;</button>
     <div id="mobileNav"></div>
     <div style="margin-top:auto;padding-top:10px;border-top:1px solid #2b3d34">
-      <div style="color:#b8c2bd;font-size:.72rem;margin-bottom:6px" id="mobileUserTag">–</div>
-      <button id="mobileLogout" style="background:var(--red)">🚪 Cerrar sesión</button>
+      <div style="color:#b8c2bd;font-size:.72rem;margin-bottom:6px" id="mobileUserTag">-</div>
+      <button id="mobileLogout" style="background:var(--red)">Cerrar sesion</button>
     </div>
   </div>
 </div>
 
 <main>
-<div id="offlineBanner">📡 Sin conexión — cambios se sincronizarán al reconectar.</div>
+<div id="offlineBanner">Sin conexion - cambios se sincronizaran al reconectar.</div>
 
-<!-- DASHBOARD -->
 <div id="sec-dashboard" class="section active">
   <div class="cards">
-    <div class="card" onclick="showSection('inventario')"><div class="n" id="dCardProds">0</div><div class="l">📦 Productos</div></div>
-    <div class="card warn" onclick="showSection('inventario')"><div class="n" id="dCardBajo">0</div><div class="l">⚠️ Stock bajo</div></div>
-    <div class="card" onclick="showSection('ventas')"><div class="n" id="dCardHoy">0</div><div class="l">🧾 Ventas hoy</div></div>
-    <div class="card alert" onclick="showSection('ventas');setTimeout(()=>{ventaFiltro='mora';renderVentas();},300)"><div class="n" id="dCardMora">0</div><div class="l">🔴 En mora</div></div>
-    <div class="card" onclick="showSection('clientes')"><div class="n" id="dCardClientes">0</div><div class="l">👥 Clientes</div></div>
+    <div class="card" onclick="showSection('inventario')"><div class="n" id="dCardProds">0</div><div class="l">Productos</div></div>
+    <div class="card warn" onclick="showSection('inventario')"><div class="n" id="dCardBajo">0</div><div class="l">Stock bajo</div></div>
+    <div class="card" onclick="showSection('ventas')"><div class="n" id="dCardHoy">0</div><div class="l">Ventas hoy</div></div>
+    <div class="card alert" onclick="showSection('ventas');setTimeout(function(){ventaFiltro='mora';renderVentas();},300)"><div class="n" id="dCardMora">0</div><div class="l">En mora</div></div>
+    <div class="card" onclick="showSection('clientes')"><div class="n" id="dCardClientes">0</div><div class="l">Clientes</div></div>
   </div>
-  <div class="fb" style="cursor:pointer" onclick="showSection('inventario')"><h2>⚠️ Stock bajo</h2><div id="dLowStock" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
-  <div class="fb" style="cursor:pointer" onclick="showSection('ventas');setTimeout(()=>{ventaFiltro='pendiente';renderVentas();},300)"><h2>🕐 Pendientes / Mora</h2><div id="dPendingPay" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
-  <div class="fb" style="cursor:pointer" onclick="showSection('ventas')"><h2>🧾 Últimas ventas</h2><div id="dLastSales" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
+  <div class="fb" style="cursor:pointer" onclick="showSection('inventario')"><h2>Stock bajo</h2><div id="dLowStock" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
+  <div class="fb" style="cursor:pointer" onclick="showSection('ventas');setTimeout(function(){ventaFiltro='pendiente';renderVentas();},300)"><h2>Pendientes / Mora</h2><div id="dPendingPay" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
+  <div class="fb" style="cursor:pointer" onclick="showSection('ventas')"><h2>Ultimas ventas</h2><div id="dLastSales" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
 </div>
 
-<!-- VENTAS -->
 <div id="sec-ventas" class="section">
   <div class="fb">
-    <h2>🧾 Nueva Venta</h2>
+    <h2>Nueva Venta</h2>
     <label>Cliente</label>
     <select id="ventaCliente"></select>
     <div id="nuevoClienteBox" class="hide" style="margin-top:8px;padding:10px;background:#f4f6f5;border-radius:8px">
       <div class="row r2">
-        <div><label>Nombre *</label><input id="ncNombre" placeholder="Nombre"/></div>
+        <div><label>Nombre</label><input id="ncNombre" placeholder="Nombre"/></div>
         <div><label>Apellido</label><input id="ncApellido" placeholder="Apellido"/></div>
       </div>
       <div class="row r3">
-        <div><label>Cédula</label><input id="ncCedula" placeholder="V-12345678"/></div>
-        <div><label>Teléfono</label><input id="ncTelefono" placeholder="04XX-XXXXXXX"/></div>
-        <div><label>Dirección</label><input id="ncDireccion" placeholder="Dirección"/></div>
+        <div><label>Cedula</label><input id="ncCedula" placeholder="V-12345678"/></div>
+        <div><label>Telefono</label><input id="ncTelefono" placeholder="04XX-XXXXXXX"/></div>
+        <div><label>Direccion</label><input id="ncDireccion" placeholder="Direccion"/></div>
       </div>
-      <button class="btn btn-p btn-sm" id="btnGuardarNC" style="margin-top:8px">💾 Guardar y usar</button>
+      <button class="btn btn-p btn-sm" id="btnGuardarNC" style="margin-top:8px">Guardar y usar</button>
     </div>
     <div id="saleItems" style="margin-top:10px"></div>
-    <button class="btn btn-o btn-sm" id="btnAddSaleItem" style="margin-top:6px">➕ Agregar producto</button>
+    <button class="btn btn-o btn-sm" id="btnAddSaleItem" style="margin-top:6px">+ Agregar producto</button>
     <div class="row r2" style="margin-top:10px">
       <div>
         <label>Forma de pago</label>
         <select id="ventaPago">
-          <option value="Pago Móvil Bs">Pago Móvil (Bs)</option>
+          <option value="Pago Movil Bs">Pago Movil (Bs)</option>
           <option value="Efectivo USD">Efectivo USD</option>
           <option value="Efectivo Bs">Efectivo Bs</option>
           <option value="Transferencia">Transferencia</option>
@@ -171,31 +169,31 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
       <div>
         <label>Estado del pago</label>
         <div class="estado-btns">
-          <button class="est-btn pagado" data-est="pagado">✅ Paga ahora</button>
-          <button class="est-btn pendiente active" data-est="pendiente">⏳ Pendiente</button>
-          <button class="est-btn mora" data-est="mora">🔴 Fiado</button>
+          <button class="est-btn pagado" data-est="pagado">Paga ahora</button>
+          <button class="est-btn pendiente active" data-est="pendiente">Pendiente</button>
+          <button class="est-btn mora" data-est="mora">Fiado</button>
         </div>
       </div>
     </div>
     <input type="hidden" id="ventaEstado" value="pendiente"/>
     <div class="totBox" id="ventaTotales">Agrega productos para ver el total</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-      <button class="btn btn-p" id="btnGuardarVenta">💾 Registrar venta</button>
-      <button class="btn btn-g hide" id="btnPreviewWA">📲 Ver mensaje WhatsApp</button>
+      <button class="btn btn-p" id="btnGuardarVenta">Registrar venta</button>
+      <button class="btn btn-g hide" id="btnPreviewWA">Ver mensaje WhatsApp</button>
     </div>
     <div id="ventaMsg" style="font-size:.75rem;margin-top:8px"></div>
     <div id="waPreview" class="hide">
       <div class="whatsapp-preview" id="waText"></div>
-      <button class="btn btn-g btn-sm" id="btnSendWA" style="margin-top:8px">📲 Enviar por WhatsApp</button>
+      <button class="btn btn-g btn-sm" id="btnSendWA" style="margin-top:8px">Enviar por WhatsApp</button>
     </div>
   </div>
   <div class="fb">
-    <h2>📜 Historial</h2>
+    <h2>Historial</h2>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
       <button class="btn btn-sm btn-o" data-filt="all">Todas</button>
-      <button class="btn btn-sm btn-o" data-filt="pendiente">⏳ Pendientes</button>
-      <button class="btn btn-sm btn-o" data-filt="mora">🔴 Mora</button>
-      <button class="btn btn-sm btn-o" data-filt="pagado">✅ Pagadas</button>
+      <button class="btn btn-sm btn-o" data-filt="pendiente">Pendientes</button>
+      <button class="btn btn-sm btn-o" data-filt="mora">Mora</button>
+      <button class="btn btn-sm btn-o" data-filt="pagado">Pagadas</button>
     </div>
     <div style="overflow-x:auto"><table>
       <thead><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>USD</th><th>Bs</th><th>Estado</th><th></th></tr></thead>
@@ -204,66 +202,64 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
   </div>
 </div>
 
-<!-- MODAL EDITAR VENTA -->
 <div id="modalVenta" class="hide" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px">
   <div style="background:#fff;border-radius:14px;padding:20px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto">
-    <h2 style="color:var(--green-d);margin-bottom:12px">✏️ Editar Venta</h2>
+    <h2 style="color:var(--green-d);margin-bottom:12px">Editar Venta</h2>
     <input type="hidden" id="editVentaId"/>
     <label>Cliente</label><select id="editVentaCliente"></select>
     <label>Forma de pago</label>
     <select id="editVentaPago">
-      <option value="Pago Móvil Bs">Pago Móvil (Bs)</option>
+      <option value="Pago Movil Bs">Pago Movil (Bs)</option>
       <option value="Efectivo USD">Efectivo USD</option>
       <option value="Efectivo Bs">Efectivo Bs</option>
       <option value="Transferencia">Transferencia</option>
     </select>
     <label>Estado</label>
     <select id="editVentaEstado">
-      <option value="pendiente">⏳ Pendiente</option>
-      <option value="pagado">✅ Pagado</option>
-      <option value="mora">🔴 Mora/Fiado</option>
+      <option value="pendiente">Pendiente</option>
+      <option value="pagado">Pagado</option>
+      <option value="mora">Mora/Fiado</option>
     </select>
     <div style="display:flex;gap:8px;margin-top:14px">
-      <button class="btn btn-p" id="btnSaveEditVenta">💾 Guardar</button>
+      <button class="btn btn-p" id="btnSaveEditVenta">Guardar</button>
       <button class="btn btn-o" id="btnCancelEditVenta">Cancelar</button>
     </div>
   </div>
 </div>
 
-<!-- INVENTARIO -->
 <div id="sec-inventario" class="section">
   <div class="fb">
-    <h2>📥 Registrar compra a proveedor</h2>
-    <div class="info-note">Selecciona el producto y cuántos litros compraste — se sumará al stock existente.</div>
+    <h2>Registrar compra a proveedor</h2>
+    <div class="info-note">Selecciona el producto y cuantos litros compraste.</div>
     <div class="row r3">
       <div><label>Producto</label><select id="compraProducto"></select></div>
       <div><label>Litros comprados</label><input type="number" step="0.1" id="compraLitros" placeholder="20"/></div>
       <div><label>Costo pagado USD (opcional)</label><input type="number" step="0.01" id="compraCosto" placeholder="8.90"/></div>
     </div>
-    <button class="btn btn-p btn-sm" id="btnRegistrarCompra" style="margin-top:10px">➕ Agregar al inventario</button>
+    <button class="btn btn-p btn-sm" id="btnRegistrarCompra" style="margin-top:10px">+ Agregar al inventario</button>
     <div id="compraMsg" style="font-size:.75rem;margin-top:6px"></div>
   </div>
   <div class="fb">
-    <h2 id="invFormTitle">➕ Agregar Producto</h2>
+    <h2 id="invFormTitle">+ Agregar Producto</h2>
     <input type="hidden" id="prodId"/>
     <div class="row r2">
-      <div><label>Nombre *</label><input id="prodNombre" placeholder="Ej: Jabón Líquido"/></div>
-      <div><label>Categoría</label><input id="prodCategoria" placeholder="Ej: Limpieza"/></div>
+      <div><label>Nombre</label><input id="prodNombre" placeholder="Ej: Jabon Liquido"/></div>
+      <div><label>Categoria</label><input id="prodCategoria" placeholder="Ej: Limpieza"/></div>
     </div>
     <div class="row r3">
       <div><label>Costo por litro (USD)</label><input type="number" step="0.001" id="prodCosto" placeholder="0.695"/></div>
       <div><label>Margen (%)</label><input type="number" step="1" id="prodMargen" placeholder="50"/></div>
-      <div><label>Stock mínimo (L)</label><input type="number" step="0.1" id="prodStockMin" placeholder="5"/></div>
+      <div><label>Stock minimo (L)</label><input type="number" step="0.1" id="prodStockMin" placeholder="5"/></div>
     </div>
-    <div class="info-note" id="prodPreview" style="margin-top:8px">Precio de venta se calculará aquí</div>
+    <div class="info-note" id="prodPreview" style="margin-top:8px">Precio de venta se calculara aqui</div>
     <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn btn-p btn-sm" id="btnGuardarProd">💾 Guardar producto</button>
+      <button class="btn btn-p btn-sm" id="btnGuardarProd">Guardar producto</button>
       <button class="btn btn-o btn-sm hide" id="btnCancelEditProd">Cancelar</button>
     </div>
   </div>
   <div class="fb">
-    <h2>📦 Inventario actual (litros)</h2>
-    <button class="btn btn-o btn-sm" id="btnCargarCatalogo" style="margin-bottom:10px">📥 Cargar catálogo Pulizia</button>
+    <h2>Inventario actual (litros)</h2>
+    <button class="btn btn-o btn-sm" id="btnCargarCatalogo" style="margin-bottom:10px">Cargar catalogo Pulizia</button>
     <div id="catalogoMsg" style="font-size:.75rem;margin-bottom:8px"></div>
     <div style="overflow-x:auto"><table>
       <thead><tr><th>Producto</th><th>Costo/L</th><th>Margen</th><th>Precio/L USD</th><th>Precio/L Bs</th><th>Stock (L)</th><th>Estado</th><th></th></tr></thead>
@@ -271,73 +267,93 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     </table></div>
   </div>
   <div class="fb">
-    <h2>🧴 Envases PET (referencia)</h2>
+    <h2>Envases PET (referencia)</h2>
     <table><thead><tr><th>Envase</th><th>Cap.</th><th>Bulto (Bs)</th><th>Unds</th><th>c/u (Bs)</th><th>c/u (USD)</th></tr></thead>
     <tbody id="envasesPETBody"></tbody></table>
   </div>
 </div>
 
-<!-- CLIENTES -->
 <div id="sec-clientes" class="section">
   <div class="fb">
-    <h2 id="cliFormTitle">➕ Agregar Cliente</h2>
+    <h2 id="cliFormTitle">+ Agregar Cliente</h2>
     <input type="hidden" id="cliId"/>
     <div class="row r2">
-      <div><label>Nombre *</label><input id="cliNombre" placeholder="Nombre"/></div>
+      <div><label>Nombre</label><input id="cliNombre" placeholder="Nombre"/></div>
       <div><label>Apellido</label><input id="cliApellido" placeholder="Apellido"/></div>
     </div>
     <div class="row r3">
-      <div><label>Cédula</label><input id="cliCedula" placeholder="V-12345678"/></div>
-      <div><label>Teléfono</label><input id="cliTelefono" placeholder="04XX-XXXXXXX"/></div>
-      <div><label>Dirección</label><input id="cliDireccion" placeholder="Dirección"/></div>
+      <div><label>Cedula</label><input id="cliCedula" placeholder="V-12345678"/></div>
+      <div><label>Telefono</label><input id="cliTelefono" placeholder="04XX-XXXXXXX"/></div>
+      <div><label>Direccion</label><input id="cliDireccion" placeholder="Direccion"/></div>
     </div>
     <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn btn-p btn-sm" id="btnGuardarCli">💾 Guardar</button>
+      <button class="btn btn-p btn-sm" id="btnGuardarCli">Guardar</button>
       <button class="btn btn-o btn-sm hide" id="btnCancelEditCli">Cancelar</button>
     </div>
   </div>
   <div class="fb">
-    <h2>👥 Clientes</h2>
-    <table><thead><tr><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Dirección</th><th>Mora</th><th></th></tr></thead>
+    <h2>Clientes</h2>
+    <table><thead><tr><th>Nombre</th><th>Cedula</th><th>Telefono</th><th>Direccion</th><th>Mora</th><th></th></tr></thead>
     <tbody id="cliBody"></tbody></table>
   </div>
 </div>
 
-<!-- TASAS -->
+<div id="sec-fidelidad" class="section">
+  <div class="fb">
+    <h2>Configuracion del programa</h2>
+    <div class="row r3">
+      <div><label>Sellos para completar</label><input type="number" id="fidSellos" value="7" min="1"/></div>
+      <div><label>Litros por sello</label><input type="number" id="fidLitros" value="4" step="0.5"/></div>
+      <div><label>USD minimo por sello</label><input type="number" id="fidUSD" value="5" step="0.5"/></div>
+    </div>
+    <div class="info-note" style="margin-top:8px">Un sello se asigna cuando una venta cumple con cualquiera de los dos criterios.</div>
+    <button class="btn btn-p btn-sm" id="btnSaveFidConfig" style="margin-top:10px">Guardar configuracion</button>
+    <div id="fidConfigMsg" style="font-size:.75rem;margin-top:6px"></div>
+  </div>
+  <div class="fb">
+    <h2>Tarjetas de clientes</h2>
+    <div id="fidCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px"></div>
+  </div>
+  <div class="fb">
+    <h2>Historial de canjes</h2>
+    <table><thead><tr><th>Fecha</th><th>Cliente</th><th>Premio</th><th>Tarjetas</th></tr></thead>
+    <tbody id="fidHistBody"></tbody></table>
+  </div>
+</div>
+
 <div id="sec-tasas" class="section">
   <div class="fb">
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-      <strong style="font-size:.85rem">💱 Tasas de cambio (Bs por unidad)</strong>
-      <button class="btn btn-sm btn-p" id="btnAutoTasas">🔄 Auto BCV/Euro</button>
+      <strong style="font-size:.85rem">Tasas de cambio (Bs por unidad)</strong>
+      <button class="btn btn-sm btn-p" id="btnAutoTasas">Auto BCV/Euro</button>
     </div>
     <div class="info-note">USDT: actualiza manualmente desde Binance P2P.</div>
     <div id="tasasContainer" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px"></div>
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center">
-      <button class="btn btn-p btn-sm" id="btnAddTasa">➕ Agregar moneda</button>
-      <button class="btn btn-s btn-sm" id="btnSaveTasas">💾 Guardar tasas</button>
+      <button class="btn btn-p btn-sm" id="btnAddTasa">+ Agregar moneda</button>
+      <button class="btn btn-s btn-sm" id="btnSaveTasas">Guardar tasas</button>
       <span style="font-size:.7rem;color:var(--gray)" id="tasasFecha"></span>
     </div>
   </div>
 </div>
 
-<!-- CONFIG -->
 <div id="sec-config" class="section">
   <div class="fb">
-    <h2>📲 Plantilla WhatsApp</h2>
-    <div class="info-note">Variables: <b>{cliente}</b>, <b>{fecha}</b>, <b>{productos}</b>, <b>{totalUSD}</b>, <b>{totalBs}</b>, <b>{tasaBCV}</b>, <b>{pagoMovil}</b></div>
+    <h2>Plantilla WhatsApp</h2>
+    <div class="info-note">Variables: {cliente}, {fecha}, {productos}, {totalUSD}, {totalBs}, {tasaBCV}, {pagoMovil}</div>
     <label>Mensaje</label><textarea id="waMsgTemplate" rows="10"></textarea>
-    <label style="margin-top:10px">Datos de pago móvil</label>
+    <label style="margin-top:10px">Datos de pago movil</label>
     <textarea id="waPagoMovil" rows="4"></textarea>
     <label style="margin-top:10px">Costo envase reciclado (Bs)</label>
     <input type="number" id="costoEnvaseReciclado" value="50" step="1"/>
-    <button class="btn btn-p btn-sm" id="btnSaveWAConfig" style="margin-top:10px">💾 Guardar configuración</button>
+    <button class="btn btn-p btn-sm" id="btnSaveWAConfig" style="margin-top:10px">Guardar configuracion</button>
     <div id="waConfigMsg" style="font-size:.75rem;margin-top:6px"></div>
   </div>
   <div class="fb">
-    <h2>👤 Usuarios</h2>
+    <h2>Usuarios</h2>
     <div class="row r3">
       <div><label>Correo</label><input id="empEmail" placeholder="empleado@correo.com"/></div>
-      <div><label>Contraseña temporal</label><input id="empPass" placeholder="mínimo 6 caracteres"/></div>
+      <div><label>Contrasena temporal</label><input id="empPass" placeholder="minimo 6 caracteres"/></div>
       <div><label>Rol</label><select id="empRol"><option value="vendedor">Vendedor</option><option value="admin">Administrador</option></select></div>
     </div>
     <button class="btn btn-p btn-sm" id="btnCrearEmpleado" style="margin-top:8px">Crear cuenta</button>
@@ -346,40 +362,17 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
   </div>
 </div>
 
-<!-- FIDELIDAD -->
-<div id="sec-fidelidad" class="section">
-  <div class="fb">
-    <h2>⚙️ Configuración del programa</h2>
-    <div class="row r3">
-      <div><label>Sellos para completar tarjeta</label><input type="number" id="fidSellos" value="7" min="1"/></div>
-      <div><label>Litros por sello</label><input type="number" id="fidLitros" value="4" step="0.5"/></div>
-      <div><label>USD mínimo por sello</label><input type="number" id="fidUSD" value="5" step="0.5"/></div>
-    </div>
-    <div class="info-note" style="margin-top:8px">Un sello se asigna automáticamente cuando una venta cumple con <b>cualquiera</b> de los dos criterios (litros O monto USD).</div>
-    <button class="btn btn-p btn-sm" id="btnSaveFidConfig" style="margin-top:10px">💾 Guardar configuración</button>
-    <div id="fidConfigMsg" style="font-size:.75rem;margin-top:6px"></div>
-  </div>
-  <div class="fb">
-    <h2>🎴 Tarjetas de clientes</h2>
-    <div id="fidCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px"></div>
-  </div>
-  <div class="fb">
-    <h2>🏆 Historial de canjes</h2>
-    <table><thead><tr><th>Fecha</th><th>Cliente</th><th>Premio</th><th>Tarjetas</th></tr></thead>
-    <tbody id="fidHistBody"></tbody></table>
-  </div>
-</div>
 <div id="sec-reportes" class="section">
   <div class="fb">
-    <h2>📊 Filtros del reporte</h2>
+    <h2>Filtros del reporte</h2>
     <div class="row r3">
       <div>
-        <label>Período</label>
+        <label>Periodo</label>
         <select id="repPeriodo">
           <option value="hoy">Hoy</option>
           <option value="semana">Esta semana</option>
           <option value="mes" selected>Este mes</option>
-          <option value="año">Este año</option>
+          <option value="ano">Este ano</option>
           <option value="personalizado">Rango personalizado</option>
           <option value="todo">Todo el historial</option>
         </select>
@@ -388,16 +381,14 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
         <label>Estado</label>
         <select id="repEstadoFiltro">
           <option value="all">Todos</option>
-          <option value="pagado">✅ Solo pagados</option>
-          <option value="pendiente">⏳ Solo pendientes</option>
-          <option value="mora">🔴 Solo mora</option>
+          <option value="pagado">Solo pagados</option>
+          <option value="pendiente">Solo pendientes</option>
+          <option value="mora">Solo mora</option>
         </select>
       </div>
       <div>
         <label>Cliente</label>
-        <select id="repClienteFiltro">
-          <option value="all">Todos los clientes</option>
-        </select>
+        <select id="repClienteFiltro"><option value="all">Todos los clientes</option></select>
       </div>
     </div>
     <div id="repRangoPersonalizado" class="hide" style="margin-top:8px">
@@ -406,12 +397,12 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
         <div><label>Hasta</label><input type="date" id="repHasta"/></div>
       </div>
     </div>
-    <button class="btn btn-p btn-sm" id="btnGenerarReporte" style="margin-top:12px">📊 Generar reporte</button>
+    <button class="btn btn-p btn-sm" id="btnGenerarReporte" style="margin-top:12px">Generar reporte</button>
   </div>
   <div class="fb hide" id="reporteResult">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
       <h2 style="margin:0">Resultados</h2>
-      <button class="btn btn-s btn-sm" onclick="imprimirReporte()">🖨️ Imprimir / PDF</button>
+      <button class="btn btn-s btn-sm" id="btnImprimirReporte">Imprimir / PDF</button>
     </div>
     <div id="repResumen" style="font-size:.78rem;color:var(--gray);margin-bottom:10px"></div>
     <div class="cards">
@@ -423,7 +414,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
       <div class="card"><div class="n" id="repUSDPendiente">$0</div><div class="l">USD por cobrar</div></div>
     </div>
     <div style="overflow-x:auto"><table>
-      <thead><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>Total USD</th><th>Total Bs</th><th>Estado</th></tr></thead>
+      <thead><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>USD</th><th>Bs</th><th>Estado</th></tr></thead>
       <tbody id="repBody"></tbody>
     </table></div>
   </div>
@@ -432,7 +423,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
 </div>
 
 <script>
-const firebaseConfig={
+var firebaseConfig={
   apiKey:"AIzaSyDG-W82BwNZWYSBqhacsHRx4QoJgk0Xyow",
   authDomain:"renuevo-app-c35be.firebaseapp.com",
   projectId:"renuevo-app-c35be",
@@ -441,118 +432,131 @@ const firebaseConfig={
   appId:"1:405969009551:web:e020789693262b7a5fa9fa"
 };
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth(), db=firebase.firestore();
+var auth=firebase.auth(), db=firebase.firestore();
 
-const $=id=>document.getElementById(id);
-let currentUser=null, currentRole=null;
-let productos={}, clientes={}, ventas={};
-let tasas={USD:{valor:0},EUR:{valor:0},USDT:{valor:0}}, monedaPrincipal='USD';
-let waConfig={template:'',pagoMovil:'',costoEnvaseReciclado:50};
-let ventaFiltro='all';
+function $(id){return document.getElementById(id);}
+var currentUser=null, currentRole=null;
+var productos={}, clientes={}, ventas={};
+var tasas={USD:{valor:0},EUR:{valor:0},USDT:{valor:0}}, monedaPrincipal='USD';
+var waConfig={template:'',pagoMovil:'',costoEnvaseReciclado:50};
+var ventaFiltro='all';
+var fidConfig={sellos:7,litrosPorSello:4,usdPorSello:5};
+var saleCount=0;
 
-const DEFAULT_PAGO=`🏦 Banco Provincial\n👤 C.I: 14.463.016\n📱 Tlf: 0412-3353098`;
-const DEFAULT_WA=`Hola {cliente} 👋\nAquí el detalle de tu pedido Renuevo:\n\n📅 Fecha: {fecha}\n📦 Productos:\n{productos}\n\n💵 Total: *$\{totalUSD} USD*\n🇻🇪 Equivalente: *Bs {totalBs}*\n📊 Tasa BCV: Bs {tasaBCV}\n\n⚠️ El monto en Bs es referencial a la tasa actual.\n\n💳 Datos de pago:\n{pagoMovil}\n\n¡Gracias! 🌿`;
-const COSTO_ENVASE_BS=50;
+var DEFAULT_PAGO='Banco Provincial\nC.I: 14.463.016\nTlf: 0412-3353098';
+var DEFAULT_WA='Hola {cliente}\nAqui el detalle de tu pedido Renuevo:\n\nFecha: {fecha}\nProductos:\n{productos}\n\nTotal: ${totalUSD} USD\nEquivalente: Bs {totalBs}\nTasa BCV: Bs {tasaBCV}\n\nEl monto en Bs es referencial a la tasa actual.\n\nDatos de pago:\n{pagoMovil}\n\nGracias!';
+var COSTO_ENVASE_BS=50;
 
-const PULIZIA=[
-  {nombre:'Jabón Líquido',categoria:'Limpieza general',costoPorLitro:0.695},
+var PULIZIA=[
+  {nombre:'Jabon Liquido',categoria:'Limpieza general',costoPorLitro:0.695},
   {nombre:'Cloro',categoria:'Limpieza general',costoPorLitro:0.445},
   {nombre:'Desinfectante Standard',categoria:'Desinfectantes',costoPorLitro:0.445},
   {nombre:'Desinfectante Concentrado',categoria:'Desinfectantes',costoPorLitro:0.550},
   {nombre:'Suavizante',categoria:'Ropa',costoPorLitro:0.695},
   {nombre:'Cera para Pisos',categoria:'Pisos',costoPorLitro:0.695},
   {nombre:'Desengrasante',categoria:'Cocina',costoPorLitro:0.400},
-  {nombre:'Limpia Cerámica',categoria:'Pisos',costoPorLitro:1.000},
-  {nombre:'Jabón Tipo Ariel',categoria:'Ropa',costoPorLitro:0.725}
+  {nombre:'Limpia Ceramica',categoria:'Pisos',costoPorLitro:1.000},
+  {nombre:'Jabon Tipo Ariel',categoria:'Ropa',costoPorLitro:0.725}
 ];
-const ENVASES_PET=[
+var ENVASES_PET=[
   {nombre:'Cloro',cap:'500ml',bulto:30,unds:180},
   {nombre:'Cloro',cap:'1000ml',bulto:23,unds:100},
   {nombre:'Transparente',cap:'500ml',bulto:23,unds:160},
   {nombre:'Transparente',cap:'828ml',bulto:26,unds:100}
 ];
 
-// NAV
-const NAV=[
-  {id:'dashboard',label:'📊 Dashboard',roles:['admin','vendedor']},
-  {id:'ventas',label:'🧾 Ventas',roles:['admin','vendedor']},
-  {id:'inventario',label:'📦 Inventario',roles:['admin','vendedor']},
-  {id:'clientes',label:'👥 Clientes',roles:['admin','vendedor']},
-  {id:'fidelidad',label:'🎴 Fidelidad',roles:['admin','vendedor']},
-  {id:'tasas',label:'💱 Tasas',roles:['admin']},
-  {id:'reportes',label:'📊 Reportes',roles:['admin']},
-  {id:'config',label:'⚙️ Config',roles:['admin']}
+var NAV=[
+  {id:'dashboard',label:'Dashboard',roles:['admin','vendedor']},
+  {id:'ventas',label:'Ventas',roles:['admin','vendedor']},
+  {id:'inventario',label:'Inventario',roles:['admin','vendedor']},
+  {id:'clientes',label:'Clientes',roles:['admin','vendedor']},
+  {id:'fidelidad',label:'Fidelidad',roles:['admin','vendedor']},
+  {id:'tasas',label:'Tasas',roles:['admin']},
+  {id:'reportes',label:'Reportes',roles:['admin']},
+  {id:'config',label:'Config',roles:['admin']}
 ];
 
 function buildNav(){
-  const perms=NAV.filter(n=>n.roles.includes(currentRole));
-  const btns=perms.map(n=>`<button data-s="${n.id}">${n.label}</button>`).join('');
+  var perms=NAV.filter(function(n){return n.roles.indexOf(currentRole)>=0;});
+  var btns=perms.map(function(n){return '<button data-s="'+n.id+'">'+n.label+'</button>';}).join('');
   $('mainNav').innerHTML=btns;
   $('mobileNav').innerHTML=btns;
-  document.querySelectorAll('#mainNav button,#mobileNav button').forEach(b=>{
-    b.addEventListener('click',()=>{showSection(b.dataset.s);$('mobileMenu').style.display='none';});
+  document.querySelectorAll('#mainNav button,#mobileNav button').forEach(function(b){
+    b.addEventListener('click',function(){showSection(b.dataset.s);$('mobileMenu').style.display='none';});
   });
   showSection('dashboard');
 }
 
 function showSection(id){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('#mainNav button,#mobileNav button').forEach(b=>b.classList.toggle('active',b.dataset.s===id));
-  const s=$('sec-'+id); if(s) s.classList.add('active');
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('#mainNav button,#mobileNav button').forEach(function(b){b.classList.toggle('active',b.dataset.s===id);});
+  var s=$('sec-'+id); if(s) s.classList.add('active');
+  if(history.state && history.state.section!==id) history.pushState({section:id},'',' #'+id);
   if(id==='dashboard') renderDashboard();
   if(id==='ventas'){fillClienteSelect();fillEditVentaClienteSelect();}
   if(id==='inventario'){renderInvTable();fillCompraProdSelect();renderEnvasesPET();}
   if(id==='clientes') renderClientes();
   if(id==='tasas') renderTasasUI();
   if(id==='reportes'){setDefaultDates();fillRepClienteFiltro();}
-  if(id==='fidelidad') renderFidelidad();
   if(id==='config') loadWAConfig();
+  if(id==='fidelidad') renderFidelidad();
 }
 
-$('hambBtn').addEventListener('click',()=>$('mobileMenu').style.display='flex');
-$('closeDrawer').addEventListener('click',()=>$('mobileMenu').style.display='none');
-$('mobileMenu').addEventListener('click',e=>{if(e.target===$('mobileMenu'))$('mobileMenu').style.display='none';});
+window.addEventListener('popstate',function(e){
+  var id=(e.state && e.state.section)||'dashboard';
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('#mainNav button,#mobileNav button').forEach(function(b){b.classList.toggle('active',b.dataset.s===id);});
+  var s=$('sec-'+id); if(s) s.classList.add('active');
+  if(id==='dashboard') renderDashboard();
+  if(id==='ventas'){fillClienteSelect();fillEditVentaClienteSelect();}
+  if(id==='inventario'){renderInvTable();fillCompraProdSelect();renderEnvasesPET();}
+  if(id==='clientes') renderClientes();
+  if(id==='tasas') renderTasasUI();
+  if(id==='reportes'){setDefaultDates();fillRepClienteFiltro();}
+  if(id==='config') loadWAConfig();
+  if(id==='fidelidad') renderFidelidad();
+});
 
-// AUTH
-let creatingMode=false;
-$('loginMode').addEventListener('click',()=>{
+$('hambBtn').addEventListener('click',function(){$('mobileMenu').style.display='flex';});
+$('closeDrawer').addEventListener('click',function(){$('mobileMenu').style.display='none';});
+$('mobileMenu').addEventListener('click',function(e){if(e.target===$('mobileMenu'))$('mobileMenu').style.display='none';});
+
+var creatingMode=false;
+$('loginMode').addEventListener('click',function(){
   creatingMode=!creatingMode;
-  $('loginMode').textContent=creatingMode?'Ya tengo cuenta, ir a ingresar':'¿Primera vez? Crear cuenta admin';
+  $('loginMode').textContent=creatingMode?'Ya tengo cuenta, ir a ingresar':'Primera vez? Crear cuenta admin';
   $('btnLogin').textContent=creatingMode?'Crear cuenta admin':'Ingresar';
 });
-$('btnLogin').addEventListener('click',async()=>{
-  const email=$('loginEmail').value.trim(), pass=$('loginPass').value;
+$('btnLogin').addEventListener('click',function(){
+  var email=$('loginEmail').value.trim(), pass=$('loginPass').value;
   $('loginErr').textContent='';
-  if(!email||!pass){$('loginErr').textContent='Completa correo y contraseña.';return;}
-  try{
-    if(creatingMode){
-      await auth.createUserWithEmailAndPassword(email,pass);
-      await db.collection('roles').doc(email.toLowerCase()).set({role:'admin',createdAt:Date.now()});
-    } else {
-      await auth.signInWithEmailAndPassword(email,pass);
-    }
-  } catch(e){$('loginErr').textContent=traducirError(e.code);}
+  if(!email||!pass){$('loginErr').textContent='Completa correo y contrasena.';return;}
+  var p=creatingMode?auth.createUserWithEmailAndPassword(email,pass):auth.signInWithEmailAndPassword(email,pass);
+  p.then(function(cred){
+    if(creatingMode) return db.collection('roles').doc(email.toLowerCase()).set({role:'admin',createdAt:Date.now()});
+  }).catch(function(e){$('loginErr').textContent=traducirError(e.code);});
 });
 function traducirError(c){
-  const m={'auth/email-already-in-use':'Ese correo ya tiene cuenta.','auth/invalid-email':'Correo inválido.','auth/weak-password':'Contraseña muy débil.','auth/user-not-found':'Usuario no encontrado.','auth/wrong-password':'Contraseña incorrecta.','auth/invalid-credential':'Correo o contraseña incorrectos.'};
+  var m={'auth/email-already-in-use':'Ese correo ya tiene cuenta.','auth/invalid-email':'Correo invalido.','auth/weak-password':'Contrasena muy debil.','auth/user-not-found':'Usuario no encontrado.','auth/wrong-password':'Contrasena incorrecta.','auth/invalid-credential':'Correo o contrasena incorrectos.'};
   return m[c]||'Error: '+c;
 }
-$('logoutBtn').addEventListener('click',()=>auth.signOut());
-$('mobileLogout').addEventListener('click',()=>auth.signOut());
+$('logoutBtn').addEventListener('click',function(){auth.signOut();});
+$('mobileLogout').addEventListener('click',function(){auth.signOut();});
 
-auth.onAuthStateChanged(async user=>{
+auth.onAuthStateChanged(function(user){
   if(user){
     currentUser=user;
-    const rd=await db.collection('roles').doc(user.email.toLowerCase()).get();
-    if(!rd.exists){await auth.signOut();return;}
-    currentRole=rd.data().role;
-    $('loginScreen').classList.add('hide');
-    $('app').classList.remove('hide');
-    $('userEmailTag').textContent=user.email;
-    $('mobileUserTag').textContent=user.email;
-    $('roleBadge').textContent=currentRole==='admin'?'Admin':'Vendedor';
-    buildNav();
-    attachListeners();
+    db.collection('roles').doc(user.email.toLowerCase()).get().then(function(rd){
+      if(!rd.exists){auth.signOut();return;}
+      currentRole=rd.data().role;
+      $('loginScreen').classList.add('hide');
+      $('app').classList.remove('hide');
+      $('userEmailTag').textContent=user.email;
+      $('mobileUserTag').textContent=user.email;
+      $('roleBadge').textContent=currentRole==='admin'?'Admin':'Vendedor';
+      buildNav();
+      attachListeners();
+    });
   } else {
     currentUser=null; currentRole=null;
     $('app').classList.add('hide');
@@ -560,103 +564,92 @@ auth.onAuthStateChanged(async user=>{
   }
 });
 
-// REALTIME LISTENERS
 function attachListeners(){
-  // Productos: solo carga inicial directa, sin onSnapshot
   recargarProductos();
-  db.collection('clientes').onSnapshot(snap=>{
+  db.collection('clientes').onSnapshot(function(snap){
     clientes={};
-    snap.forEach(d=>clientes[d.id]=d.data());
-    renderClientes();
-    renderDashboard();
-    fillClienteSelect();
-    fillEditVentaClienteSelect();
+    snap.forEach(function(d){clientes[d.id]=d.data();});
+    renderClientes(); renderDashboard(); fillClienteSelect(); fillEditVentaClienteSelect();
   });
-  db.collection('ventas').orderBy('fecha','desc').onSnapshot(snap=>{
+  db.collection('ventas').orderBy('fecha','desc').onSnapshot(function(snap){
     ventas={};
-    snap.forEach(d=>ventas[d.id]=d.data());
-    renderVentas();
-    renderDashboard();
+    snap.forEach(function(d){ventas[d.id]=d.data();});
+    renderVentas(); renderDashboard();
   });
-  db.collection('config').doc('tasas').onSnapshot(doc=>{
+  db.collection('config').doc('tasas').onSnapshot(function(doc){
     if(doc.exists){tasas=doc.data().tasas||tasas; monedaPrincipal=doc.data().principal||'USD';}
-    renderTasasUI();
-    updateBcvBadge();
-    renderInvTable();
+    renderTasasUI(); updateBcvBadge(); renderInvTable();
   });
-  db.collection('config').doc('wa').onSnapshot(doc=>{
-    if(doc.exists) waConfig=doc.data();
-  });
+  db.collection('config').doc('wa').onSnapshot(function(doc){if(doc.exists) waConfig=doc.data();});
   if(currentRole==='admin'){
-    db.collection('roles').onSnapshot(snap=>{
-      const r=[];
-      snap.forEach(d=>r.push({email:d.id,role:d.data().role}));
+    db.collection('roles').onSnapshot(function(snap){
+      var r=[];
+      snap.forEach(function(d){r.push({email:d.id,role:d.data().role});});
       renderUsers(r);
     });
   }
 }
 
-// RECARGA PRODUCTOS
-async function recargarProductos(){
-  const snap=await db.collection('productos').get();
-  productos={};
-  snap.forEach(d=>productos[d.id]=d.data());
-  renderInvTable();
-  fillCompraProdSelect();
-  renderDashboard();
+function recargarProductos(){
+  return db.collection('productos').get().then(function(snap){
+    productos={};
+    snap.forEach(function(d){productos[d.id]=d.data();});
+    renderInvTable();
+    fillCompraProdSelect();
+    renderDashboard();
+  });
 }
 
-// HELPERS
 function calcPrecioLitro(p){return (p.costoPorLitro||p.costo||0)*(1+(p.margen||0)/100);}
 function getCostoEnvaseUSD(){
-  const bs=waConfig.costoEnvaseReciclado||COSTO_ENVASE_BS;
-  const tasa=tasas['USD']?.valor||tasas[monedaPrincipal]?.valor||667;
+  var bs=waConfig.costoEnvaseReciclado||COSTO_ENVASE_BS;
+  var tasa=tasas['USD']?tasas['USD'].valor:667;
   return tasa>0?bs/tasa:0;
 }
 
-// INVENTARIO
 function renderEnvasesPET(){
-  const tasa=tasas['USD']?.valor||667;
-  $('envasesPETBody').innerHTML=ENVASES_PET.map(e=>{
-    const cuBs=e.bulto/e.unds;
-    return `<tr><td>${e.nombre}</td><td>${e.cap}</td><td>Bs ${e.bulto}</td><td>${e.unds}</td><td>Bs ${cuBs.toFixed(2)}</td><td>$${(cuBs/tasa).toFixed(4)}</td></tr>`;
+  var tasa=tasas['USD']?tasas['USD'].valor:667;
+  $('envasesPETBody').innerHTML=ENVASES_PET.map(function(e){
+    var cuBs=e.bulto/e.unds;
+    return '<tr><td>'+e.nombre+'</td><td>'+e.cap+'</td><td>Bs '+e.bulto+'</td><td>'+e.unds+'</td><td>Bs '+cuBs.toFixed(2)+'</td><td>$'+(cuBs/tasa).toFixed(4)+'</td></tr>';
   }).join('');
 }
 
-['prodCosto','prodMargen'].forEach(id=>$(id).addEventListener('input',updateProdPreview));
+$('prodCosto').addEventListener('input',updateProdPreview);
+$('prodMargen').addEventListener('input',updateProdPreview);
 function updateProdPreview(){
-  const c=parseFloat($('prodCosto').value)||0, m=parseFloat($('prodMargen').value)||0;
-  const p=c*(1+m/100);
-  const bs=(tasas[monedaPrincipal]?.valor||0)*p;
-  $('prodPreview').textContent=`Precio/L: $${p.toFixed(3)} | Bs ${bs.toLocaleString('es-VE',{maximumFractionDigits:2})}`;
+  var c=parseFloat($('prodCosto').value)||0, m=parseFloat($('prodMargen').value)||0;
+  var p=c*(1+m/100);
+  var bs=(tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0)*p;
+  $('prodPreview').textContent='Precio/L: $'+p.toFixed(3)+' | Bs '+bs.toLocaleString('es-VE',{maximumFractionDigits:2});
   $('prodPreview').style.color='var(--dark)';
 }
 
-$('btnCargarCatalogo').addEventListener('click',async()=>{
-  if(!confirm('¿Cargar 9 productos Pulizia con 50% de margen?'))return;
+$('btnCargarCatalogo').addEventListener('click',function(){
+  if(!confirm('Cargar 9 productos Pulizia con 50% de margen?'))return;
   $('catalogoMsg').textContent='Cargando...';
-  try{
-    const batch=db.batch();
-    PULIZIA.forEach(p=>{
-      const r=db.collection('productos').doc();
-      batch.set(r,{nombre:p.nombre,categoria:p.categoria,costoPorLitro:p.costoPorLitro,margen:50,stockLitros:0,stockMin:5});
-    });
-    await batch.commit();
-    await recargarProductos();
+  var batch=db.batch();
+  PULIZIA.forEach(function(p){
+    var r=db.collection('productos').doc();
+    batch.set(r,{nombre:p.nombre,categoria:p.categoria,costoPorLitro:p.costoPorLitro,margen:50,stockLitros:0,stockMin:5});
+  });
+  batch.commit().then(function(){
+    return recargarProductos();
+  }).then(function(){
     $('catalogoMsg').style.color='var(--green-d)';
-    $('catalogoMsg').textContent='✅ 9 productos cargados.';
-  } catch(e){
+    $('catalogoMsg').textContent='9 productos cargados.';
+  }).catch(function(e){
     $('catalogoMsg').style.color='var(--red)';
     $('catalogoMsg').textContent='Error: '+e.message;
-  }
+  });
 });
 
-$('btnGuardarProd').addEventListener('click',async()=>{
-  const id=$('prodId').value;
-  const nombre=$('prodNombre').value.trim();
+$('btnGuardarProd').addEventListener('click',function(){
+  var id=$('prodId').value;
+  var nombre=$('prodNombre').value.trim();
   if(!nombre){alert('El nombre es obligatorio.');return;}
-  const data={
-    nombre,
+  var data={
+    nombre:nombre,
     categoria:$('prodCategoria').value.trim(),
     costoPorLitro:parseFloat($('prodCosto').value)||0,
     margen:parseFloat($('prodMargen').value)||0,
@@ -664,618 +657,550 @@ $('btnGuardarProd').addEventListener('click',async()=>{
   };
   $('btnGuardarProd').disabled=true;
   $('btnGuardarProd').textContent='Guardando...';
-  try{
-    if(id){
-      await db.collection('productos').doc(id).update(data);
-    } else {
-      await db.collection('productos').add({...data,stockLitros:0});
-    }
-    await recargarProductos();
+  var p=id?db.collection('productos').doc(id).update(data):db.collection('productos').add(Object.assign({},data,{stockLitros:0}));
+  p.then(function(){
+    return recargarProductos();
+  }).then(function(){
     $('prodPreview').style.color='var(--green-d)';
-    $('prodPreview').textContent='✅ '+(id?'Producto actualizado.':'Producto agregado.');
-    ['prodId','prodNombre','prodCategoria','prodCosto','prodMargen','prodStockMin'].forEach(f=>$(f).value='');
-    $('invFormTitle').textContent='➕ Agregar Producto';
+    $('prodPreview').textContent=id?'Producto actualizado.':'Producto agregado.';
+    ['prodId','prodNombre','prodCategoria','prodCosto','prodMargen','prodStockMin'].forEach(function(f){$(f).value='';});
+    $('invFormTitle').textContent='+ Agregar Producto';
     $('btnCancelEditProd').classList.add('hide');
-    setTimeout(()=>{$('prodPreview').textContent='Precio de venta se calculará aquí';$('prodPreview').style.color='';},3000);
-  } catch(e){
+    setTimeout(function(){$('prodPreview').textContent='Precio de venta se calculara aqui';$('prodPreview').style.color='';},3000);
+  }).catch(function(e){
     $('prodPreview').style.color='var(--red)';
-    $('prodPreview').textContent='❌ Error: '+e.message;
-  } finally{
+    $('prodPreview').textContent='Error: '+e.message;
+  }).finally(function(){
     $('btnGuardarProd').disabled=false;
-    $('btnGuardarProd').textContent='💾 Guardar producto';
-  }
+    $('btnGuardarProd').textContent='Guardar producto';
+  });
 });
 
-$('btnCancelEditProd').addEventListener('click',()=>{
-  ['prodId','prodNombre','prodCategoria','prodCosto','prodMargen','prodStockMin'].forEach(f=>$(f).value='');
-  $('invFormTitle').textContent='➕ Agregar Producto';
+$('btnCancelEditProd').addEventListener('click',function(){
+  ['prodId','prodNombre','prodCategoria','prodCosto','prodMargen','prodStockMin'].forEach(function(f){$(f).value='';});
+  $('invFormTitle').textContent='+ Agregar Producto';
   $('btnCancelEditProd').classList.add('hide');
-  $('prodPreview').textContent='Precio de venta se calculará aquí';
+  $('prodPreview').textContent='Precio de venta se calculara aqui';
   $('prodPreview').style.color='';
 });
 
 function fillCompraProdSelect(){
-  const s=$('compraProducto'); const v=s.value;
-  s.innerHTML=Object.entries(productos).map(([id,p])=>`<option value="${id}">${p.nombre} (${(p.stockLitros||0).toFixed(1)}L)</option>`).join('');
+  var s=$('compraProducto'); var v=s.value;
+  s.innerHTML=Object.entries(productos).map(function(e){
+    return '<option value="'+e[0]+'">'+e[1].nombre+' ('+(e[1].stockLitros||0).toFixed(1)+'L)</option>';
+  }).join('');
   if(v) s.value=v;
 }
 
-$('btnRegistrarCompra').addEventListener('click',async()=>{
-  const pid=$('compraProducto').value;
-  const litros=parseFloat($('compraLitros').value)||0;
+$('btnRegistrarCompra').addEventListener('click',function(){
+  var pid=$('compraProducto').value;
+  var litros=parseFloat($('compraLitros').value)||0;
   if(!pid){$('compraMsg').textContent='Selecciona un producto.';$('compraMsg').style.color='var(--red)';return;}
-  if(litros<=0){$('compraMsg').textContent='Ingresa una cantidad válida.';$('compraMsg').style.color='var(--red)';return;}
+  if(litros<=0){$('compraMsg').textContent='Ingresa una cantidad valida.';$('compraMsg').style.color='var(--red)';return;}
   $('btnRegistrarCompra').disabled=true;
   $('btnRegistrarCompra').textContent='Guardando...';
-  try{
-    const ref=db.collection('productos').doc(pid);
-    const snap=await ref.get();
+  var ref=db.collection('productos').doc(pid);
+  ref.get().then(function(snap){
     if(!snap.exists){$('compraMsg').textContent='Producto no encontrado.';return;}
-    const p=snap.data();
-    const nuevo=parseFloat(((p.stockLitros||p.stock||0)+litros).toFixed(3));
-    await ref.update({stockLitros:nuevo});
-    await recargarProductos();
-    $('compraLitros').value=''; $('compraCosto').value='';
-    $('compraMsg').style.color='var(--green-d)';
-    $('compraMsg').textContent=`✅ +${litros}L de "${p.nombre}". Stock: ${nuevo.toFixed(1)}L`;
-  } catch(e){
+    var p=snap.data();
+    var nuevo=parseFloat(((p.stockLitros||p.stock||0)+litros).toFixed(3));
+    return ref.update({stockLitros:nuevo}).then(function(){
+      return recargarProductos().then(function(){
+        $('compraLitros').value=''; $('compraCosto').value='';
+        $('compraMsg').style.color='var(--green-d)';
+        $('compraMsg').textContent='+'+litros+'L de "'+p.nombre+'". Stock: '+nuevo.toFixed(1)+'L';
+      });
+    });
+  }).catch(function(e){
     $('compraMsg').style.color='var(--red)';
     $('compraMsg').textContent='Error: '+e.message;
-  } finally{
+  }).finally(function(){
     $('btnRegistrarCompra').disabled=false;
-    $('btnRegistrarCompra').textContent='➕ Agregar al inventario';
-  }
-});
-
-function renderInvTable(){
-  const tb=$('invBody'); if(!tb)return;
-  const isAdmin=currentRole==='admin';
-  const tasa=tasas[monedaPrincipal]?.valor||0;
-  const entries=Object.entries(productos);
-  if(!entries.length){tb.innerHTML='<tr><td colspan="8" style="color:var(--gray)">Sin productos. Carga el catálogo o agrega uno.</td></tr>';return;}
-  tb.innerHTML=entries.map(([id,p])=>{
-    const pl=calcPrecioLitro(p);
-    const bs=tasa*pl;
-    const stock=parseFloat(p.stockLitros||p.stock||0);
-    const low=stock<=(p.stockMin||0);
-    return `<tr class="${low?'lowstock':''}">
-      <td><b>${p.nombre}</b><br><span style="font-size:.67rem;color:var(--gray)">${p.categoria||''}</span></td>
-      <td>${isAdmin?'$'+(p.costoPorLitro||p.costo||0).toFixed(3):'—'}</td>
-      <td>${isAdmin?(p.margen||0)+'%':'—'}</td>
-      <td>$${pl.toFixed(3)}</td>
-      <td>Bs ${bs.toLocaleString('es-VE',{maximumFractionDigits:2})}</td>
-      <td><b>${stock.toFixed(1)}L</b></td>
-      <td><span class="badge ${low?'badge-low':'badge-ok'}">${low?'BAJO':'OK'}</span></td>
-      <td style="white-space:nowrap">${isAdmin?`<button class="btn btn-sm btn-o" data-ep="${id}">✏️</button> <button class="btn btn-sm btn-d" data-dp="${id}">🗑️</button>`:''}</td>
-    </tr>`;
-  }).join('');
-  tb.querySelectorAll('[data-ep]').forEach(b=>b.addEventListener('click',()=>{
-    const p=productos[b.dataset.ep];
-    $('prodId').value=b.dataset.ep;
-    $('prodNombre').value=p.nombre;
-    $('prodCategoria').value=p.categoria||'';
-    $('prodCosto').value=p.costoPorLitro||p.costo||0;
-    $('prodMargen').value=p.margen||0;
-    $('prodStockMin').value=p.stockMin||0;
-    $('invFormTitle').textContent='✏️ Editar: '+p.nombre;
-    $('btnCancelEditProd').classList.remove('hide');
-    updateProdPreview();
-    $('sec-inventario').querySelector('.fb:nth-child(2)').scrollIntoView({behavior:'smooth'});
-  }));
-  tb.querySelectorAll('[data-dp]').forEach(b=>b.addEventListener('click',async()=>{
-    if(confirm('¿Eliminar "'+productos[b.dataset.dp]?.nombre+'"?')){
-      await db.collection('productos').doc(b.dataset.dp).delete();
-      await recargarProductos();
-    }
-  }));
-}
-
-// VENTAS
-document.querySelectorAll('.est-btn').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('.est-btn').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    $('ventaEstado').value=b.dataset.est;
+    $('btnRegistrarCompra').textContent='+ Agregar al inventario';
   });
 });
 
-let saleCount=0;
+function renderInvTable(){
+  var tb=$('invBody'); if(!tb)return;
+  var isAdmin=currentRole==='admin';
+  var tasa=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+  var entries=Object.entries(productos);
+  if(!entries.length){tb.innerHTML='<tr><td colspan="8" style="color:var(--gray)">Sin productos.</td></tr>';return;}
+  tb.innerHTML=entries.map(function(e){
+    var id=e[0], p=e[1];
+    var pl=calcPrecioLitro(p);
+    var bs=tasa*pl;
+    var stock=parseFloat(p.stockLitros||p.stock||0);
+    var low=stock<=(p.stockMin||0);
+    return '<tr class="'+(low?'lowstock':'')+'"><td><b>'+p.nombre+'</b><br><span style="font-size:.67rem;color:var(--gray)">'+(p.categoria||'')+'</span></td>'
+      +'<td>'+(isAdmin?'$'+(p.costoPorLitro||p.costo||0).toFixed(3):'—')+'</td>'
+      +'<td>'+(isAdmin?(p.margen||0)+'%':'—')+'</td>'
+      +'<td>$'+pl.toFixed(3)+'</td>'
+      +'<td>Bs '+bs.toLocaleString('es-VE',{maximumFractionDigits:2})+'</td>'
+      +'<td><b>'+stock.toFixed(1)+'L</b></td>'
+      +'<td><span class="badge '+(low?'badge-low':'badge-ok')+'">'+(low?'BAJO':'OK')+'</span></td>'
+      +'<td style="white-space:nowrap">'+(isAdmin?'<button class="btn btn-sm btn-o" data-ep="'+id+'">Edit</button> <button class="btn btn-sm btn-d" data-dp="'+id+'">Del</button>':'')+'</td></tr>';
+  }).join('');
+  tb.querySelectorAll('[data-ep]').forEach(function(b){b.addEventListener('click',function(){
+    var p=productos[b.dataset.ep];
+    $('prodId').value=b.dataset.ep; $('prodNombre').value=p.nombre; $('prodCategoria').value=p.categoria||'';
+    $('prodCosto').value=p.costoPorLitro||p.costo||0; $('prodMargen').value=p.margen||0; $('prodStockMin').value=p.stockMin||0;
+    $('invFormTitle').textContent='Editar: '+p.nombre; $('btnCancelEditProd').classList.remove('hide'); updateProdPreview();
+  });});
+  tb.querySelectorAll('[data-dp]').forEach(function(b){b.addEventListener('click',function(){
+    if(confirm('Eliminar "'+productos[b.dataset.dp].nombre+'"?')){
+      db.collection('productos').doc(b.dataset.dp).delete().then(recargarProductos);
+    }
+  });});
+}
+
+document.querySelectorAll('.est-btn').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.est-btn').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active'); $('ventaEstado').value=b.dataset.est;
+  });
+});
+
 function addSaleRow(){
   saleCount++;
-  const rid='sr'+saleCount;
-  const div=document.createElement('div');
+  var rid='sr'+saleCount;
+  var div=document.createElement('div');
   div.id=rid; div.className='saleItemBox';
-  div.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <select class="saleProd" style="flex:1;margin-right:8px">
-        <option value="">– Producto –</option>
-        ${Object.entries(productos).map(([id,p])=>`<option value="${id}">${p.nombre} (${(p.stockLitros||0).toFixed(1)}L)</option>`).join('')}
-      </select>
-      <button class="btn btn-sm btn-d removeRow">✕</button>
-    </div>
-    <div style="font-size:.72rem;color:var(--gray);margin-bottom:4px">Cantidad:</div>
-    <div class="qty-btns">
-      <button class="qty-btn" data-ml="500">500ml</button>
-      <button class="qty-btn active" data-ml="1000">1L</button>
-      <button class="qty-btn" data-ml="1500">1.5L</button>
-      <button class="qty-btn" data-ml="2000">2L</button>
-      <input type="number" class="saleCustomML" value="1000" min="1" style="width:80px;display:inline-block"/> <span style="font-size:.7rem">ml</span>
-    </div>
-    <div style="font-size:.72rem;color:var(--gray);margin:6px 0 4px">Envase:</div>
-    <div class="envase-btns">
-      <button class="env-btn active" data-env="reciclado">🔄 Reciclado (50Bs)</button>
-      <button class="env-btn" data-env="cliente">👜 Del cliente ($0)</button>
-      <button class="env-btn" data-env="premium" disabled style="opacity:.4">⭐ Premium (próx.)</button>
-    </div>
-    <div class="saleSubtotal" style="margin-top:8px;font-size:.78rem;color:var(--green-d);font-weight:600">Subtotal: –</div>`;
+  var opts=Object.entries(productos).map(function(e){
+    return '<option value="'+e[0]+'">'+e[1].nombre+' ('+(e[1].stockLitros||0).toFixed(1)+'L)</option>';
+  }).join('');
+  div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+    +'<select class="saleProd" style="flex:1;margin-right:8px"><option value="">- Producto -</option>'+opts+'</select>'
+    +'<button class="btn btn-sm btn-d removeRow">X</button></div>'
+    +'<div style="font-size:.72rem;color:var(--gray);margin-bottom:4px">Cantidad:</div>'
+    +'<div class="qty-btns">'
+    +'<button class="qty-btn" data-ml="500">500ml</button>'
+    +'<button class="qty-btn active" data-ml="1000">1L</button>'
+    +'<button class="qty-btn" data-ml="1500">1.5L</button>'
+    +'<button class="qty-btn" data-ml="2000">2L</button>'
+    +'<input type="number" class="saleCustomML" value="1000" min="1" style="width:80px;display:inline-block"/> <span style="font-size:.7rem">ml</span>'
+    +'</div>'
+    +'<div style="font-size:.72rem;color:var(--gray);margin:6px 0 4px">Envase:</div>'
+    +'<div class="envase-btns">'
+    +'<button class="env-btn active" data-env="reciclado">Reciclado (50Bs)</button>'
+    +'<button class="env-btn" data-env="cliente">Del cliente ($0)</button>'
+    +'</div>'
+    +'<div class="saleSubtotal" style="margin-top:8px;font-size:.78rem;color:var(--green-d);font-weight:600">Subtotal: -</div>';
   $('saleItems').appendChild(div);
-  const customML=div.querySelector('.saleCustomML');
-  div.querySelectorAll('.qty-btn').forEach(b=>b.addEventListener('click',()=>{
-    div.querySelectorAll('.qty-btn').forEach(x=>x.classList.remove('active'));
+  var customML=div.querySelector('.saleCustomML');
+  div.querySelectorAll('.qty-btn').forEach(function(b){b.addEventListener('click',function(){
+    div.querySelectorAll('.qty-btn').forEach(function(x){x.classList.remove('active');});
     b.classList.add('active'); customML.value=b.dataset.ml; calcTotales();
-  }));
+  });});
   div.querySelector('.saleProd').addEventListener('change',calcTotales);
-  customML.addEventListener('input',()=>{div.querySelectorAll('.qty-btn').forEach(x=>x.classList.remove('active'));calcTotales();});
-  div.querySelectorAll('.env-btn').forEach(b=>b.addEventListener('click',()=>{
-    if(b.disabled)return;
-    div.querySelectorAll('.env-btn').forEach(x=>x.classList.remove('active'));
+  customML.addEventListener('input',function(){div.querySelectorAll('.qty-btn').forEach(function(x){x.classList.remove('active');});calcTotales();});
+  div.querySelectorAll('.env-btn').forEach(function(b){b.addEventListener('click',function(){
+    div.querySelectorAll('.env-btn').forEach(function(x){x.classList.remove('active');});
     b.classList.add('active'); calcTotales();
-  }));
-  div.querySelector('.removeRow').addEventListener('click',()=>{div.remove();calcTotales();});
+  });});
+  div.querySelector('.removeRow').addEventListener('click',function(){div.remove();calcTotales();});
 }
 $('btnAddSaleItem').addEventListener('click',addSaleRow);
 
 function getSaleItems(){
-  return [...$('saleItems').querySelectorAll('.saleItemBox')].map(div=>{
-    const pid=div.querySelector('.saleProd').value;
-    const ml=parseFloat(div.querySelector('.saleCustomML').value)||0;
-    const litros=ml/1000;
-    const envTipo=div.querySelector('.env-btn.active')?.dataset.env||'reciclado';
-    const p=productos[pid];
+  return Array.from($('saleItems').querySelectorAll('.saleItemBox')).map(function(div){
+    var pid=div.querySelector('.saleProd').value;
+    var ml=parseFloat(div.querySelector('.saleCustomML').value)||0;
+    var litros=ml/1000;
+    var envTipo=(div.querySelector('.env-btn.active')||{dataset:{env:'reciclado'}}).dataset.env;
+    var p=productos[pid];
     if(!pid||!p||litros<=0)return null;
-    const costoEnv=envTipo==='cliente'?0:getCostoEnvaseUSD();
-    const costoBase=(p.costoPorLitro||p.costo||0)*litros+costoEnv;
-    const subtotal=costoBase*(1+(p.margen||0)/100);
-    const tasa=tasas[monedaPrincipal]?.valor||0;
-    div.querySelector('.saleSubtotal').innerHTML=`${p.nombre} — ${ml}ml — Envase: ${envTipo==='cliente'?'del cliente':'reciclado'} — <b>$${subtotal.toFixed(3)}</b> (Bs ${(subtotal*tasa).toLocaleString('es-VE',{maximumFractionDigits:2})})`;
-    return {productoId:pid,nombre:p.nombre,ml,litros,envase:envTipo,costoEnvUSD:costoEnv,subtotal};
+    var costoEnv=envTipo==='cliente'?0:getCostoEnvaseUSD();
+    var costoBase=(p.costoPorLitro||p.costo||0)*litros+costoEnv;
+    var subtotal=costoBase*(1+(p.margen||0)/100);
+    var tasa=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+    div.querySelector('.saleSubtotal').innerHTML=p.nombre+' - '+ml+'ml - '+
+      (envTipo==='cliente'?'del cliente':'reciclado')+' - <b>$'+subtotal.toFixed(3)+'</b> (Bs '+(subtotal*tasa).toLocaleString('es-VE',{maximumFractionDigits:2})+')';
+    return {productoId:pid,nombre:p.nombre,ml:ml,litros:litros,envase:envTipo,costoEnvUSD:costoEnv,subtotal:subtotal};
   }).filter(Boolean);
 }
 
 function calcTotales(){
-  const items=getSaleItems();
-  const totalUSD=items.reduce((a,i)=>a+i.subtotal,0);
-  const tasa=tasas[monedaPrincipal]?.valor||0;
-  const totalBs=totalUSD*tasa;
+  var items=getSaleItems();
+  var totalUSD=items.reduce(function(a,i){return a+i.subtotal;},0);
+  var tasa=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+  var totalBs=totalUSD*tasa;
   $('ventaTotales').innerHTML=items.length
-    ?`Total: <b>$${totalUSD.toFixed(2)} USD</b> &nbsp;|&nbsp; <b>Bs ${totalBs.toLocaleString('es-VE',{maximumFractionDigits:2})}</b> <span style="font-size:.7rem;color:var(--gray)">(tasa: ${tasa})</span>`
+    ?'Total: <b>$'+totalUSD.toFixed(2)+' USD</b> &nbsp;|&nbsp; <b>Bs '+totalBs.toLocaleString('es-VE',{maximumFractionDigits:2})+'</b>'
     :'Agrega productos para ver el total';
-  $('btnPreviewWA').classList.toggle('hide',!items.length);
-  return {items,totalUSD,totalBs,tasa};
+  if(items.length) $('btnPreviewWA').classList.remove('hide');
+  else $('btnPreviewWA').classList.add('hide');
+  return {items:items,totalUSD:totalUSD,totalBs:totalBs,tasa:tasa};
 }
 
-$('btnPreviewWA').addEventListener('click',()=>{
-  const {items,totalUSD,totalBs,tasa}=calcTotales();
-  const cliId=$('ventaCliente').value;
-  const cli=clientes[cliId];
-  const cliNombre=cli?`${cli.nombre}${cli.apellido?' '+cli.apellido:''}`:'Consumidor final';
-  const fecha=new Date().toLocaleDateString('es-VE',{day:'2-digit',month:'long',year:'numeric'});
-  const prodLines=items.map(i=>`  • ${i.nombre} — ${i.ml}ml — $${i.subtotal.toFixed(3)}`).join('\n');
-  const tmpl=waConfig.template||DEFAULT_WA;
-  const msg=tmpl
+$('btnPreviewWA').addEventListener('click',function(){
+  var r=calcTotales();
+  var cliId=$('ventaCliente').value;
+  var cli=clientes[cliId];
+  var cliNombre=cli?(cli.nombre+(cli.apellido?' '+cli.apellido:'')):'Consumidor final';
+  var fecha=new Date().toLocaleDateString('es-VE',{day:'2-digit',month:'long',year:'numeric'});
+  var prodLines=r.items.map(function(i){return '  * '+i.nombre+' - '+i.ml+'ml - $'+i.subtotal.toFixed(3);}).join('\n');
+  var tmpl=waConfig.template||DEFAULT_WA;
+  var msg=tmpl
     .replace('{cliente}',cliNombre)
     .replace('{fecha}',fecha)
     .replace('{productos}',prodLines)
-    .replace('{totalUSD}',totalUSD.toFixed(2))
-    .replace('{totalBs}',totalBs.toLocaleString('es-VE',{maximumFractionDigits:2}))
-    .replace('{tasaBCV}',tasa)
+    .replace('{totalUSD}',r.totalUSD.toFixed(2))
+    .replace('{totalBs}',r.totalBs.toLocaleString('es-VE',{maximumFractionDigits:2}))
+    .replace('{tasaBCV}',r.tasa)
     .replace('{pagoMovil}',waConfig.pagoMovil||DEFAULT_PAGO);
   $('waText').textContent=msg;
   $('waPreview').classList.remove('hide');
-  const tel=(cli?.telefono||'').replace(/\D/g,'');
-  const num=tel.startsWith('0')?'58'+tel.slice(1):tel?'58'+tel:'';
-  $('btnSendWA').onclick=()=>window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`,'_blank');
+  var tel=(cli&&cli.telefono?cli.telefono:'').replace(/\D/g,'');
+  var num=tel.startsWith('0')?'58'+tel.slice(1):(tel?'58'+tel:'');
+  $('btnSendWA').onclick=function(){window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');};
 });
 
-$('btnGuardarVenta').addEventListener('click',async()=>{
-  const {items,totalUSD,totalBs,tasa}=calcTotales();
-  if(!items.length){$('ventaMsg').textContent='Agrega al menos un producto.';$('ventaMsg').style.color='var(--red)';return;}
-  for(const it of items){
-    const stock=parseFloat(productos[it.productoId]?.stockLitros||0);
-    if(stock<it.litros){$('ventaMsg').textContent=`Stock insuficiente de "${it.nombre}" (tienes ${stock.toFixed(1)}L).`;$('ventaMsg').style.color='var(--red)';return;}
+$('btnGuardarVenta').addEventListener('click',function(){
+  var r=calcTotales();
+  if(!r.items.length){$('ventaMsg').textContent='Agrega al menos un producto.';$('ventaMsg').style.color='var(--red)';return;}
+  for(var i=0;i<r.items.length;i++){
+    var it=r.items[i];
+    var stock=parseFloat((productos[it.productoId]&&productos[it.productoId].stockLitros)||0);
+    if(stock<it.litros){$('ventaMsg').textContent='Stock insuficiente de "'+it.nombre+'" (tienes '+stock.toFixed(1)+'L).';$('ventaMsg').style.color='var(--red)';return;}
   }
-  const cliId=$('ventaCliente').value;
-  const cli=cliId&&cliId!=='__nuevo__'?clientes[cliId]:null;
-  const estadoPago=$('ventaEstado').value||'pendiente';
-  try{
-    await db.collection('ventas').add({
-      fecha:Date.now(),
-      clienteId:cliId||null,
-      clienteNombre:cli?`${cli.nombre}${cli.apellido?' '+cli.apellido:''}`:'Consumidor final',
-      clienteTel:cli?.telefono||'',
-      items,totalUSD,totalBs,tasaBCV:tasa,
-      pago:$('ventaPago').value,
-      estado:estadoPago,
-      fechaPago:estadoPago==='pagado'?Date.now():null,
-      tasaPago:estadoPago==='pagado'?tasa:null,
-      vendedor:currentUser.email
+  var cliId=$('ventaCliente').value;
+  var cli=(cliId&&cliId!=='__nuevo__')?clientes[cliId]:null;
+  var estadoPago=$('ventaEstado').value||'pendiente';
+  db.collection('ventas').add({
+    fecha:Date.now(),
+    clienteId:cliId||null,
+    clienteNombre:cli?(cli.nombre+(cli.apellido?' '+cli.apellido:'')):'Consumidor final',
+    clienteTel:(cli&&cli.telefono)||'',
+    items:r.items,totalUSD:r.totalUSD,totalBs:r.totalBs,tasaBCV:r.tasa,
+    pago:$('ventaPago').value,
+    estado:estadoPago,
+    fechaPago:estadoPago==='pagado'?Date.now():null,
+    tasaPago:estadoPago==='pagado'?r.tasa:null,
+    vendedor:currentUser.email
+  }).then(function(){
+    var ps=r.items.map(function(it){
+      return db.collection('productos').doc(it.productoId).get().then(function(snap){
+        if(!snap.exists)return;
+        var curr=snap.data();
+        return db.collection('productos').doc(it.productoId).update({
+          stockLitros:parseFloat(((curr.stockLitros||curr.stock||0)-it.litros).toFixed(3))
+        });
+      });
     });
-    for(const it of items){
-      const ref=db.collection('productos').doc(it.productoId);
-      const snap=await ref.get();
-      if(!snap.exists)continue;
-      const curr=snap.data();
-      await ref.update({stockLitros:parseFloat(((curr.stockLitros||curr.stock||0)-it.litros).toFixed(3))});
-    }
-    await recargarProductos();
+    return Promise.all(ps);
+  }).then(function(){
+    return recargarProductos();
+  }).then(function(){
     $('saleItems').innerHTML='';
     $('ventaTotales').textContent='Agrega productos para ver el total';
     $('waPreview').classList.add('hide');
     $('btnPreviewWA').classList.add('hide');
     $('ventaMsg').style.color='var(--green-d)';
-    $('ventaMsg').textContent='✅ Venta registrada correctamente.';
-  } catch(e){
+    $('ventaMsg').textContent='Venta registrada correctamente.';
+  }).catch(function(e){
     $('ventaMsg').style.color='var(--red)';
-    $('ventaMsg').textContent='❌ Error: '+e.message;
-  }
+    $('ventaMsg').textContent='Error: '+e.message;
+  });
 });
 
-document.querySelectorAll('[data-filt]').forEach(b=>b.addEventListener('click',()=>{ventaFiltro=b.dataset.filt;renderVentas();}));
+document.querySelectorAll('[data-filt]').forEach(function(b){b.addEventListener('click',function(){ventaFiltro=b.dataset.filt;renderVentas();});});
 
 function renderVentas(){
-  const tb=$('ventasBody'); if(!tb)return;
-  let vs=Object.entries(ventas);
-  if(ventaFiltro!=='all') vs=vs.filter(([,v])=>v.estado===ventaFiltro);
-  tb.innerHTML=vs.map(([id,v])=>{
-    const est=v.estado==='pagado'?`<span class="badge badge-paid">✅ Pagado</span>`:v.estado==='mora'?`<span class="badge badge-mora">🔴 Mora</span>`:`<span class="badge badge-pending">⏳ Pendiente</span>`;
-    const acts=v.estado!=='pagado'?`<button class="btn btn-sm btn-g" data-pagar="${id}">✅</button>`:'';
-    return `<tr class="${v.estado==='mora'?'mora':''}">
-      <td style="white-space:nowrap">${new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})}</td>
-      <td>${v.clienteNombre||'Consumidor final'}</td>
-      <td style="font-size:.72rem">${(v.items||[]).map(i=>`${i.nombre} ${i.ml}ml`).join(', ')}</td>
-      <td>$${(v.totalUSD||0).toFixed(2)}</td>
-      <td>Bs ${(v.totalBs||0).toLocaleString('es-VE',{maximumFractionDigits:0})}</td>
-      <td>${est}</td>
-      <td style="display:flex;gap:4px;flex-wrap:wrap">${acts}<button class="btn btn-sm btn-o" data-editv="${id}">✏️</button></td>
-    </tr>`;
+  var tb=$('ventasBody'); if(!tb)return;
+  var vs=Object.entries(ventas);
+  if(ventaFiltro!=='all') vs=vs.filter(function(e){return e[1].estado===ventaFiltro;});
+  tb.innerHTML=vs.map(function(e){
+    var id=e[0],v=e[1];
+    var est=v.estado==='pagado'?'<span class="badge badge-paid">Pagado</span>':v.estado==='mora'?'<span class="badge badge-mora">Mora</span>':'<span class="badge badge-pending">Pendiente</span>';
+    var acts=v.estado!=='pagado'?'<button class="btn btn-sm btn-g" data-pagar="'+id+'">OK</button>':'';
+    return '<tr class="'+(v.estado==='mora'?'mora':'')+'">'
+      +'<td style="white-space:nowrap">'+new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})+'</td>'
+      +'<td>'+(v.clienteNombre||'Consumidor final')+'</td>'
+      +'<td style="font-size:.72rem">'+((v.items||[]).map(function(i){return i.nombre+' '+i.ml+'ml';}).join(', '))+'</td>'
+      +'<td>$'+(v.totalUSD||0).toFixed(2)+'</td>'
+      +'<td>Bs '+(v.totalBs||0).toLocaleString('es-VE',{maximumFractionDigits:0})+'</td>'
+      +'<td>'+est+'</td>'
+      +'<td style="display:flex;gap:4px;flex-wrap:wrap">'+acts+'<button class="btn btn-sm btn-o" data-editv="'+id+'">Edit</button></td>'
+      +'</tr>';
   }).join('')||'<tr><td colspan="7" style="color:var(--gray)">Sin ventas.</td></tr>';
-  tb.querySelectorAll('[data-pagar]').forEach(b=>b.addEventListener('click',async()=>{
-    const tActual=tasas[monedaPrincipal]?.valor||0;
-    const v=ventas[b.dataset.pagar];
-    const bsPago=(v.totalUSD||0)*tActual;
-    if(confirm(`¿Marcar como pagado?\nTasa BCV: ${tActual}\nTotal Bs: ${bsPago.toLocaleString('es-VE',{maximumFractionDigits:2})}`)){
-      await db.collection('ventas').doc(b.dataset.pagar).update({estado:'pagado',fechaPago:Date.now(),tasaPago:tActual,bsPagado:bsPago});
+  tb.querySelectorAll('[data-pagar]').forEach(function(b){b.addEventListener('click',function(){
+    var tActual=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+    var v=ventas[b.dataset.pagar];
+    var bsPago=(v.totalUSD||0)*tActual;
+    if(confirm('Marcar como pagado?\nTasa BCV: '+tActual+'\nTotal Bs: '+bsPago.toLocaleString('es-VE',{maximumFractionDigits:2}))){
+      db.collection('ventas').doc(b.dataset.pagar).update({estado:'pagado',fechaPago:Date.now(),tasaPago:tActual,bsPagado:bsPago});
     }
-  }));
-  tb.querySelectorAll('[data-editv]').forEach(b=>b.addEventListener('click',()=>abrirEditVenta(b.dataset.editv)));
+  });});
+  tb.querySelectorAll('[data-editv]').forEach(function(b){b.addEventListener('click',function(){abrirEditVenta(b.dataset.editv);});});
 }
 
 function fillClienteSelect(){
-  const s=$('ventaCliente'); const v=s.value;
-  s.innerHTML='<option value="">Consumidor final</option><option value="__nuevo__">➕ Nuevo cliente...</option>'+
-    Object.entries(clientes).map(([id,c])=>`<option value="${id}">${c.nombre}${c.apellido?' '+c.apellido:''} ${c.cedula?'— '+c.cedula:''}</option>`).join('');
+  var s=$('ventaCliente'); var v=s.value;
+  s.innerHTML='<option value="">Consumidor final</option><option value="__nuevo__">+ Nuevo cliente...</option>'+
+    Object.entries(clientes).map(function(e){
+      var c=e[1];
+      return '<option value="'+e[0]+'">'+c.nombre+(c.apellido?' '+c.apellido:'')+(c.cedula?' - '+c.cedula:'')+'</option>';
+    }).join('');
   if(v) s.value=v;
 }
 function fillEditVentaClienteSelect(){
-  const s=$('editVentaCliente'); const v=s.value;
+  var s=$('editVentaCliente'); var v=s.value;
   s.innerHTML='<option value="">Consumidor final</option>'+
-    Object.entries(clientes).map(([id,c])=>`<option value="${id}">${c.nombre}${c.apellido?' '+c.apellido:''}</option>`).join('');
+    Object.entries(clientes).map(function(e){
+      var c=e[1];
+      return '<option value="'+e[0]+'">'+c.nombre+(c.apellido?' '+c.apellido:'')+'</option>';
+    }).join('');
   if(v) s.value=v;
 }
-$('ventaCliente').addEventListener('change',()=>$('nuevoClienteBox').classList.toggle('hide',$('ventaCliente').value!=='__nuevo__'));
-$('btnGuardarNC').addEventListener('click',async()=>{
-  const n=$('ncNombre').value.trim();
+$('ventaCliente').addEventListener('change',function(){$('nuevoClienteBox').classList.toggle('hide',$('ventaCliente').value!=='__nuevo__');});
+$('btnGuardarNC').addEventListener('click',function(){
+  var n=$('ncNombre').value.trim();
   if(!n){alert('El nombre es obligatorio.');return;}
-  const ref=await db.collection('clientes').add({nombre:n,apellido:$('ncApellido').value.trim(),cedula:$('ncCedula').value.trim(),telefono:$('ncTelefono').value.trim(),direccion:$('ncDireccion').value.trim()});
-  ['ncNombre','ncApellido','ncCedula','ncTelefono','ncDireccion'].forEach(f=>$(f).value='');
-  $('nuevoClienteBox').classList.add('hide');
-  setTimeout(()=>{fillClienteSelect();$('ventaCliente').value=ref.id;},600);
+  db.collection('clientes').add({nombre:n,apellido:$('ncApellido').value.trim(),cedula:$('ncCedula').value.trim(),telefono:$('ncTelefono').value.trim(),direccion:$('ncDireccion').value.trim()}).then(function(ref){
+    ['ncNombre','ncApellido','ncCedula','ncTelefono','ncDireccion'].forEach(function(f){$(f).value='';});
+    $('nuevoClienteBox').classList.add('hide');
+    setTimeout(function(){fillClienteSelect();$('ventaCliente').value=ref.id;},600);
+  });
 });
 
 function abrirEditVenta(id){
-  const v=ventas[id]; if(!v)return;
+  var v=ventas[id]; if(!v)return;
   $('editVentaId').value=id;
   fillEditVentaClienteSelect();
-  setTimeout(()=>$('editVentaCliente').value=v.clienteId||'',300);
-  $('editVentaPago').value=v.pago||'Pago Móvil Bs';
+  setTimeout(function(){$('editVentaCliente').value=v.clienteId||'';},300);
+  $('editVentaPago').value=v.pago||'Pago Movil Bs';
   $('editVentaEstado').value=v.estado||'pendiente';
   $('modalVenta').classList.remove('hide');
 }
-$('btnCancelEditVenta').addEventListener('click',()=>$('modalVenta').classList.add('hide'));
-$('modalVenta').addEventListener('click',e=>{if(e.target===$('modalVenta'))$('modalVenta').classList.add('hide');});
-$('btnSaveEditVenta').addEventListener('click',async()=>{
-  const id=$('editVentaId').value;
-  const cliId=$('editVentaCliente').value;
-  const cli=cliId?clientes[cliId]:null;
-  const nuevoEstado=$('editVentaEstado').value;
-  const tActual=tasas[monedaPrincipal]?.valor||0;
-  const v=ventas[id];
-  await db.collection('ventas').doc(id).update({
+$('btnCancelEditVenta').addEventListener('click',function(){$('modalVenta').classList.add('hide');});
+$('modalVenta').addEventListener('click',function(e){if(e.target===$('modalVenta'))$('modalVenta').classList.add('hide');});
+$('btnSaveEditVenta').addEventListener('click',function(){
+  var id=$('editVentaId').value;
+  var cliId=$('editVentaCliente').value;
+  var cli=cliId?clientes[cliId]:null;
+  var nuevoEstado=$('editVentaEstado').value;
+  var tActual=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+  var v=ventas[id];
+  db.collection('ventas').doc(id).update({
     clienteId:cliId||null,
-    clienteNombre:cli?`${cli.nombre}${cli.apellido?' '+cli.apellido:''}`:'Consumidor final',
-    clienteTel:cli?.telefono||'',
+    clienteNombre:cli?(cli.nombre+(cli.apellido?' '+cli.apellido:'')):'Consumidor final',
+    clienteTel:(cli&&cli.telefono)||'',
     pago:$('editVentaPago').value,
     estado:nuevoEstado,
-    fechaPago:nuevoEstado==='pagado'&&v.estado!=='pagado'?Date.now():v.fechaPago||null,
-    tasaPago:nuevoEstado==='pagado'&&v.estado!=='pagado'?tActual:v.tasaPago||null,
-  });
-  $('modalVenta').classList.add('hide');
+    fechaPago:(nuevoEstado==='pagado'&&v.estado!=='pagado')?Date.now():(v.fechaPago||null),
+    tasaPago:(nuevoEstado==='pagado'&&v.estado!=='pagado')?tActual:(v.tasaPago||null)
+  }).then(function(){$('modalVenta').classList.add('hide');});
 });
 
-// CLIENTES
-$('btnGuardarCli').addEventListener('click',async()=>{
-  const id=$('cliId').value;
-  const nombre=$('cliNombre').value.trim();
+$('btnGuardarCli').addEventListener('click',function(){
+  var id=$('cliId').value;
+  var nombre=$('cliNombre').value.trim();
   if(!nombre){alert('El nombre es obligatorio.');return;}
-  const data={nombre,apellido:$('cliApellido').value.trim(),cedula:$('cliCedula').value.trim(),telefono:$('cliTelefono').value.trim(),direccion:$('cliDireccion').value.trim()};
-  if(id) await db.collection('clientes').doc(id).update(data);
-  else await db.collection('clientes').add(data);
-  ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliDireccion'].forEach(f=>$(f).value='');
-  $('cliFormTitle').textContent='➕ Agregar Cliente';
-  $('btnCancelEditCli').classList.add('hide');
+  var data={nombre:nombre,apellido:$('cliApellido').value.trim(),cedula:$('cliCedula').value.trim(),telefono:$('cliTelefono').value.trim(),direccion:$('cliDireccion').value.trim()};
+  var p=id?db.collection('clientes').doc(id).update(data):db.collection('clientes').add(data);
+  p.then(function(){
+    ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliDireccion'].forEach(function(f){$(f).value='';});
+    $('cliFormTitle').textContent='+ Agregar Cliente';
+    $('btnCancelEditCli').classList.add('hide');
+  });
 });
-$('btnCancelEditCli').addEventListener('click',()=>{
-  ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliDireccion'].forEach(f=>$(f).value='');
-  $('cliFormTitle').textContent='➕ Agregar Cliente';
+$('btnCancelEditCli').addEventListener('click',function(){
+  ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliDireccion'].forEach(function(f){$(f).value='';});
+  $('cliFormTitle').textContent='+ Agregar Cliente';
   $('btnCancelEditCli').classList.add('hide');
 });
 function renderClientes(){
-  const tb=$('cliBody'); if(!tb)return;
-  const cliMora=new Set(Object.values(ventas).filter(v=>v.estado==='mora').map(v=>v.clienteId));
-  tb.innerHTML=Object.entries(clientes).map(([id,c])=>`<tr>
-    <td>${c.nombre}${c.apellido?' '+c.apellido:''}</td>
-    <td>${c.cedula||'–'}</td><td>${c.telefono||'–'}</td><td>${c.direccion||'–'}</td>
-    <td>${cliMora.has(id)?'<span class="badge badge-mora">🔴</span>':'–'}</td>
-    <td style="white-space:nowrap">
-      <button class="btn btn-sm btn-o" data-ec="${id}">✏️</button>
-      <button class="btn btn-sm btn-d" data-dc="${id}">🗑️</button>
-    </td>
-  </tr>`).join('')||'<tr><td colspan="6" style="color:var(--gray)">Sin clientes.</td></tr>';
-  tb.querySelectorAll('[data-ec]').forEach(b=>b.addEventListener('click',()=>{
-    const c=clientes[b.dataset.ec];
-    $('cliId').value=b.dataset.ec;$('cliNombre').value=c.nombre;$('cliApellido').value=c.apellido||'';
-    $('cliCedula').value=c.cedula||'';$('cliTelefono').value=c.telefono||'';$('cliDireccion').value=c.direccion||'';
-    $('cliFormTitle').textContent='✏️ Editar Cliente';$('btnCancelEditCli').classList.remove('hide');
-    window.scrollTo({top:$('sec-clientes').offsetTop,behavior:'smooth'});
-  }));
-  tb.querySelectorAll('[data-dc]').forEach(b=>b.addEventListener('click',async()=>{
-    if(confirm('¿Eliminar este cliente?')) await db.collection('clientes').doc(b.dataset.dc).delete();
-  }));
+  var tb=$('cliBody'); if(!tb)return;
+  var cliMora=new Set(Object.values(ventas).filter(function(v){return v.estado==='mora';}).map(function(v){return v.clienteId;}));
+  tb.innerHTML=Object.entries(clientes).map(function(e){
+    var id=e[0],c=e[1];
+    return '<tr><td>'+c.nombre+(c.apellido?' '+c.apellido:'')+'</td>'
+      +'<td>'+(c.cedula||'-')+'</td><td>'+(c.telefono||'-')+'</td><td>'+(c.direccion||'-')+'</td>'
+      +'<td>'+(cliMora.has(id)?'<span class="badge badge-mora">Mora</span>':'-')+'</td>'
+      +'<td style="white-space:nowrap">'
+      +'<button class="btn btn-sm btn-o" data-ec="'+id+'">Edit</button> '
+      +'<button class="btn btn-sm btn-d" data-dc="'+id+'">Del</button>'
+      +'</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="color:var(--gray)">Sin clientes.</td></tr>';
+  tb.querySelectorAll('[data-ec]').forEach(function(b){b.addEventListener('click',function(){
+    var c=clientes[b.dataset.ec];
+    $('cliId').value=b.dataset.ec; $('cliNombre').value=c.nombre; $('cliApellido').value=c.apellido||'';
+    $('cliCedula').value=c.cedula||''; $('cliTelefono').value=c.telefono||''; $('cliDireccion').value=c.direccion||'';
+    $('cliFormTitle').textContent='Editar Cliente'; $('btnCancelEditCli').classList.remove('hide');
+  });});
+  tb.querySelectorAll('[data-dc]').forEach(function(b){b.addEventListener('click',function(){
+    if(confirm('Eliminar este cliente?')) db.collection('clientes').doc(b.dataset.dc).delete();
+  });});
 }
 
-// TASAS
 function renderTasasUI(){
-  const cont=$('tasasContainer'); if(!cont)return;
-  cont.innerHTML=Object.entries(tasas).map(([code,t])=>`
-    <div class="fb" style="padding:8px;margin:0">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <strong style="font-size:.8rem">${code} ${code===monedaPrincipal?'⭐':''}</strong>
-        ${code!==monedaPrincipal?`<button class="btn btn-sm btn-o" data-sp="${code}">Usar</button>`:''}
-      </div>
-      <input type="number" step="0.01" value="${t.valor||0}" data-tasa="${code}" style="margin-top:6px"/>
-      ${code!=='USD'?`<button class="btn btn-sm btn-d" data-dt="${code}" style="margin-top:4px">🗑️</button>`:''}
-    </div>`).join('');
-  cont.querySelectorAll('[data-tasa]').forEach(i=>i.addEventListener('input',()=>{if(!tasas[i.dataset.tasa])tasas[i.dataset.tasa]={};tasas[i.dataset.tasa].valor=parseFloat(i.value)||0;updateBcvBadge();}));
-  cont.querySelectorAll('[data-dt]').forEach(b=>b.addEventListener('click',()=>{delete tasas[b.dataset.dt];renderTasasUI();}));
-  cont.querySelectorAll('[data-sp]').forEach(b=>b.addEventListener('click',()=>{monedaPrincipal=b.dataset.sp;renderTasasUI();renderInvTable();}));
+  var cont=$('tasasContainer'); if(!cont)return;
+  cont.innerHTML=Object.entries(tasas).map(function(e){
+    var code=e[0],t=e[1];
+    return '<div class="fb" style="padding:8px;margin:0">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center">'
+      +'<strong style="font-size:.8rem">'+code+(code===monedaPrincipal?' *':'')+'</strong>'
+      +(code!==monedaPrincipal?'<button class="btn btn-sm btn-o" data-sp="'+code+'">Usar</button>':'')
+      +'</div>'
+      +'<input type="number" step="0.01" value="'+(t.valor||0)+'" data-tasa="'+code+'" style="margin-top:6px"/>'
+      +(code!=='USD'?'<button class="btn btn-sm btn-d" data-dt="'+code+'" style="margin-top:4px">Del</button>':'')
+      +'</div>';
+  }).join('');
+  cont.querySelectorAll('[data-tasa]').forEach(function(i){i.addEventListener('input',function(){if(!tasas[i.dataset.tasa])tasas[i.dataset.tasa]={};tasas[i.dataset.tasa].valor=parseFloat(i.value)||0;updateBcvBadge();});});
+  cont.querySelectorAll('[data-dt]').forEach(function(b){b.addEventListener('click',function(){delete tasas[b.dataset.dt];renderTasasUI();});});
+  cont.querySelectorAll('[data-sp]').forEach(function(b){b.addEventListener('click',function(){monedaPrincipal=b.dataset.sp;renderTasasUI();renderInvTable();});});
   updateBcvBadge();
 }
-$('btnAutoTasas').addEventListener('click',async()=>{
+$('btnAutoTasas').addEventListener('click',function(){
   $('tasasFecha').textContent='Consultando...';
-  try{
-    const [rD,rE]=await Promise.all([fetch('https://ve.dolarapi.com/v1/dolares/oficial'),fetch('https://ve.dolarapi.com/v1/euros/oficial')]);
-    const dD=await rD.json(), dE=await rE.json();
-    tasas.USD=tasas.USD||{};tasas.USD.valor=dD.promedio||dD.venta||tasas.USD.valor;
-    tasas.EUR=tasas.EUR||{};tasas.EUR.valor=dE.promedio||dE.venta||tasas.EUR.valor;
-    renderTasasUI();
-    $('tasasFecha').textContent='✅ BCV/Euro actualizados. Presiona "Guardar".';
-  } catch(e){$('tasasFecha').textContent='Sin conexión. Ingresa manualmente.';}
+  Promise.all([fetch('https://ve.dolarapi.com/v1/dolares/oficial'),fetch('https://ve.dolarapi.com/v1/euros/oficial')])
+  .then(function(rs){return Promise.all(rs.map(function(r){return r.json();}));})
+  .then(function(ds){
+    tasas.USD=tasas.USD||{}; tasas.USD.valor=ds[0].promedio||ds[0].venta||tasas.USD.valor;
+    tasas.EUR=tasas.EUR||{}; tasas.EUR.valor=ds[1].promedio||ds[1].venta||tasas.EUR.valor;
+    renderTasasUI(); $('tasasFecha').textContent='BCV/Euro actualizados. Presiona Guardar.';
+  }).catch(function(){$('tasasFecha').textContent='Sin conexion. Ingresa manualmente.';});
 });
-$('btnAddTasa').addEventListener('click',()=>{const c=prompt('Código (ej: USDT):');if(c){tasas[c.toUpperCase()]={valor:0};renderTasasUI();}});
-$('btnSaveTasas').addEventListener('click',async()=>{
-  await db.collection('config').doc('tasas').set({tasas,principal:monedaPrincipal,updatedAt:Date.now()});
-  $('tasasFecha').textContent='✅ Guardado: '+new Date().toLocaleString('es-VE');
+$('btnAddTasa').addEventListener('click',function(){var c=prompt('Codigo (ej: USDT):');if(c){tasas[c.toUpperCase()]={valor:0};renderTasasUI();}});
+$('btnSaveTasas').addEventListener('click',function(){
+  db.collection('config').doc('tasas').set({tasas:tasas,principal:monedaPrincipal,updatedAt:Date.now()}).then(function(){
+    $('tasasFecha').textContent='Guardado: '+new Date().toLocaleString('es-VE');
+  });
 });
 function updateBcvBadge(){
-  const t=tasas[monedaPrincipal];
-  $('bcvBadge').textContent=(t&&t.valor)?`💱 ${monedaPrincipal}=Bs ${t.valor.toLocaleString('es-VE',{maximumFractionDigits:2})}`:'💱 Tasas';
+  var t=tasas[monedaPrincipal];
+  $('bcvBadge').textContent=(t&&t.valor)?monedaPrincipal+'=Bs '+t.valor.toLocaleString('es-VE',{maximumFractionDigits:2}):'Tasas';
 }
-$('bcvBadge').addEventListener('click',()=>{if(currentRole==='admin')showSection('tasas');});
+$('bcvBadge').addEventListener('click',function(){if(currentRole==='admin')showSection('tasas');});
 
-// CONFIG WA
-async function loadWAConfig(){
-  const doc=await db.collection('config').doc('wa').get();
-  if(doc.exists){
-    waConfig=doc.data();
-    $('waMsgTemplate').value=waConfig.template||DEFAULT_WA;
-    $('waPagoMovil').value=waConfig.pagoMovil||DEFAULT_PAGO;
-    $('costoEnvaseReciclado').value=waConfig.costoEnvaseReciclado||50;
-  } else {
-    $('waMsgTemplate').value=DEFAULT_WA;
-    $('waPagoMovil').value=DEFAULT_PAGO;
-  }
+function loadWAConfig(){
+  db.collection('config').doc('wa').get().then(function(doc){
+    if(doc.exists){
+      waConfig=doc.data();
+      $('waMsgTemplate').value=waConfig.template||DEFAULT_WA;
+      $('waPagoMovil').value=waConfig.pagoMovil||DEFAULT_PAGO;
+      $('costoEnvaseReciclado').value=waConfig.costoEnvaseReciclado||50;
+    } else {
+      $('waMsgTemplate').value=DEFAULT_WA;
+      $('waPagoMovil').value=DEFAULT_PAGO;
+    }
+  });
 }
-$('btnSaveWAConfig').addEventListener('click',async()=>{
+$('btnSaveWAConfig').addEventListener('click',function(){
   waConfig={template:$('waMsgTemplate').value,pagoMovil:$('waPagoMovil').value,costoEnvaseReciclado:parseFloat($('costoEnvaseReciclado').value)||50};
-  await db.collection('config').doc('wa').set(waConfig);
-  $('waConfigMsg').style.color='var(--green-d)';
-  $('waConfigMsg').textContent='✅ Guardado.';
+  db.collection('config').doc('wa').set(waConfig).then(function(){
+    $('waConfigMsg').style.color='var(--green-d)'; $('waConfigMsg').textContent='Guardado.';
+  });
 });
 
-// USUARIOS
-$('btnCrearEmpleado').addEventListener('click',async()=>{
-  const email=$('empEmail').value.trim(), pass=$('empPass').value, rol=$('empRol').value;
-  if(!email||pass.length<6){$('empMsg').textContent='Correo válido y contraseña mínimo 6 caracteres.';$('empMsg').style.color='var(--red)';return;}
-  try{
-    const sec=firebase.initializeApp(firebaseConfig,'Sec'+Date.now());
-    await sec.auth().createUserWithEmailAndPassword(email,pass);
-    await sec.auth().signOut(); await sec.delete();
-    await db.collection('roles').doc(email.toLowerCase()).set({role:rol,createdAt:Date.now(),creadoPor:currentUser.email});
-    $('empMsg').style.color='var(--green-d)';$('empMsg').textContent='✅ Cuenta creada.';
-    $('empEmail').value='';$('empPass').value='';
-  } catch(e){$('empMsg').style.color='var(--red)';$('empMsg').textContent=traducirError(e.code);}
+$('btnCrearEmpleado').addEventListener('click',function(){
+  var email=$('empEmail').value.trim(), pass=$('empPass').value, rol=$('empRol').value;
+  if(!email||pass.length<6){$('empMsg').textContent='Correo valido y contrasena minimo 6 caracteres.';$('empMsg').style.color='var(--red)';return;}
+  var sec=firebase.initializeApp(firebaseConfig,'Sec'+Date.now());
+  sec.auth().createUserWithEmailAndPassword(email,pass).then(function(){
+    return sec.auth().signOut();
+  }).then(function(){
+    return sec.delete();
+  }).then(function(){
+    return db.collection('roles').doc(email.toLowerCase()).set({role:rol,createdAt:Date.now(),creadoPor:currentUser.email});
+  }).then(function(){
+    $('empMsg').style.color='var(--green-d)'; $('empMsg').textContent='Cuenta creada.';
+    $('empEmail').value=''; $('empPass').value='';
+  }).catch(function(e){$('empMsg').style.color='var(--red)'; $('empMsg').textContent=traducirError(e.code);});
 });
 function renderUsers(rows){
-  const tb=$('usersBody'); if(!tb)return;
-  tb.innerHTML=(rows||[]).map(r=>`<tr>
-    <td>${r.email}</td><td>${r.role==='admin'?'Admin':'Vendedor'}</td>
-    <td>${r.email!==currentUser.email?`<button class="btn btn-sm btn-d" data-du="${r.email}">Revocar</button>`:'(tú)'}</td>
-  </tr>`).join('');
-  tb.querySelectorAll('[data-du]').forEach(b=>b.addEventListener('click',async()=>{
-    if(confirm('¿Revocar acceso de '+b.dataset.du+'?')) await db.collection('roles').doc(b.dataset.du).delete();
-  }));
+  var tb=$('usersBody'); if(!tb)return;
+  tb.innerHTML=(rows||[]).map(function(r){
+    return '<tr><td>'+r.email+'</td><td>'+(r.role==='admin'?'Admin':'Vendedor')+'</td>'
+      +'<td>'+(r.email!==currentUser.email?'<button class="btn btn-sm btn-d" data-du="'+r.email+'">Revocar</button>':'(tu)')+'</td></tr>';
+  }).join('');
+  tb.querySelectorAll('[data-du]').forEach(function(b){b.addEventListener('click',function(){
+    if(confirm('Revocar acceso de '+b.dataset.du+'?')) db.collection('roles').doc(b.dataset.du).delete();
+  });});
 }
 
-// FIDELIDAD
-let fidConfig={sellos:7,litrosPorSello:4,usdPorSello:5};
-
-async function loadFidConfig(){
-  const doc=await db.collection('config').doc('fidelidad').get();
-  if(doc.exists){
-    fidConfig=doc.data();
-    $('fidSellos').value=fidConfig.sellos||7;
-    $('fidLitros').value=fidConfig.litrosPorSello||4;
-    $('fidUSD').value=fidConfig.usdPorSello||5;
-  }
-}
-$('btnSaveFidConfig').addEventListener('click',async()=>{
-  fidConfig={sellos:parseInt($('fidSellos').value)||7,litrosPorSello:parseFloat($('fidLitros').value)||4,usdPorSello:parseFloat($('fidUSD').value)||5};
-  await db.collection('config').doc('fidelidad').set(fidConfig);
-  $('fidConfigMsg').style.color='var(--green-d)';
-  $('fidConfigMsg').textContent='✅ Configuración guardada.';
-  renderFidelidad();
-});
-
-function calcSellosCliente(clienteId){
-  const ventasCliente=Object.values(ventas).filter(v=>v.clienteId===clienteId&&v.estado!=='cancelado');
-  let sellosAcum=0;
-  const detalle=[];
-  ventasCliente.forEach(v=>{
-    const totalLitros=(v.items||[]).reduce((a,i)=>a+(i.litros||0),0);
-    const sellosPorLitros=Math.floor(totalLitros/(fidConfig.litrosPorSello||4));
-    const sellosPorUSD=Math.floor((v.totalUSD||0)/(fidConfig.usdPorSello||5));
-    const sellosVenta=Math.max(sellosPorLitros,sellosPorUSD);
-    if(sellosVenta>0){sellosAcum+=sellosVenta;detalle.push({fecha:v.fecha,sellos:sellosVenta,totalUSD:v.totalUSD,litros:totalLitros});}
-  });
-  return{sellosAcum,detalle};
-}
-
-async function renderFidelidad(){
-  await loadFidConfig();
-  const cont=$('fidCards');
-  if(!Object.keys(clientes).length){cont.innerHTML='<p style="color:var(--gray);font-size:.85rem">Sin clientes registrados.</p>';return;}
-  const canjesSnap=await db.collection('canjes').get();
-  const canjes={};
-  canjesSnap.forEach(d=>{const c=d.data();if(!canjes[c.clienteId])canjes[c.clienteId]=0;canjes[c.clienteId]+=c.tarjetas||1;});
-  cont.innerHTML='';
-  Object.entries(clientes).forEach(([id,c])=>{
-    const{sellosAcum}=calcSellosCliente(id);
-    const tarjetasCompletas=Math.floor(sellosAcum/(fidConfig.sellos||7));
-    const canjeados=canjes[id]||0;
-    const tarjetasPendientes=tarjetasCompletas-canjeados;
-    const sellosEnTarjetaActual=sellosAcum%( fidConfig.sellos||7);
-    const totalSellos=fidConfig.sellos||7;
-    const card=document.createElement('div');
-    card.className='fb';card.style.margin='0';
-    const sellosHTML=Array.from({length:totalSellos},(_,i)=>`<span style="font-size:1.4rem">${i<sellosEnTarjetaActual?'⭐':'☆'}</span>`).join('');
-    card.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div>
-          <b>${c.nombre}${c.apellido?' '+c.apellido:''}</b>
-          <div style="font-size:.72rem;color:var(--gray)">${c.telefono||''}</div>
-        </div>
-        ${tarjetasPendientes>0?`<span class="badge badge-ok">🏆 ${tarjetasPendientes} tarjeta${tarjetasPendientes>1?'s':''} lista${tarjetasPendientes>1?'s':''}</span>`:''}
-      </div>
-      <div style="margin:10px 0;display:flex;flex-wrap:wrap;gap:4px">${sellosHTML}</div>
-      <div style="font-size:.75rem;color:var(--gray);margin-bottom:8px">
-        ${sellosEnTarjetaActual}/${totalSellos} sellos — ${sellosAcum} sellos totales — ${tarjetasCompletas} tarjetas completadas
-      </div>
-      ${tarjetasPendientes>0?`
-        <div style="background:#eef7f1;border-radius:8px;padding:8px;margin-bottom:8px">
-          <b style="font-size:.8rem;color:var(--green-d)">🎁 ¡Tiene ${tarjetasPendientes} tarjeta${tarjetasPendientes>1?'s':''} para canjear!</b>
-        </div>
-        <input id="premio_${id}" placeholder="¿Qué premio le das?" style="margin-bottom:6px"/>
-        <button class="btn btn-g btn-sm" data-canjear="${id}">🎁 Registrar canje</button>`:''}
-    `;
-    cont.appendChild(card);
-  });
-  cont.querySelectorAll('[data-canjear]').forEach(b=>b.addEventListener('click',async()=>{
-    const cid=b.dataset.canjear;
-    const premio=$(`premio_${cid}`).value.trim();
-    if(!premio){alert('Indica el premio que le das al cliente.');return;}
-    const c=clientes[cid];
-    await db.collection('canjes').add({clienteId:cid,clienteNombre:`${c.nombre}${c.apellido?' '+c.apellido:''}`,premio,tarjetas:1,fecha:Date.now(),by:currentUser.email});
-    alert(`✅ Canje registrado para ${c.nombre}.\nPremio: ${premio}`);
-    renderFidelidad();
-  }));
-  // historial canjes
-  const tb=$('fidHistBody');
-  const todos=[];canjesSnap.forEach(d=>todos.push(d.data()));
-  todos.sort((a,b)=>b.fecha-a.fecha);
-  tb.innerHTML=todos.map(c=>`<tr>
-    <td>${new Date(c.fecha).toLocaleDateString('es-VE')}</td>
-    <td>${c.clienteNombre||'–'}</td>
-    <td>${c.premio||'–'}</td>
-    <td>${c.tarjetas||1}</td>
-  </tr>`).join('')||'<tr><td colspan="4" style="color:var(--gray)">Sin canjes aún.</td></tr>';
-}
-
-// REPORTES
 function setDefaultDates(){
-  const h=new Date(),d=new Date(h);d.setDate(1);
+  var h=new Date(), d=new Date(h); d.setDate(1);
   $('repDesde').value=d.toISOString().split('T')[0];
   $('repHasta').value=h.toISOString().split('T')[0];
 }
 function fillRepClienteFiltro(){
-  const s=$('repClienteFiltro');const v=s.value;
+  var s=$('repClienteFiltro'); var v=s.value;
   s.innerHTML='<option value="all">Todos los clientes</option>'+
-    Object.entries(clientes).map(([id,c])=>`<option value="${id}">${c.nombre}${c.apellido?' '+c.apellido:''}</option>`).join('');
-  if(v)s.value=v;
+    Object.entries(clientes).map(function(e){
+      var c=e[1];
+      return '<option value="'+e[0]+'">'+c.nombre+(c.apellido?' '+c.apellido:'')+'</option>';
+    }).join('');
+  if(v) s.value=v;
 }
-$('repPeriodo').addEventListener('change',()=>{
+$('repPeriodo').addEventListener('change',function(){
   $('repRangoPersonalizado').classList.toggle('hide',$('repPeriodo').value!=='personalizado');
 });
 function getRepRango(){
-  const p=$('repPeriodo').value;
-  const ahora=new Date();
-  let desde,hasta=ahora.getTime()+86400000;
-  if(p==='hoy'){const d=new Date();d.setHours(0,0,0,0);desde=d.getTime();}
-  else if(p==='semana'){const d=new Date();d.setDate(d.getDate()-d.getDay());d.setHours(0,0,0,0);desde=d.getTime();}
-  else if(p==='mes'){const d=new Date();d.setDate(1);d.setHours(0,0,0,0);desde=d.getTime();}
-  else if(p==='año'){const d=new Date();d.setMonth(0,1);d.setHours(0,0,0,0);desde=d.getTime();}
+  var p=$('repPeriodo').value;
+  var ahora=new Date();
+  var desde, hasta=ahora.getTime()+86400000;
+  if(p==='hoy'){var d=new Date();d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='semana'){var d=new Date();d.setDate(d.getDate()-d.getDay());d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='mes'){var d=new Date();d.setDate(1);d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='ano'){var d=new Date();d.setMonth(0,1);d.setHours(0,0,0,0);desde=d.getTime();}
   else if(p==='personalizado'){desde=new Date($('repDesde').value).getTime();hasta=new Date($('repHasta').value).getTime()+86400000;}
   else{desde=0;}
-  return{desde,hasta};
+  return {desde:desde,hasta:hasta};
 }
-$('btnGenerarReporte').addEventListener('click',()=>{
-  const{desde,hasta}=getRepRango();
-  const estadoFiltro=$('repEstadoFiltro').value;
-  const clienteFiltro=$('repClienteFiltro').value;
-  let vs=Object.values(ventas).filter(v=>v.fecha>=desde&&v.fecha<=hasta);
-  if(estadoFiltro!=='all')vs=vs.filter(v=>v.estado===estadoFiltro);
-  if(clienteFiltro!=='all')vs=vs.filter(v=>v.clienteId===clienteFiltro);
-  const pagadas=vs.filter(v=>v.estado==='pagado');
-  const pendientes=vs.filter(v=>v.estado==='pendiente');
-  const mora=vs.filter(v=>v.estado==='mora');
-  const usdCobrado=pagadas.reduce((a,v)=>a+(v.totalUSD||0),0);
-  const bsCobrado=pagadas.reduce((a,v)=>a+(v.totalBs||0),0);
-  const usdPendiente=[...pendientes,...mora].reduce((a,v)=>a+(v.totalUSD||0),0);
+$('btnGenerarReporte').addEventListener('click',function(){
+  var rango=getRepRango();
+  var estadoFiltro=$('repEstadoFiltro').value;
+  var clienteFiltro=$('repClienteFiltro').value;
+  var vs=Object.values(ventas).filter(function(v){return v.fecha>=rango.desde&&v.fecha<=rango.hasta;});
+  if(estadoFiltro!=='all') vs=vs.filter(function(v){return v.estado===estadoFiltro;});
+  if(clienteFiltro!=='all') vs=vs.filter(function(v){return v.clienteId===clienteFiltro;});
+  var pagadas=vs.filter(function(v){return v.estado==='pagado';});
+  var pendientes=vs.filter(function(v){return v.estado==='pendiente';});
+  var mora=vs.filter(function(v){return v.estado==='mora';});
+  var usdCobrado=pagadas.reduce(function(a,v){return a+(v.totalUSD||0);},0);
+  var bsCobrado=pagadas.reduce(function(a,v){return a+(v.totalBs||0);},0);
+  var usdPend=pendientes.concat(mora).reduce(function(a,v){return a+(v.totalUSD||0);},0);
   $('repTotalVentas').textContent=vs.length;
-  $('repTotalUSD').textContent='
-function imprimirReporte(){
-  const win=window.open('','_blank');
-  const html='<html><head><title>Reporte Renuevo</title>'
+  $('repTotalUSD').textContent='$'+usdCobrado.toFixed(2);
+  $('repTotalBs').textContent='Bs '+bsCobrado.toLocaleString('es-VE',{maximumFractionDigits:0});
+  $('repPendientes').textContent=pendientes.length;
+  $('repMora').textContent=mora.length;
+  $('repUSDPendiente').textContent='$'+usdPend.toFixed(2);
+  var periodo=$('repPeriodo').options[$('repPeriodo').selectedIndex].text;
+  var estado=$('repEstadoFiltro').options[$('repEstadoFiltro').selectedIndex].text;
+  var cliLabel=clienteFiltro!=='all'?(clientes[clienteFiltro]?clientes[clienteFiltro].nombre:''):'Todos';
+  $('repResumen').textContent='Periodo: '+periodo+' | Estado: '+estado+' | Cliente: '+cliLabel;
+  $('repBody').innerHTML=vs.map(function(v){
+    var est=v.estado==='pagado'?'Pagado':v.estado==='mora'?'Mora':'Pendiente';
+    return '<tr><td>'+new Date(v.fecha).toLocaleDateString('es-VE')+'</td>'
+      +'<td>'+(v.clienteNombre||'Consumidor final')+'</td>'
+      +'<td style="font-size:.72rem">'+((v.items||[]).map(function(i){return i.nombre+' '+i.ml+'ml';}).join(', '))+'</td>'
+      +'<td>$'+(v.totalUSD||0).toFixed(2)+'</td>'
+      +'<td>Bs '+(v.totalBs||0).toLocaleString('es-VE',{maximumFractionDigits:0})+'</td>'
+      +'<td>'+est+'</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="color:var(--gray)">Sin resultados.</td></tr>';
+  $('reporteResult').classList.remove('hide');
+});
+
+$('btnImprimirReporte').addEventListener('click',function(){
+  var win=window.open('','_blank');
+  var html='<html><head><title>Reporte Renuevo</title>'
     +'<style>body{font-family:Arial,sans-serif;padding:20px;font-size:12px}h1{color:#1f7a4d}'
-    +'.cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.card{border:1px solid #ddd;border-radius:8px;padding:10px 14px}'
+    +'.cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}'
+    +'.card{border:1px solid #ddd;border-radius:8px;padding:10px 14px}'
     +'.n{font-size:1.3rem;font-weight:800;color:#1f7a4d}.l{font-size:.7rem;color:#666}'
-    +'table{width:100%;border-collapse:collapse}th{background:#1f7a4d;color:#fff;padding:6px;text-align:left}td{padding:6px;border-bottom:1px solid #eee}'
+    +'table{width:100%;border-collapse:collapse}'
+    +'th{background:#1f7a4d;color:#fff;padding:6px;text-align:left}'
+    +'td{padding:6px;border-bottom:1px solid #eee}'
     +'</style></head><body>'
-    +'<h1>Renuevo — Reporte de Ventas</h1>'
+    +'<h1>Renuevo - Reporte de Ventas</h1>'
     +'<p>'+$('repResumen').textContent+' | Generado: '+new Date().toLocaleString('es-VE')+'</p>'
     +'<div class="cards">'
     +'<div class="card"><div class="n">'+$('repTotalVentas').textContent+'</div><div class="l">Ventas</div></div>'
-    +'<div class="card"><div class="n">'+$('repTotalUSD').textContent+'</div><div class="l">Ingresos USD</div></div>'
-    +'<div class="card"><div class="n">'+$('repTotalBs').textContent+'</div><div class="l">Ingresos Bs</div></div>'
+    +'<div class="card"><div class="n">'+$('repTotalUSD').textContent+'</div><div class="l">Cobrado USD</div></div>'
+    +'<div class="card"><div class="n">'+$('repTotalBs').textContent+'</div><div class="l">Cobrado Bs</div></div>'
     +'<div class="card"><div class="n">'+$('repPendientes').textContent+'</div><div class="l">Pendientes</div></div>'
     +'<div class="card"><div class="n">'+$('repMora').textContent+'</div><div class="l">Mora</div></div>'
     +'<div class="card"><div class="n">'+$('repUSDPendiente').textContent+'</div><div class="l">USD por cobrar</div></div>'
@@ -1285,154 +1210,119 @@ function imprimirReporte(){
     +'</body></html>';
   win.document.write(html);
   win.document.close();
-  setTimeout(()=>win.print(),500);
-}
-
-// DASHBOARD
-function renderDashboard(){
-  const prods=Object.values(productos);
-  $('dCardProds').textContent=prods.length;
-  $('dCardBajo').textContent=prods.filter(p=>(p.stockLitros||0)<=(p.stockMin||0)).length;
-  $('dCardClientes').textContent=Object.keys(clientes).length;
-  const hoy=new Date();hoy.setHours(0,0,0,0);
-  $('dCardHoy').textContent=Object.values(ventas).filter(v=>v.fecha>=hoy.getTime()).length;
-  $('dCardMora').textContent=Object.values(ventas).filter(v=>v.estado==='mora').length;
-  const low=prods.filter(p=>(p.stockLitros||0)<=(p.stockMin||0));
-  $('dLowStock').innerHTML=low.length?low.map(p=>`• ${p.nombre}: ${(p.stockLitros||0).toFixed(1)}L (mín: ${p.stockMin||0}L)`).join('<br>'):'✅ Inventario en niveles saludables.';
-  const pend=Object.entries(ventas).filter(([,v])=>v.estado==='pendiente'||v.estado==='mora').slice(0,5);
-  $('dPendingPay').innerHTML=pend.length?pend.map(([,v])=>`• ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)} — <span class="badge ${v.estado==='mora'?'badge-mora':'badge-pending'}">${v.estado}</span>`).join('<br>'):'✅ Sin pagos pendientes.';
-  const last=Object.values(ventas).slice(0,5);
-  $('dLastSales').innerHTML=last.length?last.map(v=>`• ${new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})} — ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)}`).join('<br>'):'Sin ventas aún.';
-}
-
-// OFFLINE + PWA
-window.addEventListener('online',()=>$('offlineBanner').style.display='none');
-window.addEventListener('offline',()=>$('offlineBanner').style.display='block');
-if(!navigator.onLine) $('offlineBanner').style.display='block';
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-}
-</script>
-</body>
-</html>
-+usdCobrado.toFixed(2);
-  $('repTotalBs').textContent='Bs '+bsCobrado.toLocaleString('es-VE',{maximumFractionDigits:0});
-  $('repPendientes').textContent=pendientes.length;
-  $('repMora').textContent=mora.length;
-  $('repUSDPendiente').textContent='
-function imprimirReporte(){
-  const win=window.open('','_blank');
-  win.document.write(`<html><head><title>Reporte Renuevo</title>
-  <style>body{font-family:Arial,sans-serif;padding:20px;font-size:12px}h1{color:#1f7a4d}
-  .cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.card{border:1px solid #ddd;border-radius:8px;padding:10px 14px}
-  .n{font-size:1.3rem;font-weight:800;color:#1f7a4d}.l{font-size:.7rem;color:#666}
-  table{width:100%;border-collapse:collapse}th{background:#1f7a4d;color:#fff;padding:6px;text-align:left}td{padding:6px;border-bottom:1px solid #eee}
-  </style></head><body>
-  <h1>♻️ Renuevo — Reporte de Ventas</h1>
-  <p>Generado: ${new Date().toLocaleString('es-VE')}</p>
-  <div class="cards">
-    <div class="card"><div class="n">${$('repTotalVentas').textContent}</div><div class="l">Ventas</div></div>
-    <div class="card"><div class="n">${$('repTotalUSD').textContent}</div><div class="l">Ingresos USD</div></div>
-    <div class="card"><div class="n">${$('repTotalBs').textContent}</div><div class="l">Ingresos Bs</div></div>
-    <div class="card"><div class="n">${$('repPendientes').textContent}</div><div class="l">Pendientes</div></div>
-    <div class="card"><div class="n">${$('repMora').textContent}</div><div class="l">Mora</div></div>
-  </div>
-  <table><thead><tr><th>Fecha</th><th>Cliente</th><th>USD</th><th>Bs</th><th>Estado</th></tr></thead>
-  <tbody>${$('repBody').innerHTML}</tbody></table>
-  </body></html>`);
-  win.document.close();
-  setTimeout(()=>win.print(),500);
-}
-
-// DASHBOARD
-function renderDashboard(){
-  const prods=Object.values(productos);
-  $('dCardProds').textContent=prods.length;
-  $('dCardBajo').textContent=prods.filter(p=>(p.stockLitros||0)<=(p.stockMin||0)).length;
-  $('dCardClientes').textContent=Object.keys(clientes).length;
-  const hoy=new Date();hoy.setHours(0,0,0,0);
-  $('dCardHoy').textContent=Object.values(ventas).filter(v=>v.fecha>=hoy.getTime()).length;
-  $('dCardMora').textContent=Object.values(ventas).filter(v=>v.estado==='mora').length;
-  const low=prods.filter(p=>(p.stockLitros||0)<=(p.stockMin||0));
-  $('dLowStock').innerHTML=low.length?low.map(p=>`• ${p.nombre}: ${(p.stockLitros||0).toFixed(1)}L (mín: ${p.stockMin||0}L)`).join('<br>'):'✅ Inventario en niveles saludables.';
-  const pend=Object.entries(ventas).filter(([,v])=>v.estado==='pendiente'||v.estado==='mora').slice(0,5);
-  $('dPendingPay').innerHTML=pend.length?pend.map(([,v])=>`• ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)} — <span class="badge ${v.estado==='mora'?'badge-mora':'badge-pending'}">${v.estado}</span>`).join('<br>'):'✅ Sin pagos pendientes.';
-  const last=Object.values(ventas).slice(0,5);
-  $('dLastSales').innerHTML=last.length?last.map(v=>`• ${new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})} — ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)}`).join('<br>'):'Sin ventas aún.';
-}
-
-// OFFLINE + PWA
-window.addEventListener('online',()=>$('offlineBanner').style.display='none');
-window.addEventListener('offline',()=>$('offlineBanner').style.display='block');
-if(!navigator.onLine) $('offlineBanner').style.display='block';
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-}
-</script>
-</body>
-</html>
-+usdPendiente.toFixed(2);
-  const periodo=$('repPeriodo').options[$('repPeriodo').selectedIndex].text;
-  const estado=$('repEstadoFiltro').options[$('repEstadoFiltro').selectedIndex].text;
-  const cli=clienteFiltro!=='all'?(clientes[clienteFiltro]?.nombre||''):'Todos';
-  $('repResumen').textContent=`Período: ${periodo} | Estado: ${estado} | Cliente: ${cli}`;
-  $('repBody').innerHTML=vs.map(v=>`<tr>
-    <td>${new Date(v.fecha).toLocaleDateString('es-VE')}</td>
-    <td>${v.clienteNombre||'Consumidor final'}</td>
-    <td style="font-size:.72rem">${(v.items||[]).map(i=>`${i.nombre} ${i.ml}ml`).join(', ')}</td>
-    <td>${(v.totalUSD||0).toFixed(2)}</td>
-    <td>Bs ${(v.totalBs||0).toLocaleString('es-VE',{maximumFractionDigits:0})}</td>
-    <td>${v.estado==='pagado'?'✅ Pagado':v.estado==='mora'?'🔴 Mora':'⏳ Pendiente'}</td>
-  </tr>`).join('')||'<tr><td colspan="6" style="color:var(--gray)">Sin resultados.</td></tr>';
-  $('reporteResult').classList.remove('hide');
+  setTimeout(function(){win.print();},500);
 });
-function imprimirReporte(){
-  const win=window.open('','_blank');
-  win.document.write(`<html><head><title>Reporte Renuevo</title>
-  <style>body{font-family:Arial,sans-serif;padding:20px;font-size:12px}h1{color:#1f7a4d}
-  .cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.card{border:1px solid #ddd;border-radius:8px;padding:10px 14px}
-  .n{font-size:1.3rem;font-weight:800;color:#1f7a4d}.l{font-size:.7rem;color:#666}
-  table{width:100%;border-collapse:collapse}th{background:#1f7a4d;color:#fff;padding:6px;text-align:left}td{padding:6px;border-bottom:1px solid #eee}
-  </style></head><body>
-  <h1>♻️ Renuevo — Reporte de Ventas</h1>
-  <p>Generado: ${new Date().toLocaleString('es-VE')}</p>
-  <div class="cards">
-    <div class="card"><div class="n">${$('repTotalVentas').textContent}</div><div class="l">Ventas</div></div>
-    <div class="card"><div class="n">${$('repTotalUSD').textContent}</div><div class="l">Ingresos USD</div></div>
-    <div class="card"><div class="n">${$('repTotalBs').textContent}</div><div class="l">Ingresos Bs</div></div>
-    <div class="card"><div class="n">${$('repPendientes').textContent}</div><div class="l">Pendientes</div></div>
-    <div class="card"><div class="n">${$('repMora').textContent}</div><div class="l">Mora</div></div>
-  </div>
-  <table><thead><tr><th>Fecha</th><th>Cliente</th><th>USD</th><th>Bs</th><th>Estado</th></tr></thead>
-  <tbody>${$('repBody').innerHTML}</tbody></table>
-  </body></html>`);
-  win.document.close();
-  setTimeout(()=>win.print(),500);
+
+function renderFidelidad(){
+  loadFidConfig().then(function(){
+    var cont=$('fidCards');
+    if(!Object.keys(clientes).length){cont.innerHTML='<p style="color:var(--gray);font-size:.85rem">Sin clientes registrados.</p>';return;}
+    db.collection('canjes').get().then(function(canjesSnap){
+      var canjes={};
+      canjesSnap.forEach(function(d){var c=d.data();if(!canjes[c.clienteId])canjes[c.clienteId]=0;canjes[c.clienteId]+=(c.tarjetas||1);});
+      cont.innerHTML='';
+      Object.entries(clientes).forEach(function(e){
+        var id=e[0],c=e[1];
+        var res=calcSellosCliente(id);
+        var tarjetasCompletas=Math.floor(res.sellosAcum/(fidConfig.sellos||7));
+        var canjeados=canjes[id]||0;
+        var tarjetasPendientes=tarjetasCompletas-canjeados;
+        var sellosActuales=res.sellosAcum%(fidConfig.sellos||7);
+        var totalSellos=fidConfig.sellos||7;
+        var sellosHTML='';
+        for(var i=0;i<totalSellos;i++) sellosHTML+='<span class="sello">'+(i<sellosActuales?'&#11088;':'&#9734;')+'</span>';
+        var card=document.createElement('div');
+        card.className='fb'; card.style.margin='0';
+        var html='<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+          +'<div><b>'+c.nombre+(c.apellido?' '+c.apellido:'')+'</b>'
+          +'<div style="font-size:.72rem;color:var(--gray)">'+(c.telefono||'')+'</div></div>'
+          +(tarjetasPendientes>0?'<span class="badge badge-ok">'+tarjetasPendientes+' tarjeta'+(tarjetasPendientes>1?'s':'')+' lista'+(tarjetasPendientes>1?'s':'')+'</span>':'')
+          +'</div>'
+          +'<div style="margin:10px 0;display:flex;flex-wrap:wrap;gap:4px">'+sellosHTML+'</div>'
+          +'<div style="font-size:.75rem;color:var(--gray);margin-bottom:8px">'+sellosActuales+'/'+totalSellos+' sellos - '+res.sellosAcum+' totales - '+tarjetasCompletas+' completadas</div>';
+        if(tarjetasPendientes>0){
+          html+='<div style="background:#eef7f1;border-radius:8px;padding:8px;margin-bottom:8px"><b style="font-size:.8rem;color:var(--green-d)">Tiene '+tarjetasPendientes+' tarjeta'+(tarjetasPendientes>1?'s':'')+' para canjear!</b></div>'
+            +'<input id="premio_'+id+'" placeholder="Que premio le das?" style="margin-bottom:6px"/>'
+            +'<button class="btn btn-g btn-sm" data-canjear="'+id+'">Registrar canje</button>';
+        }
+        card.innerHTML=html;
+        cont.appendChild(card);
+      });
+      cont.querySelectorAll('[data-canjear]').forEach(function(b){b.addEventListener('click',function(){
+        var cid=b.dataset.canjear;
+        var premioEl=$('premio_'+cid);
+        if(!premioEl||!premioEl.value.trim()){alert('Indica el premio.');return;}
+        var premio=premioEl.value.trim();
+        var c=clientes[cid];
+        db.collection('canjes').add({clienteId:cid,clienteNombre:c.nombre+(c.apellido?' '+c.apellido:''),premio:premio,tarjetas:1,fecha:Date.now(),by:currentUser.email}).then(function(){
+          alert('Canje registrado para '+c.nombre+'. Premio: '+premio);
+          renderFidelidad();
+        });
+      });});
+      var tb=$('fidHistBody');
+      var todos=[];
+      canjesSnap.forEach(function(d){todos.push(d.data());});
+      todos.sort(function(a,b){return b.fecha-a.fecha;});
+      tb.innerHTML=todos.map(function(c){
+        return '<tr><td>'+new Date(c.fecha).toLocaleDateString('es-VE')+'</td>'
+          +'<td>'+(c.clienteNombre||'-')+'</td><td>'+(c.premio||'-')+'</td><td>'+(c.tarjetas||1)+'</td></tr>';
+      }).join('')||'<tr><td colspan="4" style="color:var(--gray)">Sin canjes aun.</td></tr>';
+    });
+  });
 }
 
-// DASHBOARD
+function calcSellosCliente(clienteId){
+  var ventasCliente=Object.values(ventas).filter(function(v){return v.clienteId===clienteId;});
+  var sellosAcum=0;
+  ventasCliente.forEach(function(v){
+    var totalLitros=(v.items||[]).reduce(function(a,i){return a+(i.litros||0);},0);
+    var sellosPorLitros=Math.floor(totalLitros/(fidConfig.litrosPorSello||4));
+    var sellosPorUSD=Math.floor((v.totalUSD||0)/(fidConfig.usdPorSello||5));
+    sellosAcum+=Math.max(sellosPorLitros,sellosPorUSD);
+  });
+  return {sellosAcum:sellosAcum};
+}
+
+function loadFidConfig(){
+  return db.collection('config').doc('fidelidad').get().then(function(doc){
+    if(doc.exists){
+      fidConfig=doc.data();
+      $('fidSellos').value=fidConfig.sellos||7;
+      $('fidLitros').value=fidConfig.litrosPorSello||4;
+      $('fidUSD').value=fidConfig.usdPorSello||5;
+    }
+  });
+}
+$('btnSaveFidConfig').addEventListener('click',function(){
+  fidConfig={sellos:parseInt($('fidSellos').value)||7,litrosPorSello:parseFloat($('fidLitros').value)||4,usdPorSello:parseFloat($('fidUSD').value)||5};
+  db.collection('config').doc('fidelidad').set(fidConfig).then(function(){
+    $('fidConfigMsg').style.color='var(--green-d)';
+    $('fidConfigMsg').textContent='Configuracion guardada.';
+    renderFidelidad();
+  });
+});
+
 function renderDashboard(){
-  const prods=Object.values(productos);
+  var prods=Object.values(productos);
   $('dCardProds').textContent=prods.length;
-  $('dCardBajo').textContent=prods.filter(p=>(p.stockLitros||0)<=(p.stockMin||0)).length;
+  $('dCardBajo').textContent=prods.filter(function(p){return (p.stockLitros||0)<=(p.stockMin||0);}).length;
   $('dCardClientes').textContent=Object.keys(clientes).length;
-  const hoy=new Date();hoy.setHours(0,0,0,0);
-  $('dCardHoy').textContent=Object.values(ventas).filter(v=>v.fecha>=hoy.getTime()).length;
-  $('dCardMora').textContent=Object.values(ventas).filter(v=>v.estado==='mora').length;
-  const low=prods.filter(p=>(p.stockLitros||0)<=(p.stockMin||0));
-  $('dLowStock').innerHTML=low.length?low.map(p=>`• ${p.nombre}: ${(p.stockLitros||0).toFixed(1)}L (mín: ${p.stockMin||0}L)`).join('<br>'):'✅ Inventario en niveles saludables.';
-  const pend=Object.entries(ventas).filter(([,v])=>v.estado==='pendiente'||v.estado==='mora').slice(0,5);
-  $('dPendingPay').innerHTML=pend.length?pend.map(([,v])=>`• ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)} — <span class="badge ${v.estado==='mora'?'badge-mora':'badge-pending'}">${v.estado}</span>`).join('<br>'):'✅ Sin pagos pendientes.';
-  const last=Object.values(ventas).slice(0,5);
-  $('dLastSales').innerHTML=last.length?last.map(v=>`• ${new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})} — ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)}`).join('<br>'):'Sin ventas aún.';
+  var hoy=new Date(); hoy.setHours(0,0,0,0);
+  $('dCardHoy').textContent=Object.values(ventas).filter(function(v){return v.fecha>=hoy.getTime();}).length;
+  $('dCardMora').textContent=Object.values(ventas).filter(function(v){return v.estado==='mora';}).length;
+  var low=prods.filter(function(p){return (p.stockLitros||0)<=(p.stockMin||0);});
+  $('dLowStock').innerHTML=low.length?low.map(function(p){return '* '+p.nombre+': '+(p.stockLitros||0).toFixed(1)+'L (min: '+(p.stockMin||0)+'L)';}).join('<br>'):'Inventario en niveles saludables.';
+  var pend=Object.entries(ventas).filter(function(e){return e[1].estado==='pendiente'||e[1].estado==='mora';}).slice(0,5);
+  $('dPendingPay').innerHTML=pend.length?pend.map(function(e){var v=e[1];return '* '+(v.clienteNombre||'Consumidor final')+' - $'+(v.totalUSD||0).toFixed(2)+' - <span class="badge '+(v.estado==='mora'?'badge-mora':'badge-pending')+'">'+v.estado+'</span>';}).join('<br>'):'Sin pagos pendientes.';
+  var last=Object.values(ventas).slice(0,5);
+  $('dLastSales').innerHTML=last.length?last.map(function(v){return '* '+new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})+' - '+(v.clienteNombre||'Consumidor final')+' - $'+(v.totalUSD||0).toFixed(2);}).join('<br>'):'Sin ventas aun.';
 }
 
-// OFFLINE + PWA
-window.addEventListener('online',()=>$('offlineBanner').style.display='none');
-window.addEventListener('offline',()=>$('offlineBanner').style.display='block');
+window.addEventListener('online',function(){$('offlineBanner').style.display='none';});
+window.addEventListener('offline',function(){$('offlineBanner').style.display='block';});
 if(!navigator.onLine) $('offlineBanner').style.display='block';
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});
 }
 </script>
 </body>
