@@ -92,8 +92,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <label>Contrasena</label><input type="password" id="loginPass" placeholder="********"/>
     <button id="btnLogin">Ingresar</button>
     <div id="loginErr"></div>
-    <div id="loginMode">Primera vez? Crear cuenta admin</div>
-    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v89</div>
+    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v94</div>
   </div>
 </div>
 
@@ -535,20 +534,11 @@ $('hambBtn').addEventListener('click',function(){$('mobileMenu').style.display='
 $('closeDrawer').addEventListener('click',function(){$('mobileMenu').style.display='none';});
 $('mobileMenu').addEventListener('click',function(e){if(e.target===$('mobileMenu'))$('mobileMenu').style.display='none';});
 
-var creatingMode=false;
-$('loginMode').addEventListener('click',function(){
-  creatingMode=!creatingMode;
-  $('loginMode').textContent=creatingMode?'Ya tengo cuenta, ir a ingresar':'Primera vez? Crear cuenta admin';
-  $('btnLogin').textContent=creatingMode?'Crear cuenta admin':'Ingresar';
-});
 $('btnLogin').addEventListener('click',function(){
   var email=$('loginEmail').value.trim(), pass=$('loginPass').value;
   $('loginErr').textContent='';
   if(!email||!pass){$('loginErr').textContent='Completa correo y contrasena.';return;}
-  var p=creatingMode?auth.createUserWithEmailAndPassword(email,pass):auth.signInWithEmailAndPassword(email,pass);
-  p.then(function(cred){
-    if(creatingMode) return db.collection('roles').doc(email.toLowerCase()).set({role:'admin',createdAt:Date.now()});
-  }).catch(function(e){$('loginErr').textContent=traducirError(e.code);});
+  auth.signInWithEmailAndPassword(email,pass).catch(function(e){$('loginErr').textContent=traducirError(e.code);});
 });
 function traducirError(c){
   var m={'auth/email-already-in-use':'Ese correo ya tiene cuenta.','auth/invalid-email':'Correo invalido.','auth/weak-password':'Contrasena muy debil.','auth/user-not-found':'Usuario no encontrado.','auth/wrong-password':'Contrasena incorrecta.','auth/invalid-credential':'Correo o contrasena incorrectos.'};
