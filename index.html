@@ -20,7 +20,6 @@ body{background:var(--bg);color:var(--dark);}
 .loginBox{background:#fff;border-radius:16px;padding:32px 26px;width:100%;max-width:360px;box-shadow:0 20px 50px rgba(0,0,0,.3);text-align:center}
 .loginBox img{max-height:120px;margin-bottom:10px}
 .loginBox h1{font-size:1.4rem;color:var(--green-d);margin-bottom:4px}
-.loginBox p{color:var(--gray);font-size:.8rem;margin-bottom:20px}
 .loginBox label{font-size:.75rem;color:var(--gray);display:block;text-align:left;margin:10px 0 4px}
 .loginBox input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:.9rem}
 .loginBox button{width:100%;margin-top:18px;padding:12px;border:none;border-radius:8px;background:var(--green);color:#fff;font-weight:700;font-size:.9rem;cursor:pointer}
@@ -45,18 +44,17 @@ main{max-width:1100px;margin:16px auto;padding:0 14px 60px}
 .fb{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px}
 .fb h2{font-size:1rem;margin-bottom:12px;color:var(--green-d)}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
-.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px}
+.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer}
 .card .n{font-size:1.4rem;font-weight:800;color:var(--green-d)}.card .l{font-size:.7rem;color:var(--gray)}
 .card.warn .n{color:var(--red)}.card.alert .n{color:var(--yellow)}
 label{font-size:.75rem;color:var(--gray);display:block;margin:8px 0 4px}
 input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:8px;font-size:.85rem}
 textarea{resize:vertical;min-height:80px}
-.row{display:grid;gap:8px}.r2{grid-template-columns:1fr 1fr}.r3{grid-template-columns:1fr 1fr 1fr}.r4{grid-template-columns:1fr 1fr 1fr 1fr}
+.row{display:grid;gap:8px}.r2{grid-template-columns:1fr 1fr}.r3{grid-template-columns:1fr 1fr 1fr}
 .btn{border:none;border-radius:8px;padding:9px 14px;font-size:.8rem;cursor:pointer;font-weight:600}
 .btn-p{background:var(--green);color:#fff}.btn-s{background:var(--blue);color:#fff}
-.btn-d{background:var(--red);color:#fff}.btn-w{background:var(--yellow);color:#333}
-.btn-o{background:#eef1ef;color:#333}.btn-g{background:#4CAF50;color:#fff}
-.btn-sm{padding:5px 9px;font-size:.72rem}
+.btn-d{background:var(--red);color:#fff}.btn-g{background:#4CAF50;color:#fff}
+.btn-o{background:#eef1ef;color:#333}.btn-sm{padding:5px 9px;font-size:.72rem}
 table{width:100%;border-collapse:collapse;font-size:.8rem}
 th{text-align:left;color:var(--gray);font-size:.68rem;text-transform:uppercase;padding:6px;border-bottom:1px solid var(--border)}
 td{padding:7px 6px;border-bottom:1px solid #f0f1f0;vertical-align:middle}
@@ -81,20 +79,21 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
 .est-btn.pagado{background:#e3f5ea;color:var(--green-d)}.est-btn.pagado.active{border-color:var(--green-d)}
 .est-btn.pendiente{background:#fff3cd;color:#856404}.est-btn.pendiente.active{border-color:#856404}
 .est-btn.mora{background:#fbe1e1;color:var(--red)}.est-btn.mora.active{border-color:var(--red)}
-@media(max-width:700px){nav{display:none}#hambBtn{display:block}.r3,.r4{grid-template-columns:1fr 1fr}.r2{grid-template-columns:1fr}.ubadge{display:none}}
-@media print{header,#offlineBanner,.btn,nav{display:none!important}main{padding:0}}
+@media(max-width:700px){nav{display:none}#hambBtn{display:block}.r3{grid-template-columns:1fr 1fr}.r2{grid-template-columns:1fr}.ubadge{display:none}}
 </style>
 </head>
 <body>
+
 <div id="loginScreen">
   <div class="loginBox">
     <img src="logo.png" alt="Renuevo" onerror="this.style.display='none';document.getElementById('loginTitle').style.display='block'"/>
-    <h1 id="loginTitle" style="display:none">♻️ RENUEVO</h1>
+    <h1 id="loginTitle" style="display:none">RENUEVO</h1>
     <label>Correo</label><input type="email" id="loginEmail" placeholder="tucorreo@ejemplo.com"/>
     <label>Contraseña</label><input type="password" id="loginPass" placeholder="••••••••"/>
     <button id="btnLogin">Ingresar</button>
     <div id="loginErr"></div>
     <div id="loginMode">¿Primera vez? Crear cuenta admin</div>
+    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v60</div>
   </div>
 </div>
 
@@ -128,15 +127,15 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
 <!-- DASHBOARD -->
 <div id="sec-dashboard" class="section active">
   <div class="cards">
-    <div class="card" style="cursor:pointer" onclick="showSection('inventario')"><div class="n" id="dCardProds">0</div><div class="l">📦 Productos</div></div>
-    <div class="card warn" style="cursor:pointer" onclick="showSection('inventario')"><div class="n" id="dCardBajo">0</div><div class="l">⚠️ Stock bajo</div></div>
-    <div class="card" style="cursor:pointer" onclick="showSection('ventas')"><div class="n" id="dCardHoy">0</div><div class="l">🧾 Ventas hoy</div></div>
-    <div class="card alert" style="cursor:pointer" onclick="showSection('ventas');setTimeout(()=>{ventaFiltro='mora';renderVentas();},300)"><div class="n" id="dCardMora">0</div><div class="l">🔴 En mora</div></div>
-    <div class="card" style="cursor:pointer" onclick="showSection('clientes')"><div class="n" id="dCardClientes">0</div><div class="l">👥 Clientes</div></div>
+    <div class="card" onclick="showSection('inventario')"><div class="n" id="dCardProds">0</div><div class="l">📦 Productos</div></div>
+    <div class="card warn" onclick="showSection('inventario')"><div class="n" id="dCardBajo">0</div><div class="l">⚠️ Stock bajo</div></div>
+    <div class="card" onclick="showSection('ventas')"><div class="n" id="dCardHoy">0</div><div class="l">🧾 Ventas hoy</div></div>
+    <div class="card alert" onclick="showSection('ventas');setTimeout(()=>{ventaFiltro='mora';renderVentas();},300)"><div class="n" id="dCardMora">0</div><div class="l">🔴 En mora</div></div>
+    <div class="card" onclick="showSection('clientes')"><div class="n" id="dCardClientes">0</div><div class="l">👥 Clientes</div></div>
   </div>
-  <div class="fb" style="cursor:pointer" onclick="showSection('inventario')"><h2>⚠️ Stock bajo — clic para ver inventario</h2><div id="dLowStock" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
-  <div class="fb" style="cursor:pointer" onclick="showSection('ventas');setTimeout(()=>{ventaFiltro='pendiente';renderVentas();},300)"><h2>🕐 Pendientes de pago / Mora — clic para ver</h2><div id="dPendingPay" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
-  <div class="fb" style="cursor:pointer" onclick="showSection('ventas')"><h2>🧾 Últimas ventas — clic para ver todas</h2><div id="dLastSales" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
+  <div class="fb" style="cursor:pointer" onclick="showSection('inventario')"><h2>⚠️ Stock bajo</h2><div id="dLowStock" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
+  <div class="fb" style="cursor:pointer" onclick="showSection('ventas');setTimeout(()=>{ventaFiltro='pendiente';renderVentas();},300)"><h2>🕐 Pendientes / Mora</h2><div id="dPendingPay" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
+  <div class="fb" style="cursor:pointer" onclick="showSection('ventas')"><h2>🧾 Últimas ventas</h2><div id="dLastSales" style="font-size:.82rem;color:var(--gray)">Cargando...</div></div>
 </div>
 
 <!-- VENTAS -->
@@ -147,13 +146,13 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <select id="ventaCliente"></select>
     <div id="nuevoClienteBox" class="hide" style="margin-top:8px;padding:10px;background:#f4f6f5;border-radius:8px">
       <div class="row r2">
-        <div><label>Nombre</label><input id="ncNombre" placeholder="Nombre"/></div>
-        <div><label>Apellido (opcional)</label><input id="ncApellido" placeholder="Apellido"/></div>
+        <div><label>Nombre *</label><input id="ncNombre" placeholder="Nombre"/></div>
+        <div><label>Apellido</label><input id="ncApellido" placeholder="Apellido"/></div>
       </div>
       <div class="row r3">
-        <div><label>Cédula (opcional)</label><input id="ncCedula" placeholder="V-12345678"/></div>
-        <div><label>Teléfono (opcional)</label><input id="ncTelefono" placeholder="04XX-XXXXXXX"/></div>
-        <div><label>Dirección (opcional)</label><input id="ncDireccion" placeholder="Dirección"/></div>
+        <div><label>Cédula</label><input id="ncCedula" placeholder="V-12345678"/></div>
+        <div><label>Teléfono</label><input id="ncTelefono" placeholder="04XX-XXXXXXX"/></div>
+        <div><label>Dirección</label><input id="ncDireccion" placeholder="Dirección"/></div>
       </div>
       <button class="btn btn-p btn-sm" id="btnGuardarNC" style="margin-top:8px">💾 Guardar y usar</button>
     </div>
@@ -191,7 +190,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     </div>
   </div>
   <div class="fb">
-    <h2>📜 Historial de ventas</h2>
+    <h2>📜 Historial</h2>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
       <button class="btn btn-sm btn-o" data-filt="all">Todas</button>
       <button class="btn btn-sm btn-o" data-filt="pendiente">⏳ Pendientes</button>
@@ -199,7 +198,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
       <button class="btn btn-sm btn-o" data-filt="pagado">✅ Pagadas</button>
     </div>
     <div style="overflow-x:auto"><table>
-      <thead><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>Total USD</th><th>Total Bs</th><th>Estado</th><th></th></tr></thead>
+      <thead><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>USD</th><th>Bs</th><th>Estado</th><th></th></tr></thead>
       <tbody id="ventasBody"></tbody>
     </table></div>
   </div>
@@ -225,7 +224,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
       <option value="mora">🔴 Mora/Fiado</option>
     </select>
     <div style="display:flex;gap:8px;margin-top:14px">
-      <button class="btn btn-p" id="btnSaveEditVenta">💾 Guardar cambios</button>
+      <button class="btn btn-p" id="btnSaveEditVenta">💾 Guardar</button>
       <button class="btn btn-o" id="btnCancelEditVenta">Cancelar</button>
     </div>
   </div>
@@ -239,7 +238,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <div class="row r3">
       <div><label>Producto</label><select id="compraProducto"></select></div>
       <div><label>Litros comprados</label><input type="number" step="0.1" id="compraLitros" placeholder="20"/></div>
-      <div><label>Costo pagado (USD, opcional)</label><input type="number" step="0.01" id="compraCosto" placeholder="8.90"/></div>
+      <div><label>Costo pagado USD (opcional)</label><input type="number" step="0.01" id="compraCosto" placeholder="8.90"/></div>
     </div>
     <button class="btn btn-p btn-sm" id="btnRegistrarCompra" style="margin-top:10px">➕ Agregar al inventario</button>
     <div id="compraMsg" style="font-size:.75rem;margin-top:6px"></div>
@@ -248,7 +247,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <h2 id="invFormTitle">➕ Agregar Producto</h2>
     <input type="hidden" id="prodId"/>
     <div class="row r2">
-      <div><label>Nombre</label><input id="prodNombre" placeholder="Ej: Jabón Líquido"/></div>
+      <div><label>Nombre *</label><input id="prodNombre" placeholder="Ej: Jabón Líquido"/></div>
       <div><label>Categoría</label><input id="prodCategoria" placeholder="Ej: Limpieza"/></div>
     </div>
     <div class="row r3">
@@ -263,7 +262,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     </div>
   </div>
   <div class="fb">
-    <h2>📦 Inventario actual (en litros)</h2>
+    <h2>📦 Inventario actual (litros)</h2>
     <button class="btn btn-o btn-sm" id="btnCargarCatalogo" style="margin-bottom:10px">📥 Cargar catálogo Pulizia</button>
     <div id="catalogoMsg" style="font-size:.75rem;margin-bottom:8px"></div>
     <div style="overflow-x:auto"><table>
@@ -272,8 +271,8 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     </table></div>
   </div>
   <div class="fb">
-    <h2>🧴 Envases PET (costos de referencia)</h2>
-    <table><thead><tr><th>Envase</th><th>Capacidad</th><th>Precio bulto (Bs)</th><th>Unds/bulto</th><th>Costo c/u (Bs)</th><th>Costo c/u (USD)</th></tr></thead>
+    <h2>🧴 Envases PET (referencia)</h2>
+    <table><thead><tr><th>Envase</th><th>Cap.</th><th>Bulto (Bs)</th><th>Unds</th><th>c/u (Bs)</th><th>c/u (USD)</th></tr></thead>
     <tbody id="envasesPETBody"></tbody></table>
   </div>
 </div>
@@ -285,12 +284,12 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <input type="hidden" id="cliId"/>
     <div class="row r2">
       <div><label>Nombre *</label><input id="cliNombre" placeholder="Nombre"/></div>
-      <div><label>Apellido (opcional)</label><input id="cliApellido" placeholder="Apellido"/></div>
+      <div><label>Apellido</label><input id="cliApellido" placeholder="Apellido"/></div>
     </div>
     <div class="row r3">
-      <div><label>Cédula (opcional)</label><input id="cliCedula" placeholder="V-12345678"/></div>
-      <div><label>Teléfono (opcional)</label><input id="cliTelefono" placeholder="04XX-XXXXXXX"/></div>
-      <div><label>Dirección (opcional)</label><input id="cliDireccion" placeholder="Dirección"/></div>
+      <div><label>Cédula</label><input id="cliCedula" placeholder="V-12345678"/></div>
+      <div><label>Teléfono</label><input id="cliTelefono" placeholder="04XX-XXXXXXX"/></div>
+      <div><label>Dirección</label><input id="cliDireccion" placeholder="Dirección"/></div>
     </div>
     <div style="display:flex;gap:8px;margin-top:10px">
       <button class="btn btn-p btn-sm" id="btnGuardarCli">💾 Guardar</button>
@@ -311,7 +310,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
       <strong style="font-size:.85rem">💱 Tasas de cambio (Bs por unidad)</strong>
       <button class="btn btn-sm btn-p" id="btnAutoTasas">🔄 Auto BCV/Euro</button>
     </div>
-    <div class="info-note">USDT: actualiza manualmente desde Binance P2P u otra referencia.</div>
+    <div class="info-note">USDT: actualiza manualmente desde Binance P2P.</div>
     <div id="tasasContainer" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px"></div>
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center">
       <button class="btn btn-p btn-sm" id="btnAddTasa">➕ Agregar moneda</button>
@@ -324,18 +323,18 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
 <!-- CONFIG -->
 <div id="sec-config" class="section">
   <div class="fb">
-    <h2>📲 Plantilla mensaje WhatsApp</h2>
+    <h2>📲 Plantilla WhatsApp</h2>
     <div class="info-note">Variables: <b>{cliente}</b>, <b>{fecha}</b>, <b>{productos}</b>, <b>{totalUSD}</b>, <b>{totalBs}</b>, <b>{tasaBCV}</b>, <b>{pagoMovil}</b></div>
     <label>Mensaje</label><textarea id="waMsgTemplate" rows="10"></textarea>
     <label style="margin-top:10px">Datos de pago móvil</label>
     <textarea id="waPagoMovil" rows="4"></textarea>
-    <label style="margin-top:10px">Costo envase reciclado (Bs) — actualmente ~$0.075 USD a tasa BCV</label>
+    <label style="margin-top:10px">Costo envase reciclado (Bs)</label>
     <input type="number" id="costoEnvaseReciclado" value="50" step="1"/>
     <button class="btn btn-p btn-sm" id="btnSaveWAConfig" style="margin-top:10px">💾 Guardar configuración</button>
     <div id="waConfigMsg" style="font-size:.75rem;margin-top:6px"></div>
   </div>
   <div class="fb">
-    <h2>👤 Usuarios con acceso</h2>
+    <h2>👤 Usuarios</h2>
     <div class="row r3">
       <div><label>Correo</label><input id="empEmail" placeholder="empleado@correo.com"/></div>
       <div><label>Contraseña temporal</label><input id="empPass" placeholder="mínimo 6 caracteres"/></div>
@@ -355,7 +354,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
       <div><label>Desde</label><input type="date" id="repDesde"/></div>
       <div><label>Hasta</label><input type="date" id="repHasta"/></div>
     </div>
-    <button class="btn btn-p btn-sm" id="btnGenerarReporte" style="margin-top:8px">📊 Generar reporte</button>
+    <button class="btn btn-p btn-sm" id="btnGenerarReporte" style="margin-top:8px">📊 Generar</button>
   </div>
   <div class="fb hide" id="reporteResult">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
@@ -375,26 +374,31 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     </table></div>
   </div>
 </div>
-
 </main>
 </div>
 
 <script>
-const firebaseConfig={apiKey:"AIzaSyDG-W82BwNZWYSBqhacsHRx4QoJgk0Xyow",authDomain:"renuevo-app-c35be.firebaseapp.com",projectId:"renuevo-app-c35be",storageBucket:"renuevo-app-c35be.firebasestorage.app",messagingSenderId:"405969009551",appId:"1:405969009551:web:e020789693262b7a5fa9fa"};
+const firebaseConfig={
+  apiKey:"AIzaSyDG-W82BwNZWYSBqhacsHRx4QoJgk0Xyow",
+  authDomain:"renuevo-app-c35be.firebaseapp.com",
+  projectId:"renuevo-app-c35be",
+  storageBucket:"renuevo-app-c35be.firebasestorage.app",
+  messagingSenderId:"405969009551",
+  appId:"1:405969009551:web:e020789693262b7a5fa9fa"
+};
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth(),db=firebase.firestore();
-try{db.enablePersistence({synchronizeTabs:true});}catch(e){}
+const auth=firebase.auth(), db=firebase.firestore();
 
 const $=id=>document.getElementById(id);
-let currentUser=null,currentRole=null;
-let productos={},clientes={},ventas={};
-let tasas={USD:{valor:0},EUR:{valor:0},USDT:{valor:0}},monedaPrincipal='USD';
-let waConfig={template:'',pagoMovil:'',costoEnvaseReciclado:30};
+let currentUser=null, currentRole=null;
+let productos={}, clientes={}, ventas={};
+let tasas={USD:{valor:0},EUR:{valor:0},USDT:{valor:0}}, monedaPrincipal='USD';
+let waConfig={template:'',pagoMovil:'',costoEnvaseReciclado:50};
 let ventaFiltro='all';
 
 const DEFAULT_PAGO=`🏦 Banco Provincial\n👤 C.I: 14.463.016\n📱 Tlf: 0412-3353098`;
-const COSTO_ENVASE_RECICLADO_BS=50;
-const DEFAULT_WA=`Hola {cliente} 👋\nAquí está el detalle de tu pedido Renuevo:\n\n📅 Fecha: {fecha}\n📦 Productos:\n{productos}\n\n💵 Total: *${'{totalUSD}'} USD*\n🇻🇪 Equivalente: *Bs {totalBs}*\n📊 Tasa BCV del momento: Bs {tasaBCV}\n\n⚠️ El monto en Bs es referencial. Si pagas después, se tomará la tasa BCV vigente en ese momento.\n\n💳 Datos de pago:\n{pagoMovil}\n\n¡Gracias por tu compra! 🌿`;
+const DEFAULT_WA=`Hola {cliente} 👋\nAquí el detalle de tu pedido Renuevo:\n\n📅 Fecha: {fecha}\n📦 Productos:\n{productos}\n\n💵 Total: *$\{totalUSD} USD*\n🇻🇪 Equivalente: *Bs {totalBs}*\n📊 Tasa BCV: Bs {tasaBCV}\n\n⚠️ El monto en Bs es referencial a la tasa actual.\n\n💳 Datos de pago:\n{pagoMovil}\n\n¡Gracias! 🌿`;
+const COSTO_ENVASE_BS=50;
 
 const PULIZIA=[
   {nombre:'Jabón Líquido',categoria:'Limpieza general',costoPorLitro:0.695},
@@ -408,13 +412,13 @@ const PULIZIA=[
   {nombre:'Jabón Tipo Ariel',categoria:'Ropa',costoPorLitro:0.725}
 ];
 const ENVASES_PET=[
-  {nombre:'Cloro',capacidad:'500ml',precioBulto:30,unds:180},
-  {nombre:'Cloro',capacidad:'1000ml',precioBulto:23,unds:100},
-  {nombre:'Transparente',capacidad:'500ml',precioBulto:23,unds:160},
-  {nombre:'Transparente',capacidad:'828ml',precioBulto:26,unds:100}
+  {nombre:'Cloro',cap:'500ml',bulto:30,unds:180},
+  {nombre:'Cloro',cap:'1000ml',bulto:23,unds:100},
+  {nombre:'Transparente',cap:'500ml',bulto:23,unds:160},
+  {nombre:'Transparente',cap:'828ml',bulto:26,unds:100}
 ];
 
-// ---------- NAV ----------
+// NAV
 const NAV=[
   {id:'dashboard',label:'📊 Dashboard',roles:['admin','vendedor']},
   {id:'ventas',label:'🧾 Ventas',roles:['admin','vendedor']},
@@ -424,32 +428,36 @@ const NAV=[
   {id:'reportes',label:'📊 Reportes',roles:['admin']},
   {id:'config',label:'⚙️ Config',roles:['admin']}
 ];
+
 function buildNav(){
   const perms=NAV.filter(n=>n.roles.includes(currentRole));
   const btns=perms.map(n=>`<button data-s="${n.id}">${n.label}</button>`).join('');
-  $('mainNav').innerHTML=btns;$('mobileNav').innerHTML=btns;
+  $('mainNav').innerHTML=btns;
+  $('mobileNav').innerHTML=btns;
   document.querySelectorAll('#mainNav button,#mobileNav button').forEach(b=>{
     b.addEventListener('click',()=>{showSection(b.dataset.s);$('mobileMenu').style.display='none';});
   });
   showSection('dashboard');
 }
+
 function showSection(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('#mainNav button,#mobileNav button').forEach(b=>b.classList.toggle('active',b.dataset.s===id));
-  const s=$('sec-'+id);if(s)s.classList.add('active');
-  if(id==='dashboard')renderDashboard();
+  const s=$('sec-'+id); if(s) s.classList.add('active');
+  if(id==='dashboard') renderDashboard();
   if(id==='ventas'){fillClienteSelect();fillEditVentaClienteSelect();}
   if(id==='inventario'){renderInvTable();fillCompraProdSelect();renderEnvasesPET();}
-  if(id==='clientes')renderClientes();
-  if(id==='tasas')renderTasasUI();
-  if(id==='reportes')setDefaultDates();
-  if(id==='config')loadWAConfig();
+  if(id==='clientes') renderClientes();
+  if(id==='tasas') renderTasasUI();
+  if(id==='reportes') setDefaultDates();
+  if(id==='config') loadWAConfig();
 }
+
 $('hambBtn').addEventListener('click',()=>$('mobileMenu').style.display='flex');
 $('closeDrawer').addEventListener('click',()=>$('mobileMenu').style.display='none');
 $('mobileMenu').addEventListener('click',e=>{if(e.target===$('mobileMenu'))$('mobileMenu').style.display='none';});
 
-// ---------- AUTH ----------
+// AUTH
 let creatingMode=false;
 $('loginMode').addEventListener('click',()=>{
   creatingMode=!creatingMode;
@@ -457,13 +465,17 @@ $('loginMode').addEventListener('click',()=>{
   $('btnLogin').textContent=creatingMode?'Crear cuenta admin':'Ingresar';
 });
 $('btnLogin').addEventListener('click',async()=>{
-  const email=$('loginEmail').value.trim(),pass=$('loginPass').value;
+  const email=$('loginEmail').value.trim(), pass=$('loginPass').value;
   $('loginErr').textContent='';
   if(!email||!pass){$('loginErr').textContent='Completa correo y contraseña.';return;}
   try{
-    if(creatingMode){await auth.createUserWithEmailAndPassword(email,pass);await db.collection('roles').doc(email.toLowerCase()).set({role:'admin',createdAt:Date.now()});}
-    else{await auth.signInWithEmailAndPassword(email,pass);}
-  }catch(e){$('loginErr').textContent=traducirError(e.code);}
+    if(creatingMode){
+      await auth.createUserWithEmailAndPassword(email,pass);
+      await db.collection('roles').doc(email.toLowerCase()).set({role:'admin',createdAt:Date.now()});
+    } else {
+      await auth.signInWithEmailAndPassword(email,pass);
+    }
+  } catch(e){$('loginErr').textContent=traducirError(e.code);}
 });
 function traducirError(c){
   const m={'auth/email-already-in-use':'Ese correo ya tiene cuenta.','auth/invalid-email':'Correo inválido.','auth/weak-password':'Contraseña muy débil.','auth/user-not-found':'Usuario no encontrado.','auth/wrong-password':'Contraseña incorrecta.','auth/invalid-credential':'Correo o contraseña incorrectos.'};
@@ -471,83 +483,123 @@ function traducirError(c){
 }
 $('logoutBtn').addEventListener('click',()=>auth.signOut());
 $('mobileLogout').addEventListener('click',()=>auth.signOut());
+
 auth.onAuthStateChanged(async user=>{
   if(user){
     currentUser=user;
     const rd=await db.collection('roles').doc(user.email.toLowerCase()).get();
     if(!rd.exists){await auth.signOut();return;}
     currentRole=rd.data().role;
-    $('loginScreen').classList.add('hide');$('app').classList.remove('hide');
-    $('userEmailTag').textContent=user.email;$('mobileUserTag').textContent=user.email;
+    $('loginScreen').classList.add('hide');
+    $('app').classList.remove('hide');
+    $('userEmailTag').textContent=user.email;
+    $('mobileUserTag').textContent=user.email;
     $('roleBadge').textContent=currentRole==='admin'?'Admin':'Vendedor';
-    buildNav();attachListeners();
-  }else{
-    currentUser=null;currentRole=null;
-    $('app').classList.add('hide');$('loginScreen').classList.remove('hide');
+    buildNav();
+    attachListeners();
+  } else {
+    currentUser=null; currentRole=null;
+    $('app').classList.add('hide');
+    $('loginScreen').classList.remove('hide');
   }
 });
 
-// ---------- REALTIME ----------
+// REALTIME LISTENERS
+function attachListeners(){
+  db.collection('productos').onSnapshot(snap=>{
+    productos={};
+    snap.forEach(d=>productos[d.id]=d.data());
+    renderInvTable();
+    fillCompraProdSelect();
+    renderDashboard();
+  });
+  db.collection('clientes').onSnapshot(snap=>{
+    clientes={};
+    snap.forEach(d=>clientes[d.id]=d.data());
+    renderClientes();
+    renderDashboard();
+    fillClienteSelect();
+    fillEditVentaClienteSelect();
+  });
+  db.collection('ventas').orderBy('fecha','desc').onSnapshot(snap=>{
+    ventas={};
+    snap.forEach(d=>ventas[d.id]=d.data());
+    renderVentas();
+    renderDashboard();
+  });
+  db.collection('config').doc('tasas').onSnapshot(doc=>{
+    if(doc.exists){tasas=doc.data().tasas||tasas; monedaPrincipal=doc.data().principal||'USD';}
+    renderTasasUI();
+    updateBcvBadge();
+    renderInvTable();
+  });
+  db.collection('config').doc('wa').onSnapshot(doc=>{
+    if(doc.exists) waConfig=doc.data();
+  });
+  if(currentRole==='admin'){
+    db.collection('roles').onSnapshot(snap=>{
+      const r=[];
+      snap.forEach(d=>r.push({email:d.id,role:d.data().role}));
+      renderUsers(r);
+    });
+  }
+}
+
+// RECARGA PRODUCTOS
 async function recargarProductos(){
   const snap=await db.collection('productos').get();
   productos={};
   snap.forEach(d=>productos[d.id]=d.data());
   renderInvTable();
   fillCompraProdSelect();
-  // actualizar selects de ventas si ya hay filas abiertas
-  document.querySelectorAll('.saleProd').forEach(s=>{
-    const v=s.value;
-    s.innerHTML='<option value="">– Producto –</option>'+Object.entries(productos).map(([id,p])=>`<option value="${id}">${p.nombre} (${(p.stockLitros||0).toFixed(1)}L disp.)</option>`).join('');
-    if(v)s.value=v;
-  });
   renderDashboard();
 }
-  db.collection('productos').onSnapshot(snap=>{
-    productos={};
-    snap.forEach(d=>productos[d.id]={...d.data(),_id:d.id});
-    renderInvTable();
-    renderDashboard();
-    fillCompraProdSelect();
-    document.querySelectorAll('.saleProd').forEach(s=>{
-      const v=s.value;
-      s.innerHTML='<option value="">– Producto –</option>'+Object.entries(productos).map(([id,p])=>`<option value="${id}">${p.nombre} (${(p.stockLitros||0).toFixed(1)}L disp.)</option>`).join('');
-      if(v)s.value=v;
-    });
-  },{includeMetadataChanges:false});
-  db.collection('clientes').onSnapshot(snap=>{clientes={};snap.forEach(d=>clientes[d.id]=d.data());renderClientes();renderDashboard();fillClienteSelect();fillEditVentaClienteSelect();});
-  db.collection('ventas').orderBy('fecha','desc').onSnapshot(snap=>{ventas={};snap.forEach(d=>ventas[d.id]=d.data());renderVentas();renderDashboard();});
-  db.collection('config').doc('tasas').onSnapshot(doc=>{if(doc.exists){tasas=doc.data().tasas||tasas;monedaPrincipal=doc.data().principal||'USD';}renderTasasUI();updateBcvBadge();renderInvTable();});
-  db.collection('config').doc('wa').onSnapshot(doc=>{if(doc.exists)waConfig=doc.data();});
-  if(currentRole==='admin'){db.collection('roles').onSnapshot(snap=>{const r=[];snap.forEach(d=>r.push({email:d.id,role:d.data().role}));renderUsers(r);});}
+
+// HELPERS
+function calcPrecioLitro(p){return (p.costoPorLitro||p.costo||0)*(1+(p.margen||0)/100);}
+function getCostoEnvaseUSD(){
+  const bs=waConfig.costoEnvaseReciclado||COSTO_ENVASE_BS;
+  const tasa=tasas['USD']?.valor||tasas[monedaPrincipal]?.valor||667;
+  return tasa>0?bs/tasa:0;
 }
 
-// ---------- INVENTARIO ----------
-function calcPrecioLitro(p){return ((p.costoPorLitro||p.costo||0))*(1+(p.margen||0)/100);}
+// INVENTARIO
 function renderEnvasesPET(){
-  const tasa=tasas[monedaPrincipal]?.valor||1;
+  const tasa=tasas['USD']?.valor||667;
   $('envasesPETBody').innerHTML=ENVASES_PET.map(e=>{
-    const cuBs=(e.precioBulto/e.unds);const cuUSD=tasa>0?(cuBs/tasa):0;
-    return `<tr><td>${e.nombre}</td><td>${e.capacidad}</td><td>Bs ${e.precioBulto}</td><td>${e.unds}</td><td>Bs ${cuBs.toFixed(2)}</td><td>$${cuUSD.toFixed(4)}</td></tr>`;
+    const cuBs=e.bulto/e.unds;
+    return `<tr><td>${e.nombre}</td><td>${e.cap}</td><td>Bs ${e.bulto}</td><td>${e.unds}</td><td>Bs ${cuBs.toFixed(2)}</td><td>$${(cuBs/tasa).toFixed(4)}</td></tr>`;
   }).join('');
 }
+
 ['prodCosto','prodMargen'].forEach(id=>$(id).addEventListener('input',updateProdPreview));
 function updateProdPreview(){
-  const c=parseFloat($('prodCosto').value)||0,m=parseFloat($('prodMargen').value)||0;
-  const p=c*(1+m/100);const bs=(tasas[monedaPrincipal]?.valor||0)*p;
-  $('prodPreview').textContent=`Precio/L: $${p.toFixed(3)} USD | Bs ${bs.toLocaleString('es-VE',{maximumFractionDigits:2})}`;
+  const c=parseFloat($('prodCosto').value)||0, m=parseFloat($('prodMargen').value)||0;
+  const p=c*(1+m/100);
+  const bs=(tasas[monedaPrincipal]?.valor||0)*p;
+  $('prodPreview').textContent=`Precio/L: $${p.toFixed(3)} | Bs ${bs.toLocaleString('es-VE',{maximumFractionDigits:2})}`;
+  $('prodPreview').style.color='var(--dark)';
 }
+
 $('btnCargarCatalogo').addEventListener('click',async()=>{
-  if(!confirm('Agrega 9 productos Pulizia con costo/litro calculado y 50% de margen. ¿Continuar?'))return;
+  if(!confirm('¿Cargar 9 productos Pulizia con 50% de margen?'))return;
   $('catalogoMsg').textContent='Cargando...';
   try{
     const batch=db.batch();
-    PULIZIA.forEach(p=>{const r=db.collection('productos').doc();batch.set(r,{nombre:p.nombre,categoria:p.categoria,costoPorLitro:p.costoPorLitro,margen:50,stockLitros:0,stockMin:5});});
+    PULIZIA.forEach(p=>{
+      const r=db.collection('productos').doc();
+      batch.set(r,{nombre:p.nombre,categoria:p.categoria,costoPorLitro:p.costoPorLitro,margen:50,stockLitros:0,stockMin:5});
+    });
     await batch.commit();
     await recargarProductos();
     $('catalogoMsg').style.color='var(--green-d)';
-    $('catalogoMsg').textContent='✅ 9 productos cargados y visibles en inventario.';
-  }catch(e){$('catalogoMsg').style.color='var(--red)';$('catalogoMsg').textContent='Error: '+e.message;}
+    $('catalogoMsg').textContent='✅ 9 productos cargados.';
+  } catch(e){
+    $('catalogoMsg').style.color='var(--red)';
+    $('catalogoMsg').textContent='Error: '+e.message;
+  }
 });
+
 $('btnGuardarProd').addEventListener('click',async()=>{
   const id=$('prodId').value;
   const nombre=$('prodNombre').value.trim();
@@ -564,141 +616,159 @@ $('btnGuardarProd').addEventListener('click',async()=>{
   try{
     if(id){
       await db.collection('productos').doc(id).update(data);
-    }else{
+    } else {
       await db.collection('productos').add({...data,stockLitros:0});
     }
     await recargarProductos();
-    $('prodPreview').textContent='✅ '+(id?'Producto actualizado.':'Producto agregado correctamente.');
     $('prodPreview').style.color='var(--green-d)';
+    $('prodPreview').textContent='✅ '+(id?'Producto actualizado.':'Producto agregado.');
     ['prodId','prodNombre','prodCategoria','prodCosto','prodMargen','prodStockMin'].forEach(f=>$(f).value='');
     $('invFormTitle').textContent='➕ Agregar Producto';
     $('btnCancelEditProd').classList.add('hide');
     setTimeout(()=>{$('prodPreview').textContent='Precio de venta se calculará aquí';$('prodPreview').style.color='';},3000);
-  }catch(e){
-    $('prodPreview').textContent='❌ Error al guardar: '+e.message;
+  } catch(e){
     $('prodPreview').style.color='var(--red)';
-    console.error('Error guardando producto:',e);
-  }finally{
+    $('prodPreview').textContent='❌ Error: '+e.message;
+  } finally{
     $('btnGuardarProd').disabled=false;
     $('btnGuardarProd').textContent='💾 Guardar producto';
   }
 });
+
 $('btnCancelEditProd').addEventListener('click',()=>{
   ['prodId','prodNombre','prodCategoria','prodCosto','prodMargen','prodStockMin'].forEach(f=>$(f).value='');
-  $('invFormTitle').textContent='➕ Agregar Producto';$('btnCancelEditProd').classList.add('hide');
+  $('invFormTitle').textContent='➕ Agregar Producto';
+  $('btnCancelEditProd').classList.add('hide');
+  $('prodPreview').textContent='Precio de venta se calculará aquí';
+  $('prodPreview').style.color='';
 });
+
 function fillCompraProdSelect(){
-  const s=$('compraProducto');const v=s.value;
+  const s=$('compraProducto'); const v=s.value;
   s.innerHTML=Object.entries(productos).map(([id,p])=>`<option value="${id}">${p.nombre} (${(p.stockLitros||0).toFixed(1)}L)</option>`).join('');
-  if(v)s.value=v;
+  if(v) s.value=v;
 }
+
 $('btnRegistrarCompra').addEventListener('click',async()=>{
   const pid=$('compraProducto').value;
   const litros=parseFloat($('compraLitros').value)||0;
   if(!pid){$('compraMsg').textContent='Selecciona un producto.';$('compraMsg').style.color='var(--red)';return;}
   if(litros<=0){$('compraMsg').textContent='Ingresa una cantidad válida.';$('compraMsg').style.color='var(--red)';return;}
-  $('btnRegistrarCompra').disabled=true;$('btnRegistrarCompra').textContent='Guardando...';
+  $('btnRegistrarCompra').disabled=true;
+  $('btnRegistrarCompra').textContent='Guardando...';
   try{
     const ref=db.collection('productos').doc(pid);
     const snap=await ref.get();
-    if(!snap.exists){$('compraMsg').textContent='Producto no encontrado.';$('compraMsg').style.color='var(--red)';return;}
+    if(!snap.exists){$('compraMsg').textContent='Producto no encontrado.';return;}
     const p=snap.data();
-    const stockActual=parseFloat(p.stockLitros)||parseFloat(p.stock)||0;
-    const nuevoStock=parseFloat((stockActual+litros).toFixed(3));
-    await ref.update({stockLitros:nuevoStock});
+    const nuevo=parseFloat(((p.stockLitros||p.stock||0)+litros).toFixed(3));
+    await ref.update({stockLitros:nuevo});
     await recargarProductos();
-    $('compraLitros').value='';$('compraCosto').value='';
+    $('compraLitros').value=''; $('compraCosto').value='';
     $('compraMsg').style.color='var(--green-d)';
-    $('compraMsg').textContent=`✅ +${litros}L de "${p.nombre}". Stock actual: ${nuevoStock.toFixed(1)}L`;
-  }catch(e){
+    $('compraMsg').textContent=`✅ +${litros}L de "${p.nombre}". Stock: ${nuevo.toFixed(1)}L`;
+  } catch(e){
     $('compraMsg').style.color='var(--red)';
     $('compraMsg').textContent='Error: '+e.message;
-  }finally{
-    $('btnRegistrarCompra').disabled=false;$('btnRegistrarCompra').textContent='➕ Agregar al inventario';
+  } finally{
+    $('btnRegistrarCompra').disabled=false;
+    $('btnRegistrarCompra').textContent='➕ Agregar al inventario';
   }
 });
+
 function renderInvTable(){
-  const tb=$('invBody');if(!tb)return;
+  const tb=$('invBody'); if(!tb)return;
   const isAdmin=currentRole==='admin';
   const tasa=tasas[monedaPrincipal]?.valor||0;
-  tb.innerHTML=Object.entries(productos).map(([id,p])=>{
-    const pl=calcPrecioLitro(p);const bs=tasa*pl;
-    const stock=p.stockLitros||p.stock||0;const low=stock<=(p.stockMin||0);
+  const entries=Object.entries(productos);
+  if(!entries.length){tb.innerHTML='<tr><td colspan="8" style="color:var(--gray)">Sin productos. Carga el catálogo o agrega uno.</td></tr>';return;}
+  tb.innerHTML=entries.map(([id,p])=>{
+    const pl=calcPrecioLitro(p);
+    const bs=tasa*pl;
+    const stock=parseFloat(p.stockLitros||p.stock||0);
+    const low=stock<=(p.stockMin||0);
     return `<tr class="${low?'lowstock':''}">
       <td><b>${p.nombre}</b><br><span style="font-size:.67rem;color:var(--gray)">${p.categoria||''}</span></td>
       <td>${isAdmin?'$'+(p.costoPorLitro||p.costo||0).toFixed(3):'—'}</td>
-      <td>${isAdmin?p.margen+'%':'—'}</td>
+      <td>${isAdmin?(p.margen||0)+'%':'—'}</td>
       <td>$${pl.toFixed(3)}</td>
       <td>Bs ${bs.toLocaleString('es-VE',{maximumFractionDigits:2})}</td>
       <td><b>${stock.toFixed(1)}L</b></td>
       <td><span class="badge ${low?'badge-low':'badge-ok'}">${low?'BAJO':'OK'}</span></td>
       <td style="white-space:nowrap">${isAdmin?`<button class="btn btn-sm btn-o" data-ep="${id}">✏️</button> <button class="btn btn-sm btn-d" data-dp="${id}">🗑️</button>`:''}</td>
     </tr>`;
-  }).join('')||'<tr><td colspan="8" style="color:var(--gray)">Sin productos.</td></tr>';
+  }).join('');
   tb.querySelectorAll('[data-ep]').forEach(b=>b.addEventListener('click',()=>{
     const p=productos[b.dataset.ep];
-    $('prodId').value=b.dataset.ep;$('prodNombre').value=p.nombre;$('prodCategoria').value=p.categoria||'';
-    $('prodCosto').value=p.costoPorLitro||p.costo||0;$('prodMargen').value=p.margen||0;$('prodStockMin').value=p.stockMin||0;
-    $('invFormTitle').textContent='✏️ Editar: '+p.nombre;$('btnCancelEditProd').classList.remove('hide');
-    updateProdPreview();window.scrollTo({top:$('sec-inventario').offsetTop,behavior:'smooth'});
+    $('prodId').value=b.dataset.ep;
+    $('prodNombre').value=p.nombre;
+    $('prodCategoria').value=p.categoria||'';
+    $('prodCosto').value=p.costoPorLitro||p.costo||0;
+    $('prodMargen').value=p.margen||0;
+    $('prodStockMin').value=p.stockMin||0;
+    $('invFormTitle').textContent='✏️ Editar: '+p.nombre;
+    $('btnCancelEditProd').classList.remove('hide');
+    updateProdPreview();
+    $('sec-inventario').querySelector('.fb:nth-child(2)').scrollIntoView({behavior:'smooth'});
   }));
-  tb.querySelectorAll('[data-dp]').forEach(b=>b.addEventListener('click',async()=>{if(confirm('¿Eliminar "'+productos[b.dataset.dp]?.nombre+'"?'))await db.collection('productos').doc(b.dataset.dp).delete();}));
+  tb.querySelectorAll('[data-dp]').forEach(b=>b.addEventListener('click',async()=>{
+    if(confirm('¿Eliminar "'+productos[b.dataset.dp]?.nombre+'"?')){
+      await db.collection('productos').doc(b.dataset.dp).delete();
+      await recargarProductos();
+    }
+  }));
 }
 
-// ---------- VENTAS ----------
-// Estado de pago selector
+// VENTAS
 document.querySelectorAll('.est-btn').forEach(b=>{
   b.addEventListener('click',()=>{
     document.querySelectorAll('.est-btn').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');$('ventaEstado').value=b.dataset.est;
+    b.classList.add('active');
+    $('ventaEstado').value=b.dataset.est;
   });
 });
 
 let saleCount=0;
-function getCostoEnvaseRecicladoUSD(){
-  const bs=waConfig.costoEnvaseReciclado||COSTO_ENVASE_RECICLADO_BS;
-  const tasa=tasas['USD']?.valor||tasas[monedaPrincipal]?.valor||667;
-  return bs/tasa;
-}
 function addSaleRow(){
-  saleCount++;const rid='sr'+saleCount;
-  const div=document.createElement('div');div.id=rid;div.className='saleItemBox';
+  saleCount++;
+  const rid='sr'+saleCount;
+  const div=document.createElement('div');
+  div.id=rid; div.className='saleItemBox';
   div.innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <select class="saleProd" style="flex:1;margin-right:8px"><option value="">– Producto –</option>${Object.entries(productos).map(([id,p])=>`<option value="${id}">${p.nombre} (${(p.stockLitros||0).toFixed(1)}L disp.)</option>`).join('')}</select>
-      <button class="btn btn-sm btn-d removeRow" style="flex-shrink:0">✕</button>
+      <select class="saleProd" style="flex:1;margin-right:8px">
+        <option value="">– Producto –</option>
+        ${Object.entries(productos).map(([id,p])=>`<option value="${id}">${p.nombre} (${(p.stockLitros||0).toFixed(1)}L)</option>`).join('')}
+      </select>
+      <button class="btn btn-sm btn-d removeRow">✕</button>
     </div>
-    <div>
-      <div style="font-size:.72rem;color:var(--gray);margin-bottom:4px">Cantidad:</div>
-      <div class="qty-btns">
-        <button class="qty-btn" data-ml="500">500ml</button>
-        <button class="qty-btn active" data-ml="1000">1L</button>
-        <button class="qty-btn" data-ml="1500">1.5L</button>
-        <button class="qty-btn" data-ml="2000">2L</button>
-        <input type="number" class="saleCustomML" value="1000" min="1" style="width:80px;display:inline-block"/> <span style="font-size:.7rem">ml</span>
-      </div>
+    <div style="font-size:.72rem;color:var(--gray);margin-bottom:4px">Cantidad:</div>
+    <div class="qty-btns">
+      <button class="qty-btn" data-ml="500">500ml</button>
+      <button class="qty-btn active" data-ml="1000">1L</button>
+      <button class="qty-btn" data-ml="1500">1.5L</button>
+      <button class="qty-btn" data-ml="2000">2L</button>
+      <input type="number" class="saleCustomML" value="1000" min="1" style="width:80px;display:inline-block"/> <span style="font-size:.7rem">ml</span>
     </div>
-    <div style="margin-top:8px">
-      <div style="font-size:.72rem;color:var(--gray);margin-bottom:4px">Envase:</div>
-      <div class="envase-btns">
-        <button class="env-btn active" data-env="reciclado">🔄 Reciclado nuestro</button>
-        <button class="env-btn" data-env="cliente">👜 Del cliente ($0)</button>
-        <button class="env-btn" data-env="premium" style="opacity:.5" disabled>⭐ Premium (próx.)</button>
-      </div>
+    <div style="font-size:.72rem;color:var(--gray);margin:6px 0 4px">Envase:</div>
+    <div class="envase-btns">
+      <button class="env-btn active" data-env="reciclado">🔄 Reciclado (50Bs)</button>
+      <button class="env-btn" data-env="cliente">👜 Del cliente ($0)</button>
+      <button class="env-btn" data-env="premium" disabled style="opacity:.4">⭐ Premium (próx.)</button>
     </div>
     <div class="saleSubtotal" style="margin-top:8px;font-size:.78rem;color:var(--green-d);font-weight:600">Subtotal: –</div>`;
   $('saleItems').appendChild(div);
   const customML=div.querySelector('.saleCustomML');
   div.querySelectorAll('.qty-btn').forEach(b=>b.addEventListener('click',()=>{
     div.querySelectorAll('.qty-btn').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');customML.value=b.dataset.ml;calcTotales();
+    b.classList.add('active'); customML.value=b.dataset.ml; calcTotales();
   }));
   div.querySelector('.saleProd').addEventListener('change',calcTotales);
   customML.addEventListener('input',()=>{div.querySelectorAll('.qty-btn').forEach(x=>x.classList.remove('active'));calcTotales();});
   div.querySelectorAll('.env-btn').forEach(b=>b.addEventListener('click',()=>{
     if(b.disabled)return;
     div.querySelectorAll('.env-btn').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');calcTotales();
+    b.classList.add('active'); calcTotales();
   }));
   div.querySelector('.removeRow').addEventListener('click',()=>{div.remove();calcTotales();});
 }
@@ -712,79 +782,102 @@ function getSaleItems(){
     const envTipo=div.querySelector('.env-btn.active')?.dataset.env||'reciclado';
     const p=productos[pid];
     if(!pid||!p||litros<=0)return null;
-    const costoEnv=envTipo==='cliente'?0:getCostoEnvaseRecicladoUSD();
+    const costoEnv=envTipo==='cliente'?0:getCostoEnvaseUSD();
     const costoBase=(p.costoPorLitro||p.costo||0)*litros+costoEnv;
     const subtotal=costoBase*(1+(p.margen||0)/100);
     const tasa=tasas[monedaPrincipal]?.valor||0;
-    const subtotalBs=subtotal*tasa;
-    div.querySelector('.saleSubtotal').innerHTML=`${p.nombre} — ${ml}ml — Envase: ${envTipo==='cliente'?'del cliente ($0)':'reciclado'} — <b>$${subtotal.toFixed(3)}</b> (Bs ${subtotalBs.toLocaleString('es-VE',{maximumFractionDigits:2})})`;
+    div.querySelector('.saleSubtotal').innerHTML=`${p.nombre} — ${ml}ml — Envase: ${envTipo==='cliente'?'del cliente':'reciclado'} — <b>$${subtotal.toFixed(3)}</b> (Bs ${(subtotal*tasa).toLocaleString('es-VE',{maximumFractionDigits:2})})`;
     return {productoId:pid,nombre:p.nombre,ml,litros,envase:envTipo,costoEnvUSD:costoEnv,subtotal};
   }).filter(Boolean);
 }
+
 function calcTotales(){
   const items=getSaleItems();
   const totalUSD=items.reduce((a,i)=>a+i.subtotal,0);
   const tasa=tasas[monedaPrincipal]?.valor||0;
   const totalBs=totalUSD*tasa;
-  $('ventaTotales').innerHTML=items.length?`Total: <b>$${totalUSD.toFixed(2)} USD</b> &nbsp;|&nbsp; <b>Bs ${totalBs.toLocaleString('es-VE',{maximumFractionDigits:2})}</b> <span style="font-size:.7rem;color:var(--gray)">(tasa: ${tasa})</span>`:'Agrega productos para ver el total';
+  $('ventaTotales').innerHTML=items.length
+    ?`Total: <b>$${totalUSD.toFixed(2)} USD</b> &nbsp;|&nbsp; <b>Bs ${totalBs.toLocaleString('es-VE',{maximumFractionDigits:2})}</b> <span style="font-size:.7rem;color:var(--gray)">(tasa: ${tasa})</span>`
+    :'Agrega productos para ver el total';
   $('btnPreviewWA').classList.toggle('hide',!items.length);
-  return{items,totalUSD,totalBs,tasa};
+  return {items,totalUSD,totalBs,tasa};
 }
+
 $('btnPreviewWA').addEventListener('click',()=>{
-  const{items,totalUSD,totalBs,tasa}=calcTotales();
+  const {items,totalUSD,totalBs,tasa}=calcTotales();
   const cliId=$('ventaCliente').value;
   const cli=clientes[cliId];
   const cliNombre=cli?`${cli.nombre}${cli.apellido?' '+cli.apellido:''}`:'Consumidor final';
   const fecha=new Date().toLocaleDateString('es-VE',{day:'2-digit',month:'long',year:'numeric'});
   const prodLines=items.map(i=>`  • ${i.nombre} — ${i.ml}ml — $${i.subtotal.toFixed(3)}`).join('\n');
   const tmpl=waConfig.template||DEFAULT_WA;
-  const msg=tmpl.replace('{cliente}',cliNombre).replace('{fecha}',fecha).replace('{productos}',prodLines).replace('{totalUSD}',totalUSD.toFixed(2)).replace('{totalBs}',totalBs.toLocaleString('es-VE',{maximumFractionDigits:2})).replace('{tasaBCV}',tasa).replace('{pagoMovil}',waConfig.pagoMovil||DEFAULT_PAGO);
-  $('waText').textContent=msg;$('waPreview').classList.remove('hide');
-  const tel=cli?.telefono?.replace(/\D/g,'')||'';
+  const msg=tmpl
+    .replace('{cliente}',cliNombre)
+    .replace('{fecha}',fecha)
+    .replace('{productos}',prodLines)
+    .replace('{totalUSD}',totalUSD.toFixed(2))
+    .replace('{totalBs}',totalBs.toLocaleString('es-VE',{maximumFractionDigits:2}))
+    .replace('{tasaBCV}',tasa)
+    .replace('{pagoMovil}',waConfig.pagoMovil||DEFAULT_PAGO);
+  $('waText').textContent=msg;
+  $('waPreview').classList.remove('hide');
+  const tel=(cli?.telefono||'').replace(/\D/g,'');
   const num=tel.startsWith('0')?'58'+tel.slice(1):tel?'58'+tel:'';
   $('btnSendWA').onclick=()=>window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`,'_blank');
 });
+
 $('btnGuardarVenta').addEventListener('click',async()=>{
-  const{items,totalUSD,totalBs,tasa}=calcTotales();
+  const {items,totalUSD,totalBs,tasa}=calcTotales();
   if(!items.length){$('ventaMsg').textContent='Agrega al menos un producto.';$('ventaMsg').style.color='var(--red)';return;}
   for(const it of items){
-    const stock=productos[it.productoId]?.stockLitros||0;
-    if(stock<it.litros){$('ventaMsg').textContent=`Stock insuficiente de "${it.nombre}" (tienes ${stock.toFixed(1)}L, vendes ${it.litros.toFixed(3)}L).`;$('ventaMsg').style.color='var(--red)';return;}
+    const stock=parseFloat(productos[it.productoId]?.stockLitros||0);
+    if(stock<it.litros){$('ventaMsg').textContent=`Stock insuficiente de "${it.nombre}" (tienes ${stock.toFixed(1)}L).`;$('ventaMsg').style.color='var(--red)';return;}
   }
   const cliId=$('ventaCliente').value;
   const cli=cliId&&cliId!=='__nuevo__'?clientes[cliId]:null;
   const estadoPago=$('ventaEstado').value||'pendiente';
-  await db.collection('ventas').add({
-    fecha:Date.now(),clienteId:cliId||null,
-    clienteNombre:cli?`${cli.nombre}${cli.apellido?' '+cli.apellido:''}`:'Consumidor final',
-    clienteTel:cli?.telefono||'',items,totalUSD,totalBs,tasaBCV:tasa,
-    pago:$('ventaPago').value,estado:estadoPago,
-    fechaPago:estadoPago==='pagado'?Date.now():null,
-    tasaPago:estadoPago==='pagado'?tasa:null,
-    vendedor:currentUser.email
-  });
-  for(const it of items){
-    const ref=db.collection('productos').doc(it.productoId);
-    const snap=await ref.get();if(!snap.exists)continue;
-    const curr=snap.data();
-    await ref.update({stockLitros:(curr.stockLitros||curr.stock||0)-it.litros});
+  try{
+    await db.collection('ventas').add({
+      fecha:Date.now(),
+      clienteId:cliId||null,
+      clienteNombre:cli?`${cli.nombre}${cli.apellido?' '+cli.apellido:''}`:'Consumidor final',
+      clienteTel:cli?.telefono||'',
+      items,totalUSD,totalBs,tasaBCV:tasa,
+      pago:$('ventaPago').value,
+      estado:estadoPago,
+      fechaPago:estadoPago==='pagado'?Date.now():null,
+      tasaPago:estadoPago==='pagado'?tasa:null,
+      vendedor:currentUser.email
+    });
+    for(const it of items){
+      const ref=db.collection('productos').doc(it.productoId);
+      const snap=await ref.get();
+      if(!snap.exists)continue;
+      const curr=snap.data();
+      await ref.update({stockLitros:parseFloat(((curr.stockLitros||curr.stock||0)-it.litros).toFixed(3))});
+    }
+    await recargarProductos();
+    $('saleItems').innerHTML='';
+    $('ventaTotales').textContent='Agrega productos para ver el total';
+    $('waPreview').classList.add('hide');
+    $('btnPreviewWA').classList.add('hide');
+    $('ventaMsg').style.color='var(--green-d)';
+    $('ventaMsg').textContent='✅ Venta registrada correctamente.';
+  } catch(e){
+    $('ventaMsg').style.color='var(--red)';
+    $('ventaMsg').textContent='❌ Error: '+e.message;
   }
-  $('saleItems').innerHTML='';$('ventaTotales').textContent='Agrega productos para ver el total';
-  $('waPreview').classList.add('hide');$('btnPreviewWA').classList.add('hide');
-  $('ventaMsg').style.color='var(--green-d)';
-  $('ventaMsg').textContent=navigator.onLine?'✅ Venta registrada correctamente.':'✅ Guardada localmente. Se sincronizará al reconectar.';
 });
 
-// Filtros ventas
 document.querySelectorAll('[data-filt]').forEach(b=>b.addEventListener('click',()=>{ventaFiltro=b.dataset.filt;renderVentas();}));
 
 function renderVentas(){
-  const tb=$('ventasBody');if(!tb)return;
+  const tb=$('ventasBody'); if(!tb)return;
   let vs=Object.entries(ventas);
-  if(ventaFiltro!=='all')vs=vs.filter(([,v])=>v.estado===ventaFiltro);
+  if(ventaFiltro!=='all') vs=vs.filter(([,v])=>v.estado===ventaFiltro);
   tb.innerHTML=vs.map(([id,v])=>{
     const est=v.estado==='pagado'?`<span class="badge badge-paid">✅ Pagado</span>`:v.estado==='mora'?`<span class="badge badge-mora">🔴 Mora</span>`:`<span class="badge badge-pending">⏳ Pendiente</span>`;
-    const acts=v.estado!=='pagado'?`<button class="btn btn-sm btn-g" data-pagar="${id}" title="Marcar pagado">✅</button>`:'';
+    const acts=v.estado!=='pagado'?`<button class="btn btn-sm btn-g" data-pagar="${id}">✅</button>`:'';
     return `<tr class="${v.estado==='mora'?'mora':''}">
       <td style="white-space:nowrap">${new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})}</td>
       <td>${v.clienteNombre||'Consumidor final'}</td>
@@ -792,33 +885,31 @@ function renderVentas(){
       <td>$${(v.totalUSD||0).toFixed(2)}</td>
       <td>Bs ${(v.totalBs||0).toLocaleString('es-VE',{maximumFractionDigits:0})}</td>
       <td>${est}</td>
-      <td style="white-space:nowrap;display:flex;gap:4px">
-        ${acts}
-        <button class="btn btn-sm btn-o" data-editv="${id}" title="Editar">✏️</button>
-      </td>
+      <td style="display:flex;gap:4px;flex-wrap:wrap">${acts}<button class="btn btn-sm btn-o" data-editv="${id}">✏️</button></td>
     </tr>`;
   }).join('')||'<tr><td colspan="7" style="color:var(--gray)">Sin ventas.</td></tr>';
   tb.querySelectorAll('[data-pagar]').forEach(b=>b.addEventListener('click',async()=>{
     const tActual=tasas[monedaPrincipal]?.valor||0;
     const v=ventas[b.dataset.pagar];
     const bsPago=(v.totalUSD||0)*tActual;
-    if(confirm(`¿Marcar como pagado?\nTasa BCV actual: ${tActual}\nTotal Bs: ${bsPago.toLocaleString('es-VE',{maximumFractionDigits:2})}`)){
+    if(confirm(`¿Marcar como pagado?\nTasa BCV: ${tActual}\nTotal Bs: ${bsPago.toLocaleString('es-VE',{maximumFractionDigits:2})}`)){
       await db.collection('ventas').doc(b.dataset.pagar).update({estado:'pagado',fechaPago:Date.now(),tasaPago:tActual,bsPagado:bsPago});
     }
   }));
   tb.querySelectorAll('[data-editv]').forEach(b=>b.addEventListener('click',()=>abrirEditVenta(b.dataset.editv)));
 }
 
-// Modal editar venta
 function fillClienteSelect(){
-  const s=$('ventaCliente');const v=s.value;
-  s.innerHTML='<option value="">Consumidor final</option><option value="__nuevo__">➕ Nuevo cliente...</option>'+Object.entries(clientes).map(([id,c])=>`<option value="${id}">${c.nombre}${c.apellido?' '+c.apellido:''} ${c.cedula?'— '+c.cedula:''}</option>`).join('');
-  if(v)s.value=v;
+  const s=$('ventaCliente'); const v=s.value;
+  s.innerHTML='<option value="">Consumidor final</option><option value="__nuevo__">➕ Nuevo cliente...</option>'+
+    Object.entries(clientes).map(([id,c])=>`<option value="${id}">${c.nombre}${c.apellido?' '+c.apellido:''} ${c.cedula?'— '+c.cedula:''}</option>`).join('');
+  if(v) s.value=v;
 }
 function fillEditVentaClienteSelect(){
-  const s=$('editVentaCliente');const v=s.value;
-  s.innerHTML='<option value="">Consumidor final</option>'+Object.entries(clientes).map(([id,c])=>`<option value="${id}">${c.nombre}${c.apellido?' '+c.apellido:''}</option>`).join('');
-  if(v)s.value=v;
+  const s=$('editVentaCliente'); const v=s.value;
+  s.innerHTML='<option value="">Consumidor final</option>'+
+    Object.entries(clientes).map(([id,c])=>`<option value="${id}">${c.nombre}${c.apellido?' '+c.apellido:''}</option>`).join('');
+  if(v) s.value=v;
 }
 $('ventaCliente').addEventListener('change',()=>$('nuevoClienteBox').classList.toggle('hide',$('ventaCliente').value!=='__nuevo__'));
 $('btnGuardarNC').addEventListener('click',async()=>{
@@ -829,11 +920,12 @@ $('btnGuardarNC').addEventListener('click',async()=>{
   $('nuevoClienteBox').classList.add('hide');
   setTimeout(()=>{fillClienteSelect();$('ventaCliente').value=ref.id;},600);
 });
+
 function abrirEditVenta(id){
-  const v=ventas[id];if(!v)return;
+  const v=ventas[id]; if(!v)return;
   $('editVentaId').value=id;
   fillEditVentaClienteSelect();
-  setTimeout(()=>{$('editVentaCliente').value=v.clienteId||'';},300);
+  setTimeout(()=>$('editVentaCliente').value=v.clienteId||'',300);
   $('editVentaPago').value=v.pago||'Pago Móvil Bs';
   $('editVentaEstado').value=v.estado||'pendiente';
   $('modalVenta').classList.remove('hide');
@@ -859,28 +951,30 @@ $('btnSaveEditVenta').addEventListener('click',async()=>{
   $('modalVenta').classList.add('hide');
 });
 
-// ---------- CLIENTES ----------
+// CLIENTES
 $('btnGuardarCli').addEventListener('click',async()=>{
   const id=$('cliId').value;
   const nombre=$('cliNombre').value.trim();
   if(!nombre){alert('El nombre es obligatorio.');return;}
   const data={nombre,apellido:$('cliApellido').value.trim(),cedula:$('cliCedula').value.trim(),telefono:$('cliTelefono').value.trim(),direccion:$('cliDireccion').value.trim()};
-  if(id)await db.collection('clientes').doc(id).update(data);
+  if(id) await db.collection('clientes').doc(id).update(data);
   else await db.collection('clientes').add(data);
   ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliDireccion'].forEach(f=>$(f).value='');
-  $('cliFormTitle').textContent='➕ Agregar Cliente';$('btnCancelEditCli').classList.add('hide');
+  $('cliFormTitle').textContent='➕ Agregar Cliente';
+  $('btnCancelEditCli').classList.add('hide');
 });
 $('btnCancelEditCli').addEventListener('click',()=>{
   ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliDireccion'].forEach(f=>$(f).value='');
-  $('cliFormTitle').textContent='➕ Agregar Cliente';$('btnCancelEditCli').classList.add('hide');
+  $('cliFormTitle').textContent='➕ Agregar Cliente';
+  $('btnCancelEditCli').classList.add('hide');
 });
 function renderClientes(){
-  const tb=$('cliBody');if(!tb)return;
+  const tb=$('cliBody'); if(!tb)return;
   const cliMora=new Set(Object.values(ventas).filter(v=>v.estado==='mora').map(v=>v.clienteId));
   tb.innerHTML=Object.entries(clientes).map(([id,c])=>`<tr>
     <td>${c.nombre}${c.apellido?' '+c.apellido:''}</td>
     <td>${c.cedula||'–'}</td><td>${c.telefono||'–'}</td><td>${c.direccion||'–'}</td>
-    <td>${cliMora.has(id)?'<span class="badge badge-mora">🔴 Mora</span>':'–'}</td>
+    <td>${cliMora.has(id)?'<span class="badge badge-mora">🔴</span>':'–'}</td>
     <td style="white-space:nowrap">
       <button class="btn btn-sm btn-o" data-ec="${id}">✏️</button>
       <button class="btn btn-sm btn-d" data-dc="${id}">🗑️</button>
@@ -893,12 +987,14 @@ function renderClientes(){
     $('cliFormTitle').textContent='✏️ Editar Cliente';$('btnCancelEditCli').classList.remove('hide');
     window.scrollTo({top:$('sec-clientes').offsetTop,behavior:'smooth'});
   }));
-  tb.querySelectorAll('[data-dc]').forEach(b=>b.addEventListener('click',async()=>{if(confirm('¿Eliminar este cliente?'))await db.collection('clientes').doc(b.dataset.dc).delete();}));
+  tb.querySelectorAll('[data-dc]').forEach(b=>b.addEventListener('click',async()=>{
+    if(confirm('¿Eliminar este cliente?')) await db.collection('clientes').doc(b.dataset.dc).delete();
+  }));
 }
 
-// ---------- TASAS ----------
+// TASAS
 function renderTasasUI(){
-  const cont=$('tasasContainer');if(!cont)return;
+  const cont=$('tasasContainer'); if(!cont)return;
   cont.innerHTML=Object.entries(tasas).map(([code,t])=>`
     <div class="fb" style="padding:8px;margin:0">
       <div style="display:flex;justify-content:space-between;align-items:center">
@@ -916,14 +1012,15 @@ function renderTasasUI(){
 $('btnAutoTasas').addEventListener('click',async()=>{
   $('tasasFecha').textContent='Consultando...';
   try{
-    const[rD,rE]=await Promise.all([fetch('https://ve.dolarapi.com/v1/dolares/oficial'),fetch('https://ve.dolarapi.com/v1/euros/oficial')]);
-    const dD=await rD.json(),dE=await rE.json();
+    const [rD,rE]=await Promise.all([fetch('https://ve.dolarapi.com/v1/dolares/oficial'),fetch('https://ve.dolarapi.com/v1/euros/oficial')]);
+    const dD=await rD.json(), dE=await rE.json();
     tasas.USD=tasas.USD||{};tasas.USD.valor=dD.promedio||dD.venta||tasas.USD.valor;
     tasas.EUR=tasas.EUR||{};tasas.EUR.valor=dE.promedio||dE.venta||tasas.EUR.valor;
-    renderTasasUI();$('tasasFecha').textContent='✅ BCV/Euro actualizados. Presiona "Guardar" para aplicar.';
-  }catch(e){$('tasasFecha').textContent='Sin conexión. Ingresa las tasas manualmente.';}
+    renderTasasUI();
+    $('tasasFecha').textContent='✅ BCV/Euro actualizados. Presiona "Guardar".';
+  } catch(e){$('tasasFecha').textContent='Sin conexión. Ingresa manualmente.';}
 });
-$('btnAddTasa').addEventListener('click',()=>{const c=prompt('Código (ej: USDT, COP):');if(c){tasas[c.toUpperCase()]={valor:0};renderTasasUI();}});
+$('btnAddTasa').addEventListener('click',()=>{const c=prompt('Código (ej: USDT):');if(c){tasas[c.toUpperCase()]={valor:0};renderTasasUI();}});
 $('btnSaveTasas').addEventListener('click',async()=>{
   await db.collection('config').doc('tasas').set({tasas,principal:monedaPrincipal,updatedAt:Date.now()});
   $('tasasFecha').textContent='✅ Guardado: '+new Date().toLocaleString('es-VE');
@@ -934,47 +1031,53 @@ function updateBcvBadge(){
 }
 $('bcvBadge').addEventListener('click',()=>{if(currentRole==='admin')showSection('tasas');});
 
-// ---------- CONFIG WA ----------
+// CONFIG WA
 async function loadWAConfig(){
   const doc=await db.collection('config').doc('wa').get();
   if(doc.exists){
     waConfig=doc.data();
     $('waMsgTemplate').value=waConfig.template||DEFAULT_WA;
     $('waPagoMovil').value=waConfig.pagoMovil||DEFAULT_PAGO;
-    $('costoEnvaseReciclado').value=waConfig.costoEnvaseReciclado||30;
-  }else{
-    $('waMsgTemplate').value=DEFAULT_WA;$('waPagoMovil').value=DEFAULT_PAGO;
+    $('costoEnvaseReciclado').value=waConfig.costoEnvaseReciclado||50;
+  } else {
+    $('waMsgTemplate').value=DEFAULT_WA;
+    $('waPagoMovil').value=DEFAULT_PAGO;
   }
 }
 $('btnSaveWAConfig').addEventListener('click',async()=>{
-  waConfig={template:$('waMsgTemplate').value,pagoMovil:$('waPagoMovil').value,costoEnvaseReciclado:parseFloat($('costoEnvaseReciclado').value)||30};
+  waConfig={template:$('waMsgTemplate').value,pagoMovil:$('waPagoMovil').value,costoEnvaseReciclado:parseFloat($('costoEnvaseReciclado').value)||50};
   await db.collection('config').doc('wa').set(waConfig);
-  $('waConfigMsg').style.color='var(--green-d)';$('waConfigMsg').textContent='✅ Configuración guardada.';
+  $('waConfigMsg').style.color='var(--green-d)';
+  $('waConfigMsg').textContent='✅ Guardado.';
 });
 
-// ---------- USUARIOS ----------
+// USUARIOS
 $('btnCrearEmpleado').addEventListener('click',async()=>{
-  const email=$('empEmail').value.trim(),pass=$('empPass').value,rol=$('empRol').value;
+  const email=$('empEmail').value.trim(), pass=$('empPass').value, rol=$('empRol').value;
   if(!email||pass.length<6){$('empMsg').textContent='Correo válido y contraseña mínimo 6 caracteres.';$('empMsg').style.color='var(--red)';return;}
   try{
     const sec=firebase.initializeApp(firebaseConfig,'Sec'+Date.now());
     await sec.auth().createUserWithEmailAndPassword(email,pass);
-    await sec.auth().signOut();await sec.delete();
+    await sec.auth().signOut(); await sec.delete();
     await db.collection('roles').doc(email.toLowerCase()).set({role:rol,createdAt:Date.now(),creadoPor:currentUser.email});
     $('empMsg').style.color='var(--green-d)';$('empMsg').textContent='✅ Cuenta creada.';
     $('empEmail').value='';$('empPass').value='';
-  }catch(e){$('empMsg').style.color='var(--red)';$('empMsg').textContent=traducirError(e.code);}
+  } catch(e){$('empMsg').style.color='var(--red)';$('empMsg').textContent=traducirError(e.code);}
 });
 function renderUsers(rows){
-  const tb=$('usersBody');if(!tb)return;
-  tb.innerHTML=(rows||[]).map(r=>`<tr><td>${r.email}</td><td>${r.role==='admin'?'Admin':'Vendedor'}</td>
-    <td>${r.email!==currentUser.email?`<button class="btn btn-sm btn-d" data-du="${r.email}">Revocar</button>`:'(tú)'}</td></tr>`).join('');
-  tb.querySelectorAll('[data-du]').forEach(b=>b.addEventListener('click',async()=>{if(confirm('¿Revocar acceso de '+b.dataset.du+'?'))await db.collection('roles').doc(b.dataset.du).delete();}));
+  const tb=$('usersBody'); if(!tb)return;
+  tb.innerHTML=(rows||[]).map(r=>`<tr>
+    <td>${r.email}</td><td>${r.role==='admin'?'Admin':'Vendedor'}</td>
+    <td>${r.email!==currentUser.email?`<button class="btn btn-sm btn-d" data-du="${r.email}">Revocar</button>`:'(tú)'}</td>
+  </tr>`).join('');
+  tb.querySelectorAll('[data-du]').forEach(b=>b.addEventListener('click',async()=>{
+    if(confirm('¿Revocar acceso de '+b.dataset.du+'?')) await db.collection('roles').doc(b.dataset.du).delete();
+  }));
 }
 
-// ---------- REPORTES ----------
+// REPORTES
 function setDefaultDates(){
-  const h=new Date(),d=new Date(h);d.setDate(1);
+  const h=new Date(), d=new Date(h); d.setDate(1);
   $('repDesde').value=d.toISOString().split('T')[0];
   $('repHasta').value=h.toISOString().split('T')[0];
 }
@@ -998,30 +1101,30 @@ $('btnGenerarReporte').addEventListener('click',()=>{
   $('reporteResult').classList.remove('hide');
 });
 function imprimirReporte(){
-  const desde=$('repDesde').value,hasta=$('repHasta').value;
   const win=window.open('','_blank');
   win.document.write(`<html><head><title>Reporte Renuevo</title>
   <style>body{font-family:Arial,sans-serif;padding:20px;font-size:12px}h1{color:#1f7a4d}
   .cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.card{border:1px solid #ddd;border-radius:8px;padding:10px 14px}
   .n{font-size:1.3rem;font-weight:800;color:#1f7a4d}.l{font-size:.7rem;color:#666}
-  table{width:100%;border-collapse:collapse}th{background:#1f7a4d;color:#fff;padding:6px;text-align:left}td{padding:6px;border-bottom:1px solid #eee}</style>
-  </head><body>
+  table{width:100%;border-collapse:collapse}th{background:#1f7a4d;color:#fff;padding:6px;text-align:left}td{padding:6px;border-bottom:1px solid #eee}
+  </style></head><body>
   <h1>♻️ Renuevo — Reporte de Ventas</h1>
-  <p>Período: ${desde} al ${hasta} | Generado: ${new Date().toLocaleString('es-VE')}</p>
+  <p>Generado: ${new Date().toLocaleString('es-VE')}</p>
   <div class="cards">
-    <div class="card"><div class="n">${$('repTotalVentas').textContent}</div><div class="l">Total ventas</div></div>
+    <div class="card"><div class="n">${$('repTotalVentas').textContent}</div><div class="l">Ventas</div></div>
     <div class="card"><div class="n">${$('repTotalUSD').textContent}</div><div class="l">Ingresos USD</div></div>
     <div class="card"><div class="n">${$('repTotalBs').textContent}</div><div class="l">Ingresos Bs</div></div>
-    <div class="card"><div class="n" style="color:#856404">${$('repPendientes').textContent}</div><div class="l">Pendientes</div></div>
-    <div class="card"><div class="n" style="color:#e74c3c">${$('repMora').textContent}</div><div class="l">En mora</div></div>
+    <div class="card"><div class="n">${$('repPendientes').textContent}</div><div class="l">Pendientes</div></div>
+    <div class="card"><div class="n">${$('repMora').textContent}</div><div class="l">Mora</div></div>
   </div>
-  <table><thead><tr><th>Fecha</th><th>Cliente</th><th>Total USD</th><th>Total Bs</th><th>Estado</th></tr></thead>
+  <table><thead><tr><th>Fecha</th><th>Cliente</th><th>USD</th><th>Bs</th><th>Estado</th></tr></thead>
   <tbody>${$('repBody').innerHTML}</tbody></table>
   </body></html>`);
-  win.document.close();setTimeout(()=>win.print(),500);
+  win.document.close();
+  setTimeout(()=>win.print(),500);
 }
 
-// ---------- DASHBOARD ----------
+// DASHBOARD
 function renderDashboard(){
   const prods=Object.values(productos);
   $('dCardProds').textContent=prods.length;
@@ -1038,10 +1141,10 @@ function renderDashboard(){
   $('dLastSales').innerHTML=last.length?last.map(v=>`• ${new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})} — ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)}`).join('<br>'):'Sin ventas aún.';
 }
 
-// ---------- OFFLINE + PWA ----------
+// OFFLINE + PWA
 window.addEventListener('online',()=>$('offlineBanner').style.display='none');
 window.addEventListener('offline',()=>$('offlineBanner').style.display='block');
-if(!navigator.onLine)$('offlineBanner').style.display='block';
+if(!navigator.onLine) $('offlineBanner').style.display='block';
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 }
