@@ -92,7 +92,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <label>Contrasena</label><input type="password" id="loginPass" placeholder="********"/>
     <button id="btnLogin">Ingresar</button>
     <div id="loginErr"></div>
-    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v94</div>
+    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v109</div>
   </div>
 </div>
 
@@ -139,6 +139,12 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
 <div id="sec-ventas" class="section">
   <div class="fb">
     <h2>🧾 Nueva Venta</h2>
+    <!-- Tabs detal/mayor -->
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn btn-p" id="tabDetal" onclick="setVentaTab('detal')">🛒 Detal</button>
+      <button class="btn btn-o" id="tabMayor" onclick="setVentaTab('mayor')">📦 Al Mayor</button>
+    </div>
+    <div id="ventaTabInfo" class="info-note" style="margin-bottom:10px">Venta al detal — precio por litro con envase incluido</div>
     <label>Cliente</label>
     <select id="ventaCliente"></select>
     <div id="nuevoClienteBox" class="hide" style="margin-top:8px;padding:10px;background:#f4f6f5;border-radius:8px">
@@ -195,7 +201,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
       <button class="btn btn-sm btn-o" data-filt="pagado">Pagadas</button>
     </div>
     <div style="overflow-x:auto"><table>
-      <thead><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>USD</th><th>Bs</th><th>Estado</th><th></th></tr></thead>
+      <thead><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>USD</th><th>Bs</th><th>Tipo</th><th>Estado</th><th></th></tr></thead>
       <tbody id="ventasBody"></tbody>
     </table></div>
   </div>
@@ -247,8 +253,12 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     </div>
     <div class="row r3">
       <div><label>Costo por litro (USD)</label><input type="number" step="0.001" id="prodCosto" placeholder="0.695"/></div>
-      <div><label>Margen (%)</label><input type="number" step="1" id="prodMargen" placeholder="50"/></div>
-      <div><label>Stock minimo (L)</label><input type="number" step="0.1" id="prodStockMin" placeholder="5"/></div>
+      <div><label>Margen detal (%)</label><input type="number" step="1" id="prodMargen" placeholder="50"/></div>
+      <div><label>Precio mayor/L (USD)</label><input type="number" step="0.001" id="prodPrecioMayor" placeholder="0.90"/></div>
+    </div>
+    <div class="row r2">
+      <div><label>Stock mínimo (L)</label><input type="number" step="0.1" id="prodStockMin" placeholder="5"/></div>
+      <div><label>Mínimo litros al mayor</label><input type="number" step="1" id="prodMinMayor" placeholder="20"/></div>
     </div>
     <div class="info-note" id="prodPreview" style="margin-top:8px">Precio de venta se calculara aqui</div>
     <div style="display:flex;gap:8px;margin-top:8px">
@@ -261,7 +271,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <button class="btn btn-o btn-sm" id="btnCargarCatalogo" style="margin-bottom:10px">Cargar catalogo Pulizia</button>
     <div id="catalogoMsg" style="font-size:.75rem;margin-bottom:8px"></div>
     <div style="overflow-x:auto"><table>
-      <thead><tr><th>Producto</th><th>Costo/L</th><th>Margen</th><th>Precio/L USD</th><th>Precio/L Bs</th><th>Stock (L)</th><th>Estado</th><th></th></tr></thead>
+      <thead><tr><th>Producto</th><th>Costo/L</th><th>Margen</th><th>Precio detal/L</th><th>Precio mayor/L</th><th>Precio Bs</th><th>Stock (L)</th><th>Estado</th><th></th></tr></thead>
       <tbody id="invBody"></tbody>
     </table></div>
   </div>
@@ -438,11 +448,25 @@ var currentUser=null, currentRole=null;
 var productos={}, clientes={}, ventas={};
 var tasas={USD:{valor:0},EUR:{valor:0},USDT:{valor:0}}, monedaPrincipal='USD';
 var waConfig={template:'',pagoMovil:'',costoEnvaseReciclado:50};
-var ventaFiltro='all';
-var fidConfig={sellos:7,litrosPorSello:4,usdPorSello:5};
-var saleCount=0;
+var ventaTab='detal'; // 'detal' o 'mayor'
 
-var DEFAULT_PAGO='Banco Provincial\nC.I: 14.463.016\nTlf: 0412-3353098';
+function setVentaTab(tab){
+  ventaTab=tab;
+  $('tabDetal').className=tab==='detal'?'btn btn-p':'btn btn-o';
+  $('tabMayor').className=tab==='mayor'?'btn btn-p':'btn btn-o';
+  $('ventaTabInfo').textContent=tab==='detal'
+    ?'Venta al detal — precio por litro con envase incluido'
+    :'Venta al mayor — precio mayorista, mínimo 20L por producto, sin envase';
+  // limpiar items al cambiar de tab
+  $('saleItems').innerHTML='';
+  $('ventaTotales').textContent='Agrega productos para ver el total';
+  $('btnPreviewWA').classList.add('hide');
+  $('waPreview').classList.add('hide');
+}
+var fidConfig={sellos:7,litrosPorSello:4,usdPorSello:5};
+var ventaFiltro='all';
+
+var saleCount=0;'Banco Provincial\nC.I: 14.463.016\nTlf: 0412-3353098';
 var DEFAULT_WA='Hola {cliente}\nAqui el detalle de tu pedido Renuevo:\n\nFecha: {fecha}\nProductos:\n{productos}\n\nTotal: ${totalUSD} USD\nEquivalente: Bs {totalBs}\nTasa BCV: Bs {tasaBCV}\n\nEl monto en Bs es referencial a la tasa actual.\n\nDatos de pago:\n{pagoMovil}\n\nGracias!';
 var COSTO_ENVASE_BS=50;
 
@@ -657,6 +681,8 @@ $('btnGuardarProd').addEventListener('click',function(){
     categoria:$('prodCategoria').value.trim(),
     costoPorLitro:parseFloat($('prodCosto').value)||0,
     margen:parseFloat($('prodMargen').value)||0,
+    precioMayor:parseFloat($('prodPrecioMayor').value)||0,
+    minMayor:parseFloat($('prodMinMayor').value)||20,
     stockMin:parseFloat($('prodStockMin').value)||0
   };
   $('btnGuardarProd').disabled=true;
@@ -748,7 +774,9 @@ function renderInvTable(){
   tb.querySelectorAll('[data-ep]').forEach(function(b){b.addEventListener('click',function(){
     var p=productos[b.dataset.ep];
     $('prodId').value=b.dataset.ep; $('prodNombre').value=p.nombre; $('prodCategoria').value=p.categoria||'';
-    $('prodCosto').value=p.costoPorLitro||p.costo||0; $('prodMargen').value=p.margen||0; $('prodStockMin').value=p.stockMin||0;
+    $('prodCosto').value=p.costoPorLitro||p.costo||0; $('prodMargen').value=p.margen||0;
+    $('prodPrecioMayor').value=p.precioMayor||0; $('prodMinMayor').value=p.minMayor||20;
+    $('prodStockMin').value=p.stockMin||0;
     $('invFormTitle').textContent='Editar: '+p.nombre; $('btnCancelEditProd').classList.remove('hide'); updateProdPreview();
   });});
   tb.querySelectorAll('[data-dp]').forEach(function(b){b.addEventListener('click',function(){
@@ -773,54 +801,1617 @@ function addSaleRow(){
   var opts=Object.entries(productos).map(function(e){
     return '<option value="'+e[0]+'">'+e[1].nombre+' ('+(e[1].stockLitros||0).toFixed(1)+'L)</option>';
   }).join('');
-  div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
-    +'<select class="saleProd" style="flex:1;margin-right:8px"><option value="">- Producto -</option>'+opts+'</select>'
-    +'<button class="btn btn-sm btn-d removeRow">X</button></div>'
-    +'<div style="font-size:.72rem;color:var(--gray);margin-bottom:4px">Cantidad:</div>'
-    +'<div class="qty-btns">'
-    +'<button class="qty-btn" data-ml="500">500ml</button>'
-    +'<button class="qty-btn active" data-ml="1000">1L</button>'
-    +'<button class="qty-btn" data-ml="1500">1.5L</button>'
-    +'<button class="qty-btn" data-ml="2000">2L</button>'
-    +'<input type="number" class="saleCustomML" value="1000" min="1" style="width:80px;display:inline-block"/> <span style="font-size:.7rem">ml</span>'
-    +'</div>'
-    +'<div style="font-size:.72rem;color:var(--gray);margin:6px 0 4px">Envase:</div>'
-    +'<div class="envase-btns">'
-    +'<button class="env-btn active" data-env="reciclado">Reciclado (50Bs)</button>'
-    +'<button class="env-btn" data-env="cliente">Del cliente ($0)</button>'
-    +'</div>'
-    +'<div class="saleSubtotal" style="margin-top:8px;font-size:.78rem;color:var(--green-d);font-weight:600">Subtotal: -</div>';
-  $('saleItems').appendChild(div);
-  var customML=div.querySelector('.saleCustomML');
-  div.querySelectorAll('.qty-btn').forEach(function(b){b.addEventListener('click',function(){
-    div.querySelectorAll('.qty-btn').forEach(function(x){x.classList.remove('active');});
-    b.classList.add('active'); customML.value=b.dataset.ml; calcTotales();
-  });});
-  div.querySelector('.saleProd').addEventListener('change',calcTotales);
-  customML.addEventListener('input',function(){div.querySelectorAll('.qty-btn').forEach(function(x){x.classList.remove('active');});calcTotales();});
-  div.querySelectorAll('.env-btn').forEach(function(b){b.addEventListener('click',function(){
-    div.querySelectorAll('.env-btn').forEach(function(x){x.classList.remove('active');});
-    b.classList.add('active'); calcTotales();
-  });});
+
+  if(ventaTab==='mayor'){
+    div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+      +'<select class="saleProd" style="flex:1;margin-right:8px"><option value="">- Producto -</option>'+opts+'</select>'
+      +'<button class="btn btn-sm btn-d removeRow">X</button></div>'
+      +'<div class="row r2" style="margin-top:6px">'
+      +'<div><label style="margin:0 0 4px">Litros</label><input type="number" class="saleCustomML" value="20" min="1" step="1" placeholder="Min 20L"/></div>'
+      +'<div><label style="margin:0 0 4px">Precio/L USD (editable)</label><input type="number" class="salePrecioMayor" step="0.001" placeholder="0.00"/></div>'
+      +'</div>'
+      +'<div class="saleSubtotal" style="margin-top:8px;font-size:.78rem;color:var(--green-d);font-weight:600">Subtotal: -</div>';
+    div.querySelector('.saleProd').addEventListener('change',function(){
+      var pid=div.querySelector('.saleProd').value;
+      var p=productos[pid];
+      if(p&&p.precioMayor) div.querySelector('.salePrecioMayor').value=p.precioMayor;
+      calcTotales();
+    });
+    div.querySelector('.saleCustomML').addEventListener('input',calcTotales);
+    div.querySelector('.salePrecioMayor').addEventListener('input',calcTotales);
+  } else {
+    div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+      +'<select class="saleProd" style="flex:1;margin-right:8px"><option value="">- Producto -</option>'+opts+'</select>'
+      +'<button class="btn btn-sm btn-d removeRow">X</button></div>'
+      +'<div style="font-size:.72rem;color:var(--gray);margin-bottom:4px">Cantidad:</div>'
+      +'<div class="qty-btns">'
+      +'<button class="qty-btn" data-ml="500">500ml</button>'
+      +'<button class="qty-btn active" data-ml="1000">1L</button>'
+      +'<button class="qty-btn" data-ml="1500">1.5L</button>'
+      +'<button class="qty-btn" data-ml="2000">2L</button>'
+      +'<input type="number" class="saleCustomML" value="1000" min="1" style="width:80px;display:inline-block"/> <span style="font-size:.7rem">ml</span>'
+      +'</div>'
+      +'<div style="font-size:.72rem;color:var(--gray);margin:6px 0 4px">Envase:</div>'
+      +'<div class="envase-btns">'
+      +'<button class="env-btn active" data-env="reciclado">♻️ Reciclado (50Bs)</button>'
+      +'<button class="env-btn" data-env="cliente">👜 Del cliente ($0)</button>'
+      +'</div>'
+      +'<div class="saleSubtotal" style="margin-top:8px;font-size:.78rem;color:var(--green-d);font-weight:600">Subtotal: -</div>';
+    var customML=div.querySelector('.saleCustomML');
+    div.querySelectorAll('.qty-btn').forEach(function(b){b.addEventListener('click',function(){
+      div.querySelectorAll('.qty-btn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active'); customML.value=b.dataset.ml; calcTotales();
+    });});
+    div.querySelector('.saleProd').addEventListener('change',calcTotales);
+    customML.addEventListener('input',function(){div.querySelectorAll('.qty-btn').forEach(function(x){x.classList.remove('active');});calcTotales();});
+    div.querySelectorAll('.env-btn').forEach(function(b){b.addEventListener('click',function(){
+      div.querySelectorAll('.env-btn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active'); calcTotales();
+    });});
+  }
   div.querySelector('.removeRow').addEventListener('click',function(){div.remove();calcTotales();});
+  $('saleItems').appendChild(div);
 }
 $('btnAddSaleItem').addEventListener('click',addSaleRow);
 
 function getSaleItems(){
   return Array.from($('saleItems').querySelectorAll('.saleItemBox')).map(function(div){
     var pid=div.querySelector('.saleProd').value;
-    var ml=parseFloat(div.querySelector('.saleCustomML').value)||0;
-    var litros=ml/1000;
-    var envTipo=(div.querySelector('.env-btn.active')||{dataset:{env:'reciclado'}}).dataset.env;
     var p=productos[pid];
-    if(!pid||!p||litros<=0)return null;
-    var costoEnv=envTipo==='cliente'?0:getCostoEnvaseUSD();
-    var costoBase=(p.costoPorLitro||p.costo||0)*litros+costoEnv;
-    var subtotal=costoBase*(1+(p.margen||0)/100);
+    if(!pid||!p) return null;
     var tasa=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
-    div.querySelector('.saleSubtotal').innerHTML=p.nombre+' - '+ml+'ml - '+
-      (envTipo==='cliente'?'del cliente':'reciclado')+' - <b>$'+subtotal.toFixed(3)+'</b> (Bs '+(subtotal*tasa).toLocaleString('es-VE',{maximumFractionDigits:2})+')';
-    return {productoId:pid,nombre:p.nombre,ml:ml,litros:litros,envase:envTipo,costoEnvUSD:costoEnv,subtotal:subtotal};
+
+    if(ventaTab==='mayor'){
+      var litros=parseFloat(div.querySelector('.saleCustomML').value)||0;
+      var precioMayor=parseFloat(div.querySelector('.salePrecioMayor').value)||p.precioMayor||0;
+      var minMayor=p.minMayor||20;
+      if(litros<minMayor){
+        div.querySelector('.saleSubtotal').innerHTML='<span style="color:var(--red)">Minimo '+minMayor+'L para precio mayor</span>';
+        return null;
+      }
+      var subtotal=precioMayor*litros;
+      div.querySelector('.saleSubtotal').innerHTML=p.nombre+' - '+litros+'L mayor - 
+
+function calcTotales(){
+  var items=getSaleItems();
+  var totalUSD=items.reduce(function(a,i){return a+i.subtotal;},0);
+  var tasa=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+  var totalBs=totalUSD*tasa;
+  $('ventaTotales').innerHTML=items.length
+    ?'Total: <b>$'+totalUSD.toFixed(2)+' USD</b> &nbsp;|&nbsp; <b>Bs '+totalBs.toLocaleString('es-VE',{maximumFractionDigits:2})+'</b>'
+    :'Agrega productos para ver el total';
+  if(items.length) $('btnPreviewWA').classList.remove('hide');
+  else $('btnPreviewWA').classList.add('hide');
+  return {items:items,totalUSD:totalUSD,totalBs:totalBs,tasa:tasa};
+}
+
+$('btnPreviewWA').addEventListener('click',function(){
+  var r=calcTotales();
+  var cliId=$('ventaCliente').value;
+  var cli=clientes[cliId];
+  var cliNombre=cli?(cli.nombre+(cli.apellido?' '+cli.apellido:'')):'Consumidor final';
+  var fecha=new Date().toLocaleDateString('es-VE',{day:'2-digit',month:'long',year:'numeric'});
+  var prodLines=r.items.map(function(i){return '  * '+i.nombre+' - '+i.ml+'ml - $'+i.subtotal.toFixed(3);}).join('\n');
+  var tmpl=waConfig.template||DEFAULT_WA;
+  var msg=tmpl
+    .replace('{cliente}',cliNombre)
+    .replace('{fecha}',fecha)
+    .replace('{productos}',prodLines)
+    .replace('{totalUSD}',r.totalUSD.toFixed(2))
+    .replace('{totalBs}',r.totalBs.toLocaleString('es-VE',{maximumFractionDigits:2}))
+    .replace('{tasaBCV}',r.tasa)
+    .replace('{pagoMovil}',waConfig.pagoMovil||DEFAULT_PAGO);
+  $('waText').textContent=msg;
+  $('waPreview').classList.remove('hide');
+  var tel=(cli&&cli.telefono?cli.telefono:'').replace(/\D/g,'');
+  var num=tel.startsWith('0')?'58'+tel.slice(1):(tel?'58'+tel:'');
+  $('btnSendWA').onclick=function(){window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');};
+});
+
+$('btnGuardarVenta').addEventListener('click',function(){
+  var r=calcTotales();
+  if(!r.items.length){$('ventaMsg').textContent='Agrega al menos un producto.';$('ventaMsg').style.color='var(--red)';return;}
+  for(var i=0;i<r.items.length;i++){
+    var it=r.items[i];
+    var stock=parseFloat((productos[it.productoId]&&productos[it.productoId].stockLitros)||0);
+    if(stock<it.litros){$('ventaMsg').textContent='Stock insuficiente de "'+it.nombre+'" (tienes '+stock.toFixed(1)+'L).';$('ventaMsg').style.color='var(--red)';return;}
+  }
+  var cliId=$('ventaCliente').value;
+  var cli=(cliId&&cliId!=='__nuevo__')?clientes[cliId]:null;
+  var estadoPago=$('ventaEstado').value||'pendiente';
+  db.collection('ventas').add({
+    fecha:Date.now(),
+    clienteId:cliId||null,
+    clienteNombre:cli?(cli.nombre+(cli.apellido?' '+cli.apellido:'')):'Consumidor final',
+    clienteTel:(cli&&cli.telefono)||'',
+    items:r.items,totalUSD:r.totalUSD,totalBs:r.totalBs,tasaBCV:r.tasa,
+    pago:$('ventaPago').value,
+    estado:estadoPago,
+    tipoVenta:ventaTab,
+    fechaPago:estadoPago==='pagado'?Date.now():null,
+    tasaPago:estadoPago==='pagado'?r.tasa:null,
+    vendedor:currentUser.email
+  }).then(function(){
+    var ps=r.items.map(function(it){
+      return db.collection('productos').doc(it.productoId).get().then(function(snap){
+        if(!snap.exists)return;
+        var curr=snap.data();
+        return db.collection('productos').doc(it.productoId).update({
+          stockLitros:parseFloat(((curr.stockLitros||curr.stock||0)-it.litros).toFixed(3))
+        });
+      });
+    });
+    return Promise.all(ps);
+  }).then(function(){
+    return recargarProductos();
+  }).then(function(){
+    $('saleItems').innerHTML='';
+    $('ventaTotales').textContent='Agrega productos para ver el total';
+    $('waPreview').classList.add('hide');
+    $('btnPreviewWA').classList.add('hide');
+    $('ventaMsg').style.color='var(--green-d)';
+    $('ventaMsg').textContent='Venta registrada correctamente.';
+  }).catch(function(e){
+    $('ventaMsg').style.color='var(--red)';
+    $('ventaMsg').textContent='Error: '+e.message;
+  });
+});
+
+document.querySelectorAll('[data-filt]').forEach(function(b){b.addEventListener('click',function(){ventaFiltro=b.dataset.filt;renderVentas();});});
+
+function renderVentas(){
+  var tb=$('ventasBody'); if(!tb)return;
+  var vs=Object.entries(ventas);
+  if(ventaFiltro!=='all') vs=vs.filter(function(e){return e[1].estado===ventaFiltro;});
+  tb.innerHTML=vs.map(function(e){
+    var id=e[0],v=e[1];
+    var est=v.estado==='pagado'?'<span class="badge badge-paid">Pagado</span>':v.estado==='mora'?'<span class="badge badge-mora">Mora</span>':'<span class="badge badge-pending">Pendiente</span>';
+    var acts=v.estado!=='pagado'?'<button class="btn btn-sm btn-g" data-pagar="'+id+'">OK</button>':'';
+    return '<tr class="'+(v.estado==='mora'?'mora':'')+'">'
+      +'<td style="white-space:nowrap">'+new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})+'</td>'
+      +'<td>'+(v.clienteNombre||'Consumidor final')+'</td>'
+      +'<td style="font-size:.72rem">'+((v.items||[]).map(function(i){return i.nombre+' '+i.ml+'ml';}).join(', '))+'</td>'
+      +'<td>$'+(v.totalUSD||0).toFixed(2)+'</td>'
+      +'<td>Bs '+(v.totalBs||0).toLocaleString('es-VE',{maximumFractionDigits:0})+'</td>'
+      +'<td>'+(v.tipoVenta==='mayor'?'<span class="badge badge-ok">Mayor</span>':'Detal')+'</td>'
+      +'<td>'+est+'</td>'
+      +'<td style="display:flex;gap:4px;flex-wrap:wrap">'+acts+'<button class="btn btn-sm btn-o" data-editv="'+id+'">Edit</button></td>'
+      +'</tr>';
+  }).join('')||'<tr><td colspan="7" style="color:var(--gray)">Sin ventas.</td></tr>';
+  tb.querySelectorAll('[data-pagar]').forEach(function(b){b.addEventListener('click',function(){
+    var tActual=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+    var v=ventas[b.dataset.pagar];
+    var bsPago=(v.totalUSD||0)*tActual;
+    if(confirm('Marcar como pagado?\nTasa BCV: '+tActual+'\nTotal Bs: '+bsPago.toLocaleString('es-VE',{maximumFractionDigits:2}))){
+      db.collection('ventas').doc(b.dataset.pagar).update({estado:'pagado',fechaPago:Date.now(),tasaPago:tActual,bsPagado:bsPago});
+    }
+  });});
+  tb.querySelectorAll('[data-editv]').forEach(function(b){b.addEventListener('click',function(){abrirEditVenta(b.dataset.editv);});});
+}
+
+function fillClienteSelect(){
+  var s=$('ventaCliente'); var v=s.value;
+  s.innerHTML='<option value="">Consumidor final</option><option value="__nuevo__">+ Nuevo cliente...</option>'+
+    Object.entries(clientes).map(function(e){
+      var c=e[1];
+      return '<option value="'+e[0]+'">'+c.nombre+(c.apellido?' '+c.apellido:'')+(c.cedula?' - '+c.cedula:'')+'</option>';
+    }).join('');
+  if(v) s.value=v;
+}
+function fillEditVentaClienteSelect(){
+  var s=$('editVentaCliente'); var v=s.value;
+  s.innerHTML='<option value="">Consumidor final</option>'+
+    Object.entries(clientes).map(function(e){
+      var c=e[1];
+      return '<option value="'+e[0]+'">'+c.nombre+(c.apellido?' '+c.apellido:'')+'</option>';
+    }).join('');
+  if(v) s.value=v;
+}
+$('ventaCliente').addEventListener('change',function(){$('nuevoClienteBox').classList.toggle('hide',$('ventaCliente').value!=='__nuevo__');});
+$('btnGuardarNC').addEventListener('click',function(){
+  var n=$('ncNombre').value.trim();
+  if(!n){alert('El nombre es obligatorio.');return;}
+  db.collection('clientes').add({nombre:n,apellido:$('ncApellido').value.trim(),cedula:$('ncCedula').value.trim(),telefono:$('ncTelefono').value.trim(),direccion:$('ncDireccion').value.trim()}).then(function(ref){
+    ['ncNombre','ncApellido','ncCedula','ncTelefono','ncDireccion'].forEach(function(f){$(f).value='';});
+    $('nuevoClienteBox').classList.add('hide');
+    setTimeout(function(){fillClienteSelect();$('ventaCliente').value=ref.id;},600);
+  });
+});
+
+function abrirEditVenta(id){
+  var v=ventas[id]; if(!v)return;
+  $('editVentaId').value=id;
+  fillEditVentaClienteSelect();
+  setTimeout(function(){$('editVentaCliente').value=v.clienteId||'';},300);
+  $('editVentaPago').value=v.pago||'Pago Movil Bs';
+  $('editVentaEstado').value=v.estado||'pendiente';
+  $('modalVenta').classList.remove('hide');
+}
+$('btnCancelEditVenta').addEventListener('click',function(){$('modalVenta').classList.add('hide');});
+$('modalVenta').addEventListener('click',function(e){if(e.target===$('modalVenta'))$('modalVenta').classList.add('hide');});
+$('btnSaveEditVenta').addEventListener('click',function(){
+  var id=$('editVentaId').value;
+  var cliId=$('editVentaCliente').value;
+  var cli=cliId?clientes[cliId]:null;
+  var nuevoEstado=$('editVentaEstado').value;
+  var tActual=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+  var v=ventas[id];
+  db.collection('ventas').doc(id).update({
+    clienteId:cliId||null,
+    clienteNombre:cli?(cli.nombre+(cli.apellido?' '+cli.apellido:'')):'Consumidor final',
+    clienteTel:(cli&&cli.telefono)||'',
+    pago:$('editVentaPago').value,
+    estado:nuevoEstado,
+    fechaPago:(nuevoEstado==='pagado'&&v.estado!=='pagado')?Date.now():(v.fechaPago||null),
+    tasaPago:(nuevoEstado==='pagado'&&v.estado!=='pagado')?tActual:(v.tasaPago||null)
+  }).then(function(){$('modalVenta').classList.add('hide');});
+});
+
+$('btnGuardarCli').addEventListener('click',function(){
+  var id=$('cliId').value;
+  var nombre=$('cliNombre').value.trim();
+  if(!nombre){alert('El nombre es obligatorio.');return;}
+  var data={nombre:nombre,apellido:$('cliApellido').value.trim(),cedula:$('cliCedula').value.trim(),telefono:$('cliTelefono').value.trim(),direccion:$('cliDireccion').value.trim()};
+  var p=id?db.collection('clientes').doc(id).update(data):db.collection('clientes').add(data);
+  p.then(function(){
+    ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliDireccion'].forEach(function(f){$(f).value='';});
+    $('cliFormTitle').textContent='+ Agregar Cliente';
+    $('btnCancelEditCli').classList.add('hide');
+  });
+});
+$('btnCancelEditCli').addEventListener('click',function(){
+  ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliDireccion'].forEach(function(f){$(f).value='';});
+  $('cliFormTitle').textContent='+ Agregar Cliente';
+  $('btnCancelEditCli').classList.add('hide');
+});
+function renderClientes(){
+  var tb=$('cliBody'); if(!tb)return;
+  var cliMora=new Set(Object.values(ventas).filter(function(v){return v.estado==='mora';}).map(function(v){return v.clienteId;}));
+  tb.innerHTML=Object.entries(clientes).map(function(e){
+    var id=e[0],c=e[1];
+    return '<tr><td>'+c.nombre+(c.apellido?' '+c.apellido:'')+'</td>'
+      +'<td>'+(c.cedula||'-')+'</td><td>'+(c.telefono||'-')+'</td><td>'+(c.direccion||'-')+'</td>'
+      +'<td>'+(cliMora.has(id)?'<span class="badge badge-mora">Mora</span>':'-')+'</td>'
+      +'<td style="white-space:nowrap">'
+      +'<button class="btn btn-sm btn-o" data-ec="'+id+'">Edit</button> '
+      +'<button class="btn btn-sm btn-d" data-dc="'+id+'">Del</button>'
+      +'</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="color:var(--gray)">Sin clientes.</td></tr>';
+  tb.querySelectorAll('[data-ec]').forEach(function(b){b.addEventListener('click',function(){
+    var c=clientes[b.dataset.ec];
+    $('cliId').value=b.dataset.ec; $('cliNombre').value=c.nombre; $('cliApellido').value=c.apellido||'';
+    $('cliCedula').value=c.cedula||''; $('cliTelefono').value=c.telefono||''; $('cliDireccion').value=c.direccion||'';
+    $('cliFormTitle').textContent='Editar Cliente'; $('btnCancelEditCli').classList.remove('hide');
+  });});
+  tb.querySelectorAll('[data-dc]').forEach(function(b){b.addEventListener('click',function(){
+    if(confirm('Eliminar este cliente?')) db.collection('clientes').doc(b.dataset.dc).delete();
+  });});
+}
+
+function renderTasasUI(){
+  var cont=$('tasasContainer'); if(!cont)return;
+  cont.innerHTML=Object.entries(tasas).map(function(e){
+    var code=e[0],t=e[1];
+    return '<div class="fb" style="padding:8px;margin:0">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center">'
+      +'<strong style="font-size:.8rem">'+code+(code===monedaPrincipal?' *':'')+'</strong>'
+      +(code!==monedaPrincipal?'<button class="btn btn-sm btn-o" data-sp="'+code+'">Usar</button>':'')
+      +'</div>'
+      +'<input type="number" step="0.01" value="'+(t.valor||0)+'" data-tasa="'+code+'" style="margin-top:6px"/>'
+      +(code!=='USD'?'<button class="btn btn-sm btn-d" data-dt="'+code+'" style="margin-top:4px">Del</button>':'')
+      +'</div>';
+  }).join('');
+  cont.querySelectorAll('[data-tasa]').forEach(function(i){i.addEventListener('input',function(){if(!tasas[i.dataset.tasa])tasas[i.dataset.tasa]={};tasas[i.dataset.tasa].valor=parseFloat(i.value)||0;updateBcvBadge();});});
+  cont.querySelectorAll('[data-dt]').forEach(function(b){b.addEventListener('click',function(){delete tasas[b.dataset.dt];renderTasasUI();});});
+  cont.querySelectorAll('[data-sp]').forEach(function(b){b.addEventListener('click',function(){monedaPrincipal=b.dataset.sp;renderTasasUI();renderInvTable();});});
+  updateBcvBadge();
+}
+$('btnAutoTasas').addEventListener('click',function(){
+  $('tasasFecha').textContent='Consultando...';
+  Promise.all([fetch('https://ve.dolarapi.com/v1/dolares/oficial'),fetch('https://ve.dolarapi.com/v1/euros/oficial')])
+  .then(function(rs){return Promise.all(rs.map(function(r){return r.json();}));})
+  .then(function(ds){
+    tasas.USD=tasas.USD||{}; tasas.USD.valor=ds[0].promedio||ds[0].venta||tasas.USD.valor;
+    tasas.EUR=tasas.EUR||{}; tasas.EUR.valor=ds[1].promedio||ds[1].venta||tasas.EUR.valor;
+    renderTasasUI(); $('tasasFecha').textContent='BCV/Euro actualizados. Presiona Guardar.';
+  }).catch(function(){$('tasasFecha').textContent='Sin conexion. Ingresa manualmente.';});
+});
+$('btnAddTasa').addEventListener('click',function(){var c=prompt('Codigo (ej: USDT):');if(c){tasas[c.toUpperCase()]={valor:0};renderTasasUI();}});
+$('btnSaveTasas').addEventListener('click',function(){
+  db.collection('config').doc('tasas').set({tasas:tasas,principal:monedaPrincipal,updatedAt:Date.now()}).then(function(){
+    $('tasasFecha').textContent='Guardado: '+new Date().toLocaleString('es-VE');
+  });
+});
+function updateBcvBadge(){
+  var t=tasas[monedaPrincipal];
+  $('bcvBadge').textContent=(t&&t.valor)?monedaPrincipal+'=Bs '+t.valor.toLocaleString('es-VE',{maximumFractionDigits:2}):'Tasas';
+}
+$('bcvBadge').addEventListener('click',function(){if(currentRole==='admin')showSection('tasas');});
+
+function loadWAConfig(){
+  db.collection('config').doc('wa').get().then(function(doc){
+    if(doc.exists){
+      waConfig=doc.data();
+      $('waMsgTemplate').value=waConfig.template||DEFAULT_WA;
+      $('waPagoMovil').value=waConfig.pagoMovil||DEFAULT_PAGO;
+      $('costoEnvaseReciclado').value=waConfig.costoEnvaseReciclado||50;
+    } else {
+      $('waMsgTemplate').value=DEFAULT_WA;
+      $('waPagoMovil').value=DEFAULT_PAGO;
+    }
+  });
+}
+$('btnSaveWAConfig').addEventListener('click',function(){
+  waConfig={template:$('waMsgTemplate').value,pagoMovil:$('waPagoMovil').value,costoEnvaseReciclado:parseFloat($('costoEnvaseReciclado').value)||50};
+  db.collection('config').doc('wa').set(waConfig).then(function(){
+    $('waConfigMsg').style.color='var(--green-d)'; $('waConfigMsg').textContent='Guardado.';
+  });
+});
+
+$('btnCrearEmpleado').addEventListener('click',function(){
+  var email=$('empEmail').value.trim(), pass=$('empPass').value, rol=$('empRol').value;
+  if(!email||pass.length<6){$('empMsg').textContent='Correo valido y contrasena minimo 6 caracteres.';$('empMsg').style.color='var(--red)';return;}
+  var sec=firebase.initializeApp(firebaseConfig,'Sec'+Date.now());
+  sec.auth().createUserWithEmailAndPassword(email,pass).then(function(){
+    return sec.auth().signOut();
+  }).then(function(){
+    return sec.delete();
+  }).then(function(){
+    return db.collection('roles').doc(email.toLowerCase()).set({role:rol,createdAt:Date.now(),creadoPor:currentUser.email});
+  }).then(function(){
+    $('empMsg').style.color='var(--green-d)'; $('empMsg').textContent='Cuenta creada.';
+    $('empEmail').value=''; $('empPass').value='';
+  }).catch(function(e){$('empMsg').style.color='var(--red)'; $('empMsg').textContent=traducirError(e.code);});
+});
+function renderUsers(rows){
+  var tb=$('usersBody'); if(!tb)return;
+  tb.innerHTML=(rows||[]).map(function(r){
+    return '<tr><td>'+r.email+'</td><td>'+(r.role==='admin'?'Admin':'Vendedor')+'</td>'
+      +'<td>'+(r.email!==currentUser.email?'<button class="btn btn-sm btn-d" data-du="'+r.email+'">Revocar</button>':'(tu)')+'</td></tr>';
+  }).join('');
+  tb.querySelectorAll('[data-du]').forEach(function(b){b.addEventListener('click',function(){
+    if(confirm('Revocar acceso de '+b.dataset.du+'?')) db.collection('roles').doc(b.dataset.du).delete();
+  });});
+}
+
+function setDefaultDates(){
+  var h=new Date(), d=new Date(h); d.setDate(1);
+  $('repDesde').value=d.toISOString().split('T')[0];
+  $('repHasta').value=h.toISOString().split('T')[0];
+}
+function fillRepClienteFiltro(){
+  var s=$('repClienteFiltro'); var v=s.value;
+  s.innerHTML='<option value="all">Todos los clientes</option>'+
+    Object.entries(clientes).map(function(e){
+      var c=e[1];
+      return '<option value="'+e[0]+'">'+c.nombre+(c.apellido?' '+c.apellido:'')+'</option>';
+    }).join('');
+  if(v) s.value=v;
+}
+$('repPeriodo').addEventListener('change',function(){
+  $('repRangoPersonalizado').classList.toggle('hide',$('repPeriodo').value!=='personalizado');
+});
+function getRepRango(){
+  var p=$('repPeriodo').value;
+  var ahora=new Date();
+  var desde, hasta=ahora.getTime()+86400000;
+  if(p==='hoy'){var d=new Date();d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='semana'){var d=new Date();d.setDate(d.getDate()-d.getDay());d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='mes'){var d=new Date();d.setDate(1);d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='ano'){var d=new Date();d.setMonth(0,1);d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='personalizado'){desde=new Date($('repDesde').value).getTime();hasta=new Date($('repHasta').value).getTime()+86400000;}
+  else{desde=0;}
+  return {desde:desde,hasta:hasta};
+}
+$('btnGenerarReporte').addEventListener('click',function(){
+  var rango=getRepRango();
+  var estadoFiltro=$('repEstadoFiltro').value;
+  var clienteFiltro=$('repClienteFiltro').value;
+  var vs=Object.values(ventas).filter(function(v){return v.fecha>=rango.desde&&v.fecha<=rango.hasta;});
+  if(estadoFiltro!=='all') vs=vs.filter(function(v){return v.estado===estadoFiltro;});
+  if(clienteFiltro!=='all') vs=vs.filter(function(v){return v.clienteId===clienteFiltro;});
+  var pagadas=vs.filter(function(v){return v.estado==='pagado';});
+  var pendientes=vs.filter(function(v){return v.estado==='pendiente';});
+  var mora=vs.filter(function(v){return v.estado==='mora';});
+  var usdCobrado=pagadas.reduce(function(a,v){return a+(v.totalUSD||0);},0);
+  var bsCobrado=pagadas.reduce(function(a,v){return a+(v.totalBs||0);},0);
+  var usdPend=pendientes.concat(mora).reduce(function(a,v){return a+(v.totalUSD||0);},0);
+  $('repTotalVentas').textContent=vs.length;
+  $('repTotalUSD').textContent='$'+usdCobrado.toFixed(2);
+  $('repTotalBs').textContent='Bs '+bsCobrado.toLocaleString('es-VE',{maximumFractionDigits:0});
+  $('repPendientes').textContent=pendientes.length;
+  $('repMora').textContent=mora.length;
+  $('repUSDPendiente').textContent='$'+usdPend.toFixed(2);
+  var periodo=$('repPeriodo').options[$('repPeriodo').selectedIndex].text;
+  var estado=$('repEstadoFiltro').options[$('repEstadoFiltro').selectedIndex].text;
+  var cliLabel=clienteFiltro!=='all'?(clientes[clienteFiltro]?clientes[clienteFiltro].nombre:''):'Todos';
+  $('repResumen').textContent='Periodo: '+periodo+' | Estado: '+estado+' | Cliente: '+cliLabel;
+  $('repBody').innerHTML=vs.map(function(v){
+    var est=v.estado==='pagado'?'Pagado':v.estado==='mora'?'Mora':'Pendiente';
+    return '<tr><td>'+new Date(v.fecha).toLocaleDateString('es-VE')+'</td>'
+      +'<td>'+(v.clienteNombre||'Consumidor final')+'</td>'
+      +'<td style="font-size:.72rem">'+((v.items||[]).map(function(i){return i.nombre+' '+i.ml+'ml';}).join(', '))+'</td>'
+      +'<td>$'+(v.totalUSD||0).toFixed(2)+'</td>'
+      +'<td>Bs '+(v.totalBs||0).toLocaleString('es-VE',{maximumFractionDigits:0})+'</td>'
+      +'<td>'+est+'</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="color:var(--gray)">Sin resultados.</td></tr>';
+  $('reporteResult').classList.remove('hide');
+});
+
+$('btnImprimirReporte').addEventListener('click',function(){
+  var win=window.open('','_blank');
+  var html='<html><head><title>Reporte Renuevo</title>'
+    +'<style>body{font-family:Arial,sans-serif;padding:20px;font-size:12px}h1{color:#1f7a4d}'
+    +'.cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}'
+    +'.card{border:1px solid #ddd;border-radius:8px;padding:10px 14px}'
+    +'.n{font-size:1.3rem;font-weight:800;color:#1f7a4d}.l{font-size:.7rem;color:#666}'
+    +'table{width:100%;border-collapse:collapse}'
+    +'th{background:#1f7a4d;color:#fff;padding:6px;text-align:left}'
+    +'td{padding:6px;border-bottom:1px solid #eee}'
+    +'</style></head><body>'
+    +'<h1>Renuevo - Reporte de Ventas</h1>'
+    +'<p>'+$('repResumen').textContent+' | Generado: '+new Date().toLocaleString('es-VE')+'</p>'
+    +'<div class="cards">'
+    +'<div class="card"><div class="n">'+$('repTotalVentas').textContent+'</div><div class="l">Ventas</div></div>'
+    +'<div class="card"><div class="n">'+$('repTotalUSD').textContent+'</div><div class="l">Cobrado USD</div></div>'
+    +'<div class="card"><div class="n">'+$('repTotalBs').textContent+'</div><div class="l">Cobrado Bs</div></div>'
+    +'<div class="card"><div class="n">'+$('repPendientes').textContent+'</div><div class="l">Pendientes</div></div>'
+    +'<div class="card"><div class="n">'+$('repMora').textContent+'</div><div class="l">Mora</div></div>'
+    +'<div class="card"><div class="n">'+$('repUSDPendiente').textContent+'</div><div class="l">USD por cobrar</div></div>'
+    +'</div>'
+    +'<table><thead><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>USD</th><th>Bs</th><th>Estado</th></tr></thead>'
+    +'<tbody>'+$('repBody').innerHTML+'</tbody></table>'
+    +'</body></html>';
+  win.document.write(html);
+  win.document.close();
+  setTimeout(function(){win.print();},500);
+});
+
+function renderFidelidad(){
+  loadFidConfig().then(function(){
+    var cont=$('fidCards');
+    if(!Object.keys(clientes).length){cont.innerHTML='<p style="color:var(--gray);font-size:.85rem">Sin clientes registrados.</p>';return;}
+    db.collection('canjes').get().then(function(canjesSnap){
+      var canjes={};
+      canjesSnap.forEach(function(d){var c=d.data();if(!canjes[c.clienteId])canjes[c.clienteId]=0;canjes[c.clienteId]+=(c.tarjetas||1);});
+      cont.innerHTML='';
+      Object.entries(clientes).forEach(function(e){
+        var id=e[0],c=e[1];
+        var res=calcSellosCliente(id);
+        var tarjetasCompletas=Math.floor(res.sellosAcum/(fidConfig.sellos||7));
+        var canjeados=canjes[id]||0;
+        var tarjetasPendientes=tarjetasCompletas-canjeados;
+        var sellosActuales=res.sellosAcum%(fidConfig.sellos||7);
+        var totalSellos=fidConfig.sellos||7;
+        var sellosHTML='';
+        for(var i=0;i<totalSellos;i++) sellosHTML+='<span class="sello">'+(i<sellosActuales?'&#11088;':'&#9734;')+'</span>';
+        var card=document.createElement('div');
+        card.className='fb'; card.style.margin='0';
+        var html='<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+          +'<div><b>'+c.nombre+(c.apellido?' '+c.apellido:'')+'</b>'
+          +'<div style="font-size:.72rem;color:var(--gray)">'+(c.telefono||'')+'</div></div>'
+          +(tarjetasPendientes>0?'<span class="badge badge-ok">'+tarjetasPendientes+' tarjeta'+(tarjetasPendientes>1?'s':'')+' lista'+(tarjetasPendientes>1?'s':'')+'</span>':'')
+          +'</div>'
+          +'<div style="margin:10px 0;display:flex;flex-wrap:wrap;gap:4px">'+sellosHTML+'</div>'
+          +'<div style="font-size:.75rem;color:var(--gray);margin-bottom:8px">'+sellosActuales+'/'+totalSellos+' sellos - '+res.sellosAcum+' totales - '+tarjetasCompletas+' completadas</div>';
+        if(tarjetasPendientes>0){
+          html+='<div style="background:#eef7f1;border-radius:8px;padding:8px;margin-bottom:8px"><b style="font-size:.8rem;color:var(--green-d)">Tiene '+tarjetasPendientes+' tarjeta'+(tarjetasPendientes>1?'s':'')+' para canjear!</b></div>'
+            +'<input id="premio_'+id+'" placeholder="Que premio le das?" style="margin-bottom:6px"/>'
+            +'<button class="btn btn-g btn-sm" data-canjear="'+id+'">Registrar canje</button>';
+        }
+        card.innerHTML=html;
+        cont.appendChild(card);
+      });
+      cont.querySelectorAll('[data-canjear]').forEach(function(b){b.addEventListener('click',function(){
+        var cid=b.dataset.canjear;
+        var premioEl=$('premio_'+cid);
+        if(!premioEl||!premioEl.value.trim()){alert('Indica el premio.');return;}
+        var premio=premioEl.value.trim();
+        var c=clientes[cid];
+        db.collection('canjes').add({clienteId:cid,clienteNombre:c.nombre+(c.apellido?' '+c.apellido:''),premio:premio,tarjetas:1,fecha:Date.now(),by:currentUser.email}).then(function(){
+          alert('Canje registrado para '+c.nombre+'. Premio: '+premio);
+          renderFidelidad();
+        });
+      });});
+      var tb=$('fidHistBody');
+      var todos=[];
+      canjesSnap.forEach(function(d){todos.push(d.data());});
+      todos.sort(function(a,b){return b.fecha-a.fecha;});
+      tb.innerHTML=todos.map(function(c){
+        return '<tr><td>'+new Date(c.fecha).toLocaleDateString('es-VE')+'</td>'
+          +'<td>'+(c.clienteNombre||'-')+'</td><td>'+(c.premio||'-')+'</td><td>'+(c.tarjetas||1)+'</td></tr>';
+      }).join('')||'<tr><td colspan="4" style="color:var(--gray)">Sin canjes aun.</td></tr>';
+    });
+  });
+}
+
+function calcSellosCliente(clienteId){
+  var ventasCliente=Object.values(ventas).filter(function(v){return v.clienteId===clienteId;});
+  var sellosAcum=0;
+  ventasCliente.forEach(function(v){
+    var totalLitros=(v.items||[]).reduce(function(a,i){return a+(i.litros||0);},0);
+    var sellosPorLitros=Math.floor(totalLitros/(fidConfig.litrosPorSello||4));
+    var sellosPorUSD=Math.floor((v.totalUSD||0)/(fidConfig.usdPorSello||5));
+    sellosAcum+=Math.max(sellosPorLitros,sellosPorUSD);
+  });
+  return {sellosAcum:sellosAcum};
+}
+
+function loadFidConfig(){
+  return db.collection('config').doc('fidelidad').get().then(function(doc){
+    if(doc.exists){
+      fidConfig=doc.data();
+      $('fidSellos').value=fidConfig.sellos||7;
+      $('fidLitros').value=fidConfig.litrosPorSello||4;
+      $('fidUSD').value=fidConfig.usdPorSello||5;
+    }
+  });
+}
+$('btnSaveFidConfig').addEventListener('click',function(){
+  fidConfig={sellos:parseInt($('fidSellos').value)||7,litrosPorSello:parseFloat($('fidLitros').value)||4,usdPorSello:parseFloat($('fidUSD').value)||5};
+  db.collection('config').doc('fidelidad').set(fidConfig).then(function(){
+    $('fidConfigMsg').style.color='var(--green-d)';
+    $('fidConfigMsg').textContent='Configuracion guardada.';
+    renderFidelidad();
+  });
+});
+
+function renderDashboard(){
+  var prods=Object.values(productos);
+  $('dCardProds').textContent=prods.length;
+  $('dCardBajo').textContent=prods.filter(function(p){return (p.stockLitros||0)<=(p.stockMin||0);}).length;
+  $('dCardClientes').textContent=Object.keys(clientes).length;
+  var hoy=new Date(); hoy.setHours(0,0,0,0);
+  $('dCardHoy').textContent=Object.values(ventas).filter(function(v){return v.fecha>=hoy.getTime();}).length;
+  $('dCardMora').textContent=Object.values(ventas).filter(function(v){return v.estado==='mora';}).length;
+  var low=prods.filter(function(p){return (p.stockLitros||0)<=(p.stockMin||0);});
+  $('dLowStock').innerHTML=low.length?low.map(function(p){return '* '+p.nombre+': '+(p.stockLitros||0).toFixed(1)+'L (min: '+(p.stockMin||0)+'L)';}).join('<br>'):'Inventario en niveles saludables.';
+  var pend=Object.entries(ventas).filter(function(e){return e[1].estado==='pendiente'||e[1].estado==='mora';}).slice(0,5);
+  $('dPendingPay').innerHTML=pend.length?pend.map(function(e){var v=e[1];return '* '+(v.clienteNombre||'Consumidor final')+' - $'+(v.totalUSD||0).toFixed(2)+' - <span class="badge '+(v.estado==='mora'?'badge-mora':'badge-pending')+'">'+v.estado+'</span>';}).join('<br>'):'Sin pagos pendientes.';
+  var last=Object.values(ventas).slice(0,5);
+  $('dLastSales').innerHTML=last.length?last.map(function(v){return '* '+new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})+' - '+(v.clienteNombre||'Consumidor final')+' - $'+(v.totalUSD||0).toFixed(2);}).join('<br>'):'Sin ventas aun.';
+}
+
+window.addEventListener('online',function(){$('offlineBanner').style.display='none';});
+window.addEventListener('offline',function(){$('offlineBanner').style.display='block';});
+if(!navigator.onLine) $('offlineBanner').style.display='block';
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});
+}
+</script>
+</body>
+</html>
++precioMayor.toFixed(3)+'/L - <b>
+
+function calcTotales(){
+  var items=getSaleItems();
+  var totalUSD=items.reduce(function(a,i){return a+i.subtotal;},0);
+  var tasa=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+  var totalBs=totalUSD*tasa;
+  $('ventaTotales').innerHTML=items.length
+    ?'Total: <b>$'+totalUSD.toFixed(2)+' USD</b> &nbsp;|&nbsp; <b>Bs '+totalBs.toLocaleString('es-VE',{maximumFractionDigits:2})+'</b>'
+    :'Agrega productos para ver el total';
+  if(items.length) $('btnPreviewWA').classList.remove('hide');
+  else $('btnPreviewWA').classList.add('hide');
+  return {items:items,totalUSD:totalUSD,totalBs:totalBs,tasa:tasa};
+}
+
+$('btnPreviewWA').addEventListener('click',function(){
+  var r=calcTotales();
+  var cliId=$('ventaCliente').value;
+  var cli=clientes[cliId];
+  var cliNombre=cli?(cli.nombre+(cli.apellido?' '+cli.apellido:'')):'Consumidor final';
+  var fecha=new Date().toLocaleDateString('es-VE',{day:'2-digit',month:'long',year:'numeric'});
+  var prodLines=r.items.map(function(i){return '  * '+i.nombre+' - '+i.ml+'ml - $'+i.subtotal.toFixed(3);}).join('\n');
+  var tmpl=waConfig.template||DEFAULT_WA;
+  var msg=tmpl
+    .replace('{cliente}',cliNombre)
+    .replace('{fecha}',fecha)
+    .replace('{productos}',prodLines)
+    .replace('{totalUSD}',r.totalUSD.toFixed(2))
+    .replace('{totalBs}',r.totalBs.toLocaleString('es-VE',{maximumFractionDigits:2}))
+    .replace('{tasaBCV}',r.tasa)
+    .replace('{pagoMovil}',waConfig.pagoMovil||DEFAULT_PAGO);
+  $('waText').textContent=msg;
+  $('waPreview').classList.remove('hide');
+  var tel=(cli&&cli.telefono?cli.telefono:'').replace(/\D/g,'');
+  var num=tel.startsWith('0')?'58'+tel.slice(1):(tel?'58'+tel:'');
+  $('btnSendWA').onclick=function(){window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');};
+});
+
+$('btnGuardarVenta').addEventListener('click',function(){
+  var r=calcTotales();
+  if(!r.items.length){$('ventaMsg').textContent='Agrega al menos un producto.';$('ventaMsg').style.color='var(--red)';return;}
+  for(var i=0;i<r.items.length;i++){
+    var it=r.items[i];
+    var stock=parseFloat((productos[it.productoId]&&productos[it.productoId].stockLitros)||0);
+    if(stock<it.litros){$('ventaMsg').textContent='Stock insuficiente de "'+it.nombre+'" (tienes '+stock.toFixed(1)+'L).';$('ventaMsg').style.color='var(--red)';return;}
+  }
+  var cliId=$('ventaCliente').value;
+  var cli=(cliId&&cliId!=='__nuevo__')?clientes[cliId]:null;
+  var estadoPago=$('ventaEstado').value||'pendiente';
+  db.collection('ventas').add({
+    fecha:Date.now(),
+    clienteId:cliId||null,
+    clienteNombre:cli?(cli.nombre+(cli.apellido?' '+cli.apellido:'')):'Consumidor final',
+    clienteTel:(cli&&cli.telefono)||'',
+    items:r.items,totalUSD:r.totalUSD,totalBs:r.totalBs,tasaBCV:r.tasa,
+    pago:$('ventaPago').value,
+    estado:estadoPago,
+    fechaPago:estadoPago==='pagado'?Date.now():null,
+    tasaPago:estadoPago==='pagado'?r.tasa:null,
+    vendedor:currentUser.email
+  }).then(function(){
+    var ps=r.items.map(function(it){
+      return db.collection('productos').doc(it.productoId).get().then(function(snap){
+        if(!snap.exists)return;
+        var curr=snap.data();
+        return db.collection('productos').doc(it.productoId).update({
+          stockLitros:parseFloat(((curr.stockLitros||curr.stock||0)-it.litros).toFixed(3))
+        });
+      });
+    });
+    return Promise.all(ps);
+  }).then(function(){
+    return recargarProductos();
+  }).then(function(){
+    $('saleItems').innerHTML='';
+    $('ventaTotales').textContent='Agrega productos para ver el total';
+    $('waPreview').classList.add('hide');
+    $('btnPreviewWA').classList.add('hide');
+    $('ventaMsg').style.color='var(--green-d)';
+    $('ventaMsg').textContent='Venta registrada correctamente.';
+  }).catch(function(e){
+    $('ventaMsg').style.color='var(--red)';
+    $('ventaMsg').textContent='Error: '+e.message;
+  });
+});
+
+document.querySelectorAll('[data-filt]').forEach(function(b){b.addEventListener('click',function(){ventaFiltro=b.dataset.filt;renderVentas();});});
+
+function renderVentas(){
+  var tb=$('ventasBody'); if(!tb)return;
+  var vs=Object.entries(ventas);
+  if(ventaFiltro!=='all') vs=vs.filter(function(e){return e[1].estado===ventaFiltro;});
+  tb.innerHTML=vs.map(function(e){
+    var id=e[0],v=e[1];
+    var est=v.estado==='pagado'?'<span class="badge badge-paid">Pagado</span>':v.estado==='mora'?'<span class="badge badge-mora">Mora</span>':'<span class="badge badge-pending">Pendiente</span>';
+    var acts=v.estado!=='pagado'?'<button class="btn btn-sm btn-g" data-pagar="'+id+'">OK</button>':'';
+    return '<tr class="'+(v.estado==='mora'?'mora':'')+'">'
+      +'<td style="white-space:nowrap">'+new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})+'</td>'
+      +'<td>'+(v.clienteNombre||'Consumidor final')+'</td>'
+      +'<td style="font-size:.72rem">'+((v.items||[]).map(function(i){return i.nombre+' '+i.ml+'ml';}).join(', '))+'</td>'
+      +'<td>$'+(v.totalUSD||0).toFixed(2)+'</td>'
+      +'<td>Bs '+(v.totalBs||0).toLocaleString('es-VE',{maximumFractionDigits:0})+'</td>'
+      +'<td>'+est+'</td>'
+      +'<td style="display:flex;gap:4px;flex-wrap:wrap">'+acts+'<button class="btn btn-sm btn-o" data-editv="'+id+'">Edit</button></td>'
+      +'</tr>';
+  }).join('')||'<tr><td colspan="7" style="color:var(--gray)">Sin ventas.</td></tr>';
+  tb.querySelectorAll('[data-pagar]').forEach(function(b){b.addEventListener('click',function(){
+    var tActual=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+    var v=ventas[b.dataset.pagar];
+    var bsPago=(v.totalUSD||0)*tActual;
+    if(confirm('Marcar como pagado?\nTasa BCV: '+tActual+'\nTotal Bs: '+bsPago.toLocaleString('es-VE',{maximumFractionDigits:2}))){
+      db.collection('ventas').doc(b.dataset.pagar).update({estado:'pagado',fechaPago:Date.now(),tasaPago:tActual,bsPagado:bsPago});
+    }
+  });});
+  tb.querySelectorAll('[data-editv]').forEach(function(b){b.addEventListener('click',function(){abrirEditVenta(b.dataset.editv);});});
+}
+
+function fillClienteSelect(){
+  var s=$('ventaCliente'); var v=s.value;
+  s.innerHTML='<option value="">Consumidor final</option><option value="__nuevo__">+ Nuevo cliente...</option>'+
+    Object.entries(clientes).map(function(e){
+      var c=e[1];
+      return '<option value="'+e[0]+'">'+c.nombre+(c.apellido?' '+c.apellido:'')+(c.cedula?' - '+c.cedula:'')+'</option>';
+    }).join('');
+  if(v) s.value=v;
+}
+function fillEditVentaClienteSelect(){
+  var s=$('editVentaCliente'); var v=s.value;
+  s.innerHTML='<option value="">Consumidor final</option>'+
+    Object.entries(clientes).map(function(e){
+      var c=e[1];
+      return '<option value="'+e[0]+'">'+c.nombre+(c.apellido?' '+c.apellido:'')+'</option>';
+    }).join('');
+  if(v) s.value=v;
+}
+$('ventaCliente').addEventListener('change',function(){$('nuevoClienteBox').classList.toggle('hide',$('ventaCliente').value!=='__nuevo__');});
+$('btnGuardarNC').addEventListener('click',function(){
+  var n=$('ncNombre').value.trim();
+  if(!n){alert('El nombre es obligatorio.');return;}
+  db.collection('clientes').add({nombre:n,apellido:$('ncApellido').value.trim(),cedula:$('ncCedula').value.trim(),telefono:$('ncTelefono').value.trim(),direccion:$('ncDireccion').value.trim()}).then(function(ref){
+    ['ncNombre','ncApellido','ncCedula','ncTelefono','ncDireccion'].forEach(function(f){$(f).value='';});
+    $('nuevoClienteBox').classList.add('hide');
+    setTimeout(function(){fillClienteSelect();$('ventaCliente').value=ref.id;},600);
+  });
+});
+
+function abrirEditVenta(id){
+  var v=ventas[id]; if(!v)return;
+  $('editVentaId').value=id;
+  fillEditVentaClienteSelect();
+  setTimeout(function(){$('editVentaCliente').value=v.clienteId||'';},300);
+  $('editVentaPago').value=v.pago||'Pago Movil Bs';
+  $('editVentaEstado').value=v.estado||'pendiente';
+  $('modalVenta').classList.remove('hide');
+}
+$('btnCancelEditVenta').addEventListener('click',function(){$('modalVenta').classList.add('hide');});
+$('modalVenta').addEventListener('click',function(e){if(e.target===$('modalVenta'))$('modalVenta').classList.add('hide');});
+$('btnSaveEditVenta').addEventListener('click',function(){
+  var id=$('editVentaId').value;
+  var cliId=$('editVentaCliente').value;
+  var cli=cliId?clientes[cliId]:null;
+  var nuevoEstado=$('editVentaEstado').value;
+  var tActual=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+  var v=ventas[id];
+  db.collection('ventas').doc(id).update({
+    clienteId:cliId||null,
+    clienteNombre:cli?(cli.nombre+(cli.apellido?' '+cli.apellido:'')):'Consumidor final',
+    clienteTel:(cli&&cli.telefono)||'',
+    pago:$('editVentaPago').value,
+    estado:nuevoEstado,
+    fechaPago:(nuevoEstado==='pagado'&&v.estado!=='pagado')?Date.now():(v.fechaPago||null),
+    tasaPago:(nuevoEstado==='pagado'&&v.estado!=='pagado')?tActual:(v.tasaPago||null)
+  }).then(function(){$('modalVenta').classList.add('hide');});
+});
+
+$('btnGuardarCli').addEventListener('click',function(){
+  var id=$('cliId').value;
+  var nombre=$('cliNombre').value.trim();
+  if(!nombre){alert('El nombre es obligatorio.');return;}
+  var data={nombre:nombre,apellido:$('cliApellido').value.trim(),cedula:$('cliCedula').value.trim(),telefono:$('cliTelefono').value.trim(),direccion:$('cliDireccion').value.trim()};
+  var p=id?db.collection('clientes').doc(id).update(data):db.collection('clientes').add(data);
+  p.then(function(){
+    ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliDireccion'].forEach(function(f){$(f).value='';});
+    $('cliFormTitle').textContent='+ Agregar Cliente';
+    $('btnCancelEditCli').classList.add('hide');
+  });
+});
+$('btnCancelEditCli').addEventListener('click',function(){
+  ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliDireccion'].forEach(function(f){$(f).value='';});
+  $('cliFormTitle').textContent='+ Agregar Cliente';
+  $('btnCancelEditCli').classList.add('hide');
+});
+function renderClientes(){
+  var tb=$('cliBody'); if(!tb)return;
+  var cliMora=new Set(Object.values(ventas).filter(function(v){return v.estado==='mora';}).map(function(v){return v.clienteId;}));
+  tb.innerHTML=Object.entries(clientes).map(function(e){
+    var id=e[0],c=e[1];
+    return '<tr><td>'+c.nombre+(c.apellido?' '+c.apellido:'')+'</td>'
+      +'<td>'+(c.cedula||'-')+'</td><td>'+(c.telefono||'-')+'</td><td>'+(c.direccion||'-')+'</td>'
+      +'<td>'+(cliMora.has(id)?'<span class="badge badge-mora">Mora</span>':'-')+'</td>'
+      +'<td style="white-space:nowrap">'
+      +'<button class="btn btn-sm btn-o" data-ec="'+id+'">Edit</button> '
+      +'<button class="btn btn-sm btn-d" data-dc="'+id+'">Del</button>'
+      +'</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="color:var(--gray)">Sin clientes.</td></tr>';
+  tb.querySelectorAll('[data-ec]').forEach(function(b){b.addEventListener('click',function(){
+    var c=clientes[b.dataset.ec];
+    $('cliId').value=b.dataset.ec; $('cliNombre').value=c.nombre; $('cliApellido').value=c.apellido||'';
+    $('cliCedula').value=c.cedula||''; $('cliTelefono').value=c.telefono||''; $('cliDireccion').value=c.direccion||'';
+    $('cliFormTitle').textContent='Editar Cliente'; $('btnCancelEditCli').classList.remove('hide');
+  });});
+  tb.querySelectorAll('[data-dc]').forEach(function(b){b.addEventListener('click',function(){
+    if(confirm('Eliminar este cliente?')) db.collection('clientes').doc(b.dataset.dc).delete();
+  });});
+}
+
+function renderTasasUI(){
+  var cont=$('tasasContainer'); if(!cont)return;
+  cont.innerHTML=Object.entries(tasas).map(function(e){
+    var code=e[0],t=e[1];
+    return '<div class="fb" style="padding:8px;margin:0">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center">'
+      +'<strong style="font-size:.8rem">'+code+(code===monedaPrincipal?' *':'')+'</strong>'
+      +(code!==monedaPrincipal?'<button class="btn btn-sm btn-o" data-sp="'+code+'">Usar</button>':'')
+      +'</div>'
+      +'<input type="number" step="0.01" value="'+(t.valor||0)+'" data-tasa="'+code+'" style="margin-top:6px"/>'
+      +(code!=='USD'?'<button class="btn btn-sm btn-d" data-dt="'+code+'" style="margin-top:4px">Del</button>':'')
+      +'</div>';
+  }).join('');
+  cont.querySelectorAll('[data-tasa]').forEach(function(i){i.addEventListener('input',function(){if(!tasas[i.dataset.tasa])tasas[i.dataset.tasa]={};tasas[i.dataset.tasa].valor=parseFloat(i.value)||0;updateBcvBadge();});});
+  cont.querySelectorAll('[data-dt]').forEach(function(b){b.addEventListener('click',function(){delete tasas[b.dataset.dt];renderTasasUI();});});
+  cont.querySelectorAll('[data-sp]').forEach(function(b){b.addEventListener('click',function(){monedaPrincipal=b.dataset.sp;renderTasasUI();renderInvTable();});});
+  updateBcvBadge();
+}
+$('btnAutoTasas').addEventListener('click',function(){
+  $('tasasFecha').textContent='Consultando...';
+  Promise.all([fetch('https://ve.dolarapi.com/v1/dolares/oficial'),fetch('https://ve.dolarapi.com/v1/euros/oficial')])
+  .then(function(rs){return Promise.all(rs.map(function(r){return r.json();}));})
+  .then(function(ds){
+    tasas.USD=tasas.USD||{}; tasas.USD.valor=ds[0].promedio||ds[0].venta||tasas.USD.valor;
+    tasas.EUR=tasas.EUR||{}; tasas.EUR.valor=ds[1].promedio||ds[1].venta||tasas.EUR.valor;
+    renderTasasUI(); $('tasasFecha').textContent='BCV/Euro actualizados. Presiona Guardar.';
+  }).catch(function(){$('tasasFecha').textContent='Sin conexion. Ingresa manualmente.';});
+});
+$('btnAddTasa').addEventListener('click',function(){var c=prompt('Codigo (ej: USDT):');if(c){tasas[c.toUpperCase()]={valor:0};renderTasasUI();}});
+$('btnSaveTasas').addEventListener('click',function(){
+  db.collection('config').doc('tasas').set({tasas:tasas,principal:monedaPrincipal,updatedAt:Date.now()}).then(function(){
+    $('tasasFecha').textContent='Guardado: '+new Date().toLocaleString('es-VE');
+  });
+});
+function updateBcvBadge(){
+  var t=tasas[monedaPrincipal];
+  $('bcvBadge').textContent=(t&&t.valor)?monedaPrincipal+'=Bs '+t.valor.toLocaleString('es-VE',{maximumFractionDigits:2}):'Tasas';
+}
+$('bcvBadge').addEventListener('click',function(){if(currentRole==='admin')showSection('tasas');});
+
+function loadWAConfig(){
+  db.collection('config').doc('wa').get().then(function(doc){
+    if(doc.exists){
+      waConfig=doc.data();
+      $('waMsgTemplate').value=waConfig.template||DEFAULT_WA;
+      $('waPagoMovil').value=waConfig.pagoMovil||DEFAULT_PAGO;
+      $('costoEnvaseReciclado').value=waConfig.costoEnvaseReciclado||50;
+    } else {
+      $('waMsgTemplate').value=DEFAULT_WA;
+      $('waPagoMovil').value=DEFAULT_PAGO;
+    }
+  });
+}
+$('btnSaveWAConfig').addEventListener('click',function(){
+  waConfig={template:$('waMsgTemplate').value,pagoMovil:$('waPagoMovil').value,costoEnvaseReciclado:parseFloat($('costoEnvaseReciclado').value)||50};
+  db.collection('config').doc('wa').set(waConfig).then(function(){
+    $('waConfigMsg').style.color='var(--green-d)'; $('waConfigMsg').textContent='Guardado.';
+  });
+});
+
+$('btnCrearEmpleado').addEventListener('click',function(){
+  var email=$('empEmail').value.trim(), pass=$('empPass').value, rol=$('empRol').value;
+  if(!email||pass.length<6){$('empMsg').textContent='Correo valido y contrasena minimo 6 caracteres.';$('empMsg').style.color='var(--red)';return;}
+  var sec=firebase.initializeApp(firebaseConfig,'Sec'+Date.now());
+  sec.auth().createUserWithEmailAndPassword(email,pass).then(function(){
+    return sec.auth().signOut();
+  }).then(function(){
+    return sec.delete();
+  }).then(function(){
+    return db.collection('roles').doc(email.toLowerCase()).set({role:rol,createdAt:Date.now(),creadoPor:currentUser.email});
+  }).then(function(){
+    $('empMsg').style.color='var(--green-d)'; $('empMsg').textContent='Cuenta creada.';
+    $('empEmail').value=''; $('empPass').value='';
+  }).catch(function(e){$('empMsg').style.color='var(--red)'; $('empMsg').textContent=traducirError(e.code);});
+});
+function renderUsers(rows){
+  var tb=$('usersBody'); if(!tb)return;
+  tb.innerHTML=(rows||[]).map(function(r){
+    return '<tr><td>'+r.email+'</td><td>'+(r.role==='admin'?'Admin':'Vendedor')+'</td>'
+      +'<td>'+(r.email!==currentUser.email?'<button class="btn btn-sm btn-d" data-du="'+r.email+'">Revocar</button>':'(tu)')+'</td></tr>';
+  }).join('');
+  tb.querySelectorAll('[data-du]').forEach(function(b){b.addEventListener('click',function(){
+    if(confirm('Revocar acceso de '+b.dataset.du+'?')) db.collection('roles').doc(b.dataset.du).delete();
+  });});
+}
+
+function setDefaultDates(){
+  var h=new Date(), d=new Date(h); d.setDate(1);
+  $('repDesde').value=d.toISOString().split('T')[0];
+  $('repHasta').value=h.toISOString().split('T')[0];
+}
+function fillRepClienteFiltro(){
+  var s=$('repClienteFiltro'); var v=s.value;
+  s.innerHTML='<option value="all">Todos los clientes</option>'+
+    Object.entries(clientes).map(function(e){
+      var c=e[1];
+      return '<option value="'+e[0]+'">'+c.nombre+(c.apellido?' '+c.apellido:'')+'</option>';
+    }).join('');
+  if(v) s.value=v;
+}
+$('repPeriodo').addEventListener('change',function(){
+  $('repRangoPersonalizado').classList.toggle('hide',$('repPeriodo').value!=='personalizado');
+});
+function getRepRango(){
+  var p=$('repPeriodo').value;
+  var ahora=new Date();
+  var desde, hasta=ahora.getTime()+86400000;
+  if(p==='hoy'){var d=new Date();d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='semana'){var d=new Date();d.setDate(d.getDate()-d.getDay());d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='mes'){var d=new Date();d.setDate(1);d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='ano'){var d=new Date();d.setMonth(0,1);d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='personalizado'){desde=new Date($('repDesde').value).getTime();hasta=new Date($('repHasta').value).getTime()+86400000;}
+  else{desde=0;}
+  return {desde:desde,hasta:hasta};
+}
+$('btnGenerarReporte').addEventListener('click',function(){
+  var rango=getRepRango();
+  var estadoFiltro=$('repEstadoFiltro').value;
+  var clienteFiltro=$('repClienteFiltro').value;
+  var vs=Object.values(ventas).filter(function(v){return v.fecha>=rango.desde&&v.fecha<=rango.hasta;});
+  if(estadoFiltro!=='all') vs=vs.filter(function(v){return v.estado===estadoFiltro;});
+  if(clienteFiltro!=='all') vs=vs.filter(function(v){return v.clienteId===clienteFiltro;});
+  var pagadas=vs.filter(function(v){return v.estado==='pagado';});
+  var pendientes=vs.filter(function(v){return v.estado==='pendiente';});
+  var mora=vs.filter(function(v){return v.estado==='mora';});
+  var usdCobrado=pagadas.reduce(function(a,v){return a+(v.totalUSD||0);},0);
+  var bsCobrado=pagadas.reduce(function(a,v){return a+(v.totalBs||0);},0);
+  var usdPend=pendientes.concat(mora).reduce(function(a,v){return a+(v.totalUSD||0);},0);
+  $('repTotalVentas').textContent=vs.length;
+  $('repTotalUSD').textContent='$'+usdCobrado.toFixed(2);
+  $('repTotalBs').textContent='Bs '+bsCobrado.toLocaleString('es-VE',{maximumFractionDigits:0});
+  $('repPendientes').textContent=pendientes.length;
+  $('repMora').textContent=mora.length;
+  $('repUSDPendiente').textContent='$'+usdPend.toFixed(2);
+  var periodo=$('repPeriodo').options[$('repPeriodo').selectedIndex].text;
+  var estado=$('repEstadoFiltro').options[$('repEstadoFiltro').selectedIndex].text;
+  var cliLabel=clienteFiltro!=='all'?(clientes[clienteFiltro]?clientes[clienteFiltro].nombre:''):'Todos';
+  $('repResumen').textContent='Periodo: '+periodo+' | Estado: '+estado+' | Cliente: '+cliLabel;
+  $('repBody').innerHTML=vs.map(function(v){
+    var est=v.estado==='pagado'?'Pagado':v.estado==='mora'?'Mora':'Pendiente';
+    return '<tr><td>'+new Date(v.fecha).toLocaleDateString('es-VE')+'</td>'
+      +'<td>'+(v.clienteNombre||'Consumidor final')+'</td>'
+      +'<td style="font-size:.72rem">'+((v.items||[]).map(function(i){return i.nombre+' '+i.ml+'ml';}).join(', '))+'</td>'
+      +'<td>$'+(v.totalUSD||0).toFixed(2)+'</td>'
+      +'<td>Bs '+(v.totalBs||0).toLocaleString('es-VE',{maximumFractionDigits:0})+'</td>'
+      +'<td>'+est+'</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="color:var(--gray)">Sin resultados.</td></tr>';
+  $('reporteResult').classList.remove('hide');
+});
+
+$('btnImprimirReporte').addEventListener('click',function(){
+  var win=window.open('','_blank');
+  var html='<html><head><title>Reporte Renuevo</title>'
+    +'<style>body{font-family:Arial,sans-serif;padding:20px;font-size:12px}h1{color:#1f7a4d}'
+    +'.cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}'
+    +'.card{border:1px solid #ddd;border-radius:8px;padding:10px 14px}'
+    +'.n{font-size:1.3rem;font-weight:800;color:#1f7a4d}.l{font-size:.7rem;color:#666}'
+    +'table{width:100%;border-collapse:collapse}'
+    +'th{background:#1f7a4d;color:#fff;padding:6px;text-align:left}'
+    +'td{padding:6px;border-bottom:1px solid #eee}'
+    +'</style></head><body>'
+    +'<h1>Renuevo - Reporte de Ventas</h1>'
+    +'<p>'+$('repResumen').textContent+' | Generado: '+new Date().toLocaleString('es-VE')+'</p>'
+    +'<div class="cards">'
+    +'<div class="card"><div class="n">'+$('repTotalVentas').textContent+'</div><div class="l">Ventas</div></div>'
+    +'<div class="card"><div class="n">'+$('repTotalUSD').textContent+'</div><div class="l">Cobrado USD</div></div>'
+    +'<div class="card"><div class="n">'+$('repTotalBs').textContent+'</div><div class="l">Cobrado Bs</div></div>'
+    +'<div class="card"><div class="n">'+$('repPendientes').textContent+'</div><div class="l">Pendientes</div></div>'
+    +'<div class="card"><div class="n">'+$('repMora').textContent+'</div><div class="l">Mora</div></div>'
+    +'<div class="card"><div class="n">'+$('repUSDPendiente').textContent+'</div><div class="l">USD por cobrar</div></div>'
+    +'</div>'
+    +'<table><thead><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>USD</th><th>Bs</th><th>Estado</th></tr></thead>'
+    +'<tbody>'+$('repBody').innerHTML+'</tbody></table>'
+    +'</body></html>';
+  win.document.write(html);
+  win.document.close();
+  setTimeout(function(){win.print();},500);
+});
+
+function renderFidelidad(){
+  loadFidConfig().then(function(){
+    var cont=$('fidCards');
+    if(!Object.keys(clientes).length){cont.innerHTML='<p style="color:var(--gray);font-size:.85rem">Sin clientes registrados.</p>';return;}
+    db.collection('canjes').get().then(function(canjesSnap){
+      var canjes={};
+      canjesSnap.forEach(function(d){var c=d.data();if(!canjes[c.clienteId])canjes[c.clienteId]=0;canjes[c.clienteId]+=(c.tarjetas||1);});
+      cont.innerHTML='';
+      Object.entries(clientes).forEach(function(e){
+        var id=e[0],c=e[1];
+        var res=calcSellosCliente(id);
+        var tarjetasCompletas=Math.floor(res.sellosAcum/(fidConfig.sellos||7));
+        var canjeados=canjes[id]||0;
+        var tarjetasPendientes=tarjetasCompletas-canjeados;
+        var sellosActuales=res.sellosAcum%(fidConfig.sellos||7);
+        var totalSellos=fidConfig.sellos||7;
+        var sellosHTML='';
+        for(var i=0;i<totalSellos;i++) sellosHTML+='<span class="sello">'+(i<sellosActuales?'&#11088;':'&#9734;')+'</span>';
+        var card=document.createElement('div');
+        card.className='fb'; card.style.margin='0';
+        var html='<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+          +'<div><b>'+c.nombre+(c.apellido?' '+c.apellido:'')+'</b>'
+          +'<div style="font-size:.72rem;color:var(--gray)">'+(c.telefono||'')+'</div></div>'
+          +(tarjetasPendientes>0?'<span class="badge badge-ok">'+tarjetasPendientes+' tarjeta'+(tarjetasPendientes>1?'s':'')+' lista'+(tarjetasPendientes>1?'s':'')+'</span>':'')
+          +'</div>'
+          +'<div style="margin:10px 0;display:flex;flex-wrap:wrap;gap:4px">'+sellosHTML+'</div>'
+          +'<div style="font-size:.75rem;color:var(--gray);margin-bottom:8px">'+sellosActuales+'/'+totalSellos+' sellos - '+res.sellosAcum+' totales - '+tarjetasCompletas+' completadas</div>';
+        if(tarjetasPendientes>0){
+          html+='<div style="background:#eef7f1;border-radius:8px;padding:8px;margin-bottom:8px"><b style="font-size:.8rem;color:var(--green-d)">Tiene '+tarjetasPendientes+' tarjeta'+(tarjetasPendientes>1?'s':'')+' para canjear!</b></div>'
+            +'<input id="premio_'+id+'" placeholder="Que premio le das?" style="margin-bottom:6px"/>'
+            +'<button class="btn btn-g btn-sm" data-canjear="'+id+'">Registrar canje</button>';
+        }
+        card.innerHTML=html;
+        cont.appendChild(card);
+      });
+      cont.querySelectorAll('[data-canjear]').forEach(function(b){b.addEventListener('click',function(){
+        var cid=b.dataset.canjear;
+        var premioEl=$('premio_'+cid);
+        if(!premioEl||!premioEl.value.trim()){alert('Indica el premio.');return;}
+        var premio=premioEl.value.trim();
+        var c=clientes[cid];
+        db.collection('canjes').add({clienteId:cid,clienteNombre:c.nombre+(c.apellido?' '+c.apellido:''),premio:premio,tarjetas:1,fecha:Date.now(),by:currentUser.email}).then(function(){
+          alert('Canje registrado para '+c.nombre+'. Premio: '+premio);
+          renderFidelidad();
+        });
+      });});
+      var tb=$('fidHistBody');
+      var todos=[];
+      canjesSnap.forEach(function(d){todos.push(d.data());});
+      todos.sort(function(a,b){return b.fecha-a.fecha;});
+      tb.innerHTML=todos.map(function(c){
+        return '<tr><td>'+new Date(c.fecha).toLocaleDateString('es-VE')+'</td>'
+          +'<td>'+(c.clienteNombre||'-')+'</td><td>'+(c.premio||'-')+'</td><td>'+(c.tarjetas||1)+'</td></tr>';
+      }).join('')||'<tr><td colspan="4" style="color:var(--gray)">Sin canjes aun.</td></tr>';
+    });
+  });
+}
+
+function calcSellosCliente(clienteId){
+  var ventasCliente=Object.values(ventas).filter(function(v){return v.clienteId===clienteId;});
+  var sellosAcum=0;
+  ventasCliente.forEach(function(v){
+    var totalLitros=(v.items||[]).reduce(function(a,i){return a+(i.litros||0);},0);
+    var sellosPorLitros=Math.floor(totalLitros/(fidConfig.litrosPorSello||4));
+    var sellosPorUSD=Math.floor((v.totalUSD||0)/(fidConfig.usdPorSello||5));
+    sellosAcum+=Math.max(sellosPorLitros,sellosPorUSD);
+  });
+  return {sellosAcum:sellosAcum};
+}
+
+function loadFidConfig(){
+  return db.collection('config').doc('fidelidad').get().then(function(doc){
+    if(doc.exists){
+      fidConfig=doc.data();
+      $('fidSellos').value=fidConfig.sellos||7;
+      $('fidLitros').value=fidConfig.litrosPorSello||4;
+      $('fidUSD').value=fidConfig.usdPorSello||5;
+    }
+  });
+}
+$('btnSaveFidConfig').addEventListener('click',function(){
+  fidConfig={sellos:parseInt($('fidSellos').value)||7,litrosPorSello:parseFloat($('fidLitros').value)||4,usdPorSello:parseFloat($('fidUSD').value)||5};
+  db.collection('config').doc('fidelidad').set(fidConfig).then(function(){
+    $('fidConfigMsg').style.color='var(--green-d)';
+    $('fidConfigMsg').textContent='Configuracion guardada.';
+    renderFidelidad();
+  });
+});
+
+function renderDashboard(){
+  var prods=Object.values(productos);
+  $('dCardProds').textContent=prods.length;
+  $('dCardBajo').textContent=prods.filter(function(p){return (p.stockLitros||0)<=(p.stockMin||0);}).length;
+  $('dCardClientes').textContent=Object.keys(clientes).length;
+  var hoy=new Date(); hoy.setHours(0,0,0,0);
+  $('dCardHoy').textContent=Object.values(ventas).filter(function(v){return v.fecha>=hoy.getTime();}).length;
+  $('dCardMora').textContent=Object.values(ventas).filter(function(v){return v.estado==='mora';}).length;
+  var low=prods.filter(function(p){return (p.stockLitros||0)<=(p.stockMin||0);});
+  $('dLowStock').innerHTML=low.length?low.map(function(p){return '* '+p.nombre+': '+(p.stockLitros||0).toFixed(1)+'L (min: '+(p.stockMin||0)+'L)';}).join('<br>'):'Inventario en niveles saludables.';
+  var pend=Object.entries(ventas).filter(function(e){return e[1].estado==='pendiente'||e[1].estado==='mora';}).slice(0,5);
+  $('dPendingPay').innerHTML=pend.length?pend.map(function(e){var v=e[1];return '* '+(v.clienteNombre||'Consumidor final')+' - $'+(v.totalUSD||0).toFixed(2)+' - <span class="badge '+(v.estado==='mora'?'badge-mora':'badge-pending')+'">'+v.estado+'</span>';}).join('<br>'):'Sin pagos pendientes.';
+  var last=Object.values(ventas).slice(0,5);
+  $('dLastSales').innerHTML=last.length?last.map(function(v){return '* '+new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})+' - '+(v.clienteNombre||'Consumidor final')+' - $'+(v.totalUSD||0).toFixed(2);}).join('<br>'):'Sin ventas aun.';
+}
+
+window.addEventListener('online',function(){$('offlineBanner').style.display='none';});
+window.addEventListener('offline',function(){$('offlineBanner').style.display='block';});
+if(!navigator.onLine) $('offlineBanner').style.display='block';
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});
+}
+</script>
+</body>
+</html>
++subtotal.toFixed(2)+'</b> (Bs '+(subtotal*tasa).toLocaleString('es-VE',{maximumFractionDigits:2})+')';
+      return {productoId:pid,nombre:p.nombre,ml:litros*1000,litros:litros,envase:'mayor',costoEnvUSD:0,subtotal:subtotal,tipoVenta:'mayor',precioMayor:precioMayor};
+    } else {
+      var ml=parseFloat(div.querySelector('.saleCustomML').value)||0;
+      var litros=ml/1000;
+      var envTipo=(div.querySelector('.env-btn.active')||{dataset:{env:'reciclado'}}).dataset.env;
+      if(litros<=0) return null;
+      var costoEnv=envTipo==='cliente'?0:getCostoEnvaseUSD();
+      var costoBase=(p.costoPorLitro||p.costo||0)*litros+costoEnv;
+      var subtotal=costoBase*(1+(p.margen||0)/100);
+      div.querySelector('.saleSubtotal').innerHTML=p.nombre+' - '+ml+'ml - '+(envTipo==='cliente'?'del cliente':'reciclado')+' - <b>
+
+function calcTotales(){
+  var items=getSaleItems();
+  var totalUSD=items.reduce(function(a,i){return a+i.subtotal;},0);
+  var tasa=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+  var totalBs=totalUSD*tasa;
+  $('ventaTotales').innerHTML=items.length
+    ?'Total: <b>$'+totalUSD.toFixed(2)+' USD</b> &nbsp;|&nbsp; <b>Bs '+totalBs.toLocaleString('es-VE',{maximumFractionDigits:2})+'</b>'
+    :'Agrega productos para ver el total';
+  if(items.length) $('btnPreviewWA').classList.remove('hide');
+  else $('btnPreviewWA').classList.add('hide');
+  return {items:items,totalUSD:totalUSD,totalBs:totalBs,tasa:tasa};
+}
+
+$('btnPreviewWA').addEventListener('click',function(){
+  var r=calcTotales();
+  var cliId=$('ventaCliente').value;
+  var cli=clientes[cliId];
+  var cliNombre=cli?(cli.nombre+(cli.apellido?' '+cli.apellido:'')):'Consumidor final';
+  var fecha=new Date().toLocaleDateString('es-VE',{day:'2-digit',month:'long',year:'numeric'});
+  var prodLines=r.items.map(function(i){return '  * '+i.nombre+' - '+i.ml+'ml - $'+i.subtotal.toFixed(3);}).join('\n');
+  var tmpl=waConfig.template||DEFAULT_WA;
+  var msg=tmpl
+    .replace('{cliente}',cliNombre)
+    .replace('{fecha}',fecha)
+    .replace('{productos}',prodLines)
+    .replace('{totalUSD}',r.totalUSD.toFixed(2))
+    .replace('{totalBs}',r.totalBs.toLocaleString('es-VE',{maximumFractionDigits:2}))
+    .replace('{tasaBCV}',r.tasa)
+    .replace('{pagoMovil}',waConfig.pagoMovil||DEFAULT_PAGO);
+  $('waText').textContent=msg;
+  $('waPreview').classList.remove('hide');
+  var tel=(cli&&cli.telefono?cli.telefono:'').replace(/\D/g,'');
+  var num=tel.startsWith('0')?'58'+tel.slice(1):(tel?'58'+tel:'');
+  $('btnSendWA').onclick=function(){window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');};
+});
+
+$('btnGuardarVenta').addEventListener('click',function(){
+  var r=calcTotales();
+  if(!r.items.length){$('ventaMsg').textContent='Agrega al menos un producto.';$('ventaMsg').style.color='var(--red)';return;}
+  for(var i=0;i<r.items.length;i++){
+    var it=r.items[i];
+    var stock=parseFloat((productos[it.productoId]&&productos[it.productoId].stockLitros)||0);
+    if(stock<it.litros){$('ventaMsg').textContent='Stock insuficiente de "'+it.nombre+'" (tienes '+stock.toFixed(1)+'L).';$('ventaMsg').style.color='var(--red)';return;}
+  }
+  var cliId=$('ventaCliente').value;
+  var cli=(cliId&&cliId!=='__nuevo__')?clientes[cliId]:null;
+  var estadoPago=$('ventaEstado').value||'pendiente';
+  db.collection('ventas').add({
+    fecha:Date.now(),
+    clienteId:cliId||null,
+    clienteNombre:cli?(cli.nombre+(cli.apellido?' '+cli.apellido:'')):'Consumidor final',
+    clienteTel:(cli&&cli.telefono)||'',
+    items:r.items,totalUSD:r.totalUSD,totalBs:r.totalBs,tasaBCV:r.tasa,
+    pago:$('ventaPago').value,
+    estado:estadoPago,
+    fechaPago:estadoPago==='pagado'?Date.now():null,
+    tasaPago:estadoPago==='pagado'?r.tasa:null,
+    vendedor:currentUser.email
+  }).then(function(){
+    var ps=r.items.map(function(it){
+      return db.collection('productos').doc(it.productoId).get().then(function(snap){
+        if(!snap.exists)return;
+        var curr=snap.data();
+        return db.collection('productos').doc(it.productoId).update({
+          stockLitros:parseFloat(((curr.stockLitros||curr.stock||0)-it.litros).toFixed(3))
+        });
+      });
+    });
+    return Promise.all(ps);
+  }).then(function(){
+    return recargarProductos();
+  }).then(function(){
+    $('saleItems').innerHTML='';
+    $('ventaTotales').textContent='Agrega productos para ver el total';
+    $('waPreview').classList.add('hide');
+    $('btnPreviewWA').classList.add('hide');
+    $('ventaMsg').style.color='var(--green-d)';
+    $('ventaMsg').textContent='Venta registrada correctamente.';
+  }).catch(function(e){
+    $('ventaMsg').style.color='var(--red)';
+    $('ventaMsg').textContent='Error: '+e.message;
+  });
+});
+
+document.querySelectorAll('[data-filt]').forEach(function(b){b.addEventListener('click',function(){ventaFiltro=b.dataset.filt;renderVentas();});});
+
+function renderVentas(){
+  var tb=$('ventasBody'); if(!tb)return;
+  var vs=Object.entries(ventas);
+  if(ventaFiltro!=='all') vs=vs.filter(function(e){return e[1].estado===ventaFiltro;});
+  tb.innerHTML=vs.map(function(e){
+    var id=e[0],v=e[1];
+    var est=v.estado==='pagado'?'<span class="badge badge-paid">Pagado</span>':v.estado==='mora'?'<span class="badge badge-mora">Mora</span>':'<span class="badge badge-pending">Pendiente</span>';
+    var acts=v.estado!=='pagado'?'<button class="btn btn-sm btn-g" data-pagar="'+id+'">OK</button>':'';
+    return '<tr class="'+(v.estado==='mora'?'mora':'')+'">'
+      +'<td style="white-space:nowrap">'+new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})+'</td>'
+      +'<td>'+(v.clienteNombre||'Consumidor final')+'</td>'
+      +'<td style="font-size:.72rem">'+((v.items||[]).map(function(i){return i.nombre+' '+i.ml+'ml';}).join(', '))+'</td>'
+      +'<td>$'+(v.totalUSD||0).toFixed(2)+'</td>'
+      +'<td>Bs '+(v.totalBs||0).toLocaleString('es-VE',{maximumFractionDigits:0})+'</td>'
+      +'<td>'+est+'</td>'
+      +'<td style="display:flex;gap:4px;flex-wrap:wrap">'+acts+'<button class="btn btn-sm btn-o" data-editv="'+id+'">Edit</button></td>'
+      +'</tr>';
+  }).join('')||'<tr><td colspan="7" style="color:var(--gray)">Sin ventas.</td></tr>';
+  tb.querySelectorAll('[data-pagar]').forEach(function(b){b.addEventListener('click',function(){
+    var tActual=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+    var v=ventas[b.dataset.pagar];
+    var bsPago=(v.totalUSD||0)*tActual;
+    if(confirm('Marcar como pagado?\nTasa BCV: '+tActual+'\nTotal Bs: '+bsPago.toLocaleString('es-VE',{maximumFractionDigits:2}))){
+      db.collection('ventas').doc(b.dataset.pagar).update({estado:'pagado',fechaPago:Date.now(),tasaPago:tActual,bsPagado:bsPago});
+    }
+  });});
+  tb.querySelectorAll('[data-editv]').forEach(function(b){b.addEventListener('click',function(){abrirEditVenta(b.dataset.editv);});});
+}
+
+function fillClienteSelect(){
+  var s=$('ventaCliente'); var v=s.value;
+  s.innerHTML='<option value="">Consumidor final</option><option value="__nuevo__">+ Nuevo cliente...</option>'+
+    Object.entries(clientes).map(function(e){
+      var c=e[1];
+      return '<option value="'+e[0]+'">'+c.nombre+(c.apellido?' '+c.apellido:'')+(c.cedula?' - '+c.cedula:'')+'</option>';
+    }).join('');
+  if(v) s.value=v;
+}
+function fillEditVentaClienteSelect(){
+  var s=$('editVentaCliente'); var v=s.value;
+  s.innerHTML='<option value="">Consumidor final</option>'+
+    Object.entries(clientes).map(function(e){
+      var c=e[1];
+      return '<option value="'+e[0]+'">'+c.nombre+(c.apellido?' '+c.apellido:'')+'</option>';
+    }).join('');
+  if(v) s.value=v;
+}
+$('ventaCliente').addEventListener('change',function(){$('nuevoClienteBox').classList.toggle('hide',$('ventaCliente').value!=='__nuevo__');});
+$('btnGuardarNC').addEventListener('click',function(){
+  var n=$('ncNombre').value.trim();
+  if(!n){alert('El nombre es obligatorio.');return;}
+  db.collection('clientes').add({nombre:n,apellido:$('ncApellido').value.trim(),cedula:$('ncCedula').value.trim(),telefono:$('ncTelefono').value.trim(),direccion:$('ncDireccion').value.trim()}).then(function(ref){
+    ['ncNombre','ncApellido','ncCedula','ncTelefono','ncDireccion'].forEach(function(f){$(f).value='';});
+    $('nuevoClienteBox').classList.add('hide');
+    setTimeout(function(){fillClienteSelect();$('ventaCliente').value=ref.id;},600);
+  });
+});
+
+function abrirEditVenta(id){
+  var v=ventas[id]; if(!v)return;
+  $('editVentaId').value=id;
+  fillEditVentaClienteSelect();
+  setTimeout(function(){$('editVentaCliente').value=v.clienteId||'';},300);
+  $('editVentaPago').value=v.pago||'Pago Movil Bs';
+  $('editVentaEstado').value=v.estado||'pendiente';
+  $('modalVenta').classList.remove('hide');
+}
+$('btnCancelEditVenta').addEventListener('click',function(){$('modalVenta').classList.add('hide');});
+$('modalVenta').addEventListener('click',function(e){if(e.target===$('modalVenta'))$('modalVenta').classList.add('hide');});
+$('btnSaveEditVenta').addEventListener('click',function(){
+  var id=$('editVentaId').value;
+  var cliId=$('editVentaCliente').value;
+  var cli=cliId?clientes[cliId]:null;
+  var nuevoEstado=$('editVentaEstado').value;
+  var tActual=tasas[monedaPrincipal]?tasas[monedaPrincipal].valor:0;
+  var v=ventas[id];
+  db.collection('ventas').doc(id).update({
+    clienteId:cliId||null,
+    clienteNombre:cli?(cli.nombre+(cli.apellido?' '+cli.apellido:'')):'Consumidor final',
+    clienteTel:(cli&&cli.telefono)||'',
+    pago:$('editVentaPago').value,
+    estado:nuevoEstado,
+    fechaPago:(nuevoEstado==='pagado'&&v.estado!=='pagado')?Date.now():(v.fechaPago||null),
+    tasaPago:(nuevoEstado==='pagado'&&v.estado!=='pagado')?tActual:(v.tasaPago||null)
+  }).then(function(){$('modalVenta').classList.add('hide');});
+});
+
+$('btnGuardarCli').addEventListener('click',function(){
+  var id=$('cliId').value;
+  var nombre=$('cliNombre').value.trim();
+  if(!nombre){alert('El nombre es obligatorio.');return;}
+  var data={nombre:nombre,apellido:$('cliApellido').value.trim(),cedula:$('cliCedula').value.trim(),telefono:$('cliTelefono').value.trim(),direccion:$('cliDireccion').value.trim()};
+  var p=id?db.collection('clientes').doc(id).update(data):db.collection('clientes').add(data);
+  p.then(function(){
+    ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliDireccion'].forEach(function(f){$(f).value='';});
+    $('cliFormTitle').textContent='+ Agregar Cliente';
+    $('btnCancelEditCli').classList.add('hide');
+  });
+});
+$('btnCancelEditCli').addEventListener('click',function(){
+  ['cliId','cliNombre','cliApellido','cliCedula','cliTelefono','cliDireccion'].forEach(function(f){$(f).value='';});
+  $('cliFormTitle').textContent='+ Agregar Cliente';
+  $('btnCancelEditCli').classList.add('hide');
+});
+function renderClientes(){
+  var tb=$('cliBody'); if(!tb)return;
+  var cliMora=new Set(Object.values(ventas).filter(function(v){return v.estado==='mora';}).map(function(v){return v.clienteId;}));
+  tb.innerHTML=Object.entries(clientes).map(function(e){
+    var id=e[0],c=e[1];
+    return '<tr><td>'+c.nombre+(c.apellido?' '+c.apellido:'')+'</td>'
+      +'<td>'+(c.cedula||'-')+'</td><td>'+(c.telefono||'-')+'</td><td>'+(c.direccion||'-')+'</td>'
+      +'<td>'+(cliMora.has(id)?'<span class="badge badge-mora">Mora</span>':'-')+'</td>'
+      +'<td style="white-space:nowrap">'
+      +'<button class="btn btn-sm btn-o" data-ec="'+id+'">Edit</button> '
+      +'<button class="btn btn-sm btn-d" data-dc="'+id+'">Del</button>'
+      +'</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="color:var(--gray)">Sin clientes.</td></tr>';
+  tb.querySelectorAll('[data-ec]').forEach(function(b){b.addEventListener('click',function(){
+    var c=clientes[b.dataset.ec];
+    $('cliId').value=b.dataset.ec; $('cliNombre').value=c.nombre; $('cliApellido').value=c.apellido||'';
+    $('cliCedula').value=c.cedula||''; $('cliTelefono').value=c.telefono||''; $('cliDireccion').value=c.direccion||'';
+    $('cliFormTitle').textContent='Editar Cliente'; $('btnCancelEditCli').classList.remove('hide');
+  });});
+  tb.querySelectorAll('[data-dc]').forEach(function(b){b.addEventListener('click',function(){
+    if(confirm('Eliminar este cliente?')) db.collection('clientes').doc(b.dataset.dc).delete();
+  });});
+}
+
+function renderTasasUI(){
+  var cont=$('tasasContainer'); if(!cont)return;
+  cont.innerHTML=Object.entries(tasas).map(function(e){
+    var code=e[0],t=e[1];
+    return '<div class="fb" style="padding:8px;margin:0">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center">'
+      +'<strong style="font-size:.8rem">'+code+(code===monedaPrincipal?' *':'')+'</strong>'
+      +(code!==monedaPrincipal?'<button class="btn btn-sm btn-o" data-sp="'+code+'">Usar</button>':'')
+      +'</div>'
+      +'<input type="number" step="0.01" value="'+(t.valor||0)+'" data-tasa="'+code+'" style="margin-top:6px"/>'
+      +(code!=='USD'?'<button class="btn btn-sm btn-d" data-dt="'+code+'" style="margin-top:4px">Del</button>':'')
+      +'</div>';
+  }).join('');
+  cont.querySelectorAll('[data-tasa]').forEach(function(i){i.addEventListener('input',function(){if(!tasas[i.dataset.tasa])tasas[i.dataset.tasa]={};tasas[i.dataset.tasa].valor=parseFloat(i.value)||0;updateBcvBadge();});});
+  cont.querySelectorAll('[data-dt]').forEach(function(b){b.addEventListener('click',function(){delete tasas[b.dataset.dt];renderTasasUI();});});
+  cont.querySelectorAll('[data-sp]').forEach(function(b){b.addEventListener('click',function(){monedaPrincipal=b.dataset.sp;renderTasasUI();renderInvTable();});});
+  updateBcvBadge();
+}
+$('btnAutoTasas').addEventListener('click',function(){
+  $('tasasFecha').textContent='Consultando...';
+  Promise.all([fetch('https://ve.dolarapi.com/v1/dolares/oficial'),fetch('https://ve.dolarapi.com/v1/euros/oficial')])
+  .then(function(rs){return Promise.all(rs.map(function(r){return r.json();}));})
+  .then(function(ds){
+    tasas.USD=tasas.USD||{}; tasas.USD.valor=ds[0].promedio||ds[0].venta||tasas.USD.valor;
+    tasas.EUR=tasas.EUR||{}; tasas.EUR.valor=ds[1].promedio||ds[1].venta||tasas.EUR.valor;
+    renderTasasUI(); $('tasasFecha').textContent='BCV/Euro actualizados. Presiona Guardar.';
+  }).catch(function(){$('tasasFecha').textContent='Sin conexion. Ingresa manualmente.';});
+});
+$('btnAddTasa').addEventListener('click',function(){var c=prompt('Codigo (ej: USDT):');if(c){tasas[c.toUpperCase()]={valor:0};renderTasasUI();}});
+$('btnSaveTasas').addEventListener('click',function(){
+  db.collection('config').doc('tasas').set({tasas:tasas,principal:monedaPrincipal,updatedAt:Date.now()}).then(function(){
+    $('tasasFecha').textContent='Guardado: '+new Date().toLocaleString('es-VE');
+  });
+});
+function updateBcvBadge(){
+  var t=tasas[monedaPrincipal];
+  $('bcvBadge').textContent=(t&&t.valor)?monedaPrincipal+'=Bs '+t.valor.toLocaleString('es-VE',{maximumFractionDigits:2}):'Tasas';
+}
+$('bcvBadge').addEventListener('click',function(){if(currentRole==='admin')showSection('tasas');});
+
+function loadWAConfig(){
+  db.collection('config').doc('wa').get().then(function(doc){
+    if(doc.exists){
+      waConfig=doc.data();
+      $('waMsgTemplate').value=waConfig.template||DEFAULT_WA;
+      $('waPagoMovil').value=waConfig.pagoMovil||DEFAULT_PAGO;
+      $('costoEnvaseReciclado').value=waConfig.costoEnvaseReciclado||50;
+    } else {
+      $('waMsgTemplate').value=DEFAULT_WA;
+      $('waPagoMovil').value=DEFAULT_PAGO;
+    }
+  });
+}
+$('btnSaveWAConfig').addEventListener('click',function(){
+  waConfig={template:$('waMsgTemplate').value,pagoMovil:$('waPagoMovil').value,costoEnvaseReciclado:parseFloat($('costoEnvaseReciclado').value)||50};
+  db.collection('config').doc('wa').set(waConfig).then(function(){
+    $('waConfigMsg').style.color='var(--green-d)'; $('waConfigMsg').textContent='Guardado.';
+  });
+});
+
+$('btnCrearEmpleado').addEventListener('click',function(){
+  var email=$('empEmail').value.trim(), pass=$('empPass').value, rol=$('empRol').value;
+  if(!email||pass.length<6){$('empMsg').textContent='Correo valido y contrasena minimo 6 caracteres.';$('empMsg').style.color='var(--red)';return;}
+  var sec=firebase.initializeApp(firebaseConfig,'Sec'+Date.now());
+  sec.auth().createUserWithEmailAndPassword(email,pass).then(function(){
+    return sec.auth().signOut();
+  }).then(function(){
+    return sec.delete();
+  }).then(function(){
+    return db.collection('roles').doc(email.toLowerCase()).set({role:rol,createdAt:Date.now(),creadoPor:currentUser.email});
+  }).then(function(){
+    $('empMsg').style.color='var(--green-d)'; $('empMsg').textContent='Cuenta creada.';
+    $('empEmail').value=''; $('empPass').value='';
+  }).catch(function(e){$('empMsg').style.color='var(--red)'; $('empMsg').textContent=traducirError(e.code);});
+});
+function renderUsers(rows){
+  var tb=$('usersBody'); if(!tb)return;
+  tb.innerHTML=(rows||[]).map(function(r){
+    return '<tr><td>'+r.email+'</td><td>'+(r.role==='admin'?'Admin':'Vendedor')+'</td>'
+      +'<td>'+(r.email!==currentUser.email?'<button class="btn btn-sm btn-d" data-du="'+r.email+'">Revocar</button>':'(tu)')+'</td></tr>';
+  }).join('');
+  tb.querySelectorAll('[data-du]').forEach(function(b){b.addEventListener('click',function(){
+    if(confirm('Revocar acceso de '+b.dataset.du+'?')) db.collection('roles').doc(b.dataset.du).delete();
+  });});
+}
+
+function setDefaultDates(){
+  var h=new Date(), d=new Date(h); d.setDate(1);
+  $('repDesde').value=d.toISOString().split('T')[0];
+  $('repHasta').value=h.toISOString().split('T')[0];
+}
+function fillRepClienteFiltro(){
+  var s=$('repClienteFiltro'); var v=s.value;
+  s.innerHTML='<option value="all">Todos los clientes</option>'+
+    Object.entries(clientes).map(function(e){
+      var c=e[1];
+      return '<option value="'+e[0]+'">'+c.nombre+(c.apellido?' '+c.apellido:'')+'</option>';
+    }).join('');
+  if(v) s.value=v;
+}
+$('repPeriodo').addEventListener('change',function(){
+  $('repRangoPersonalizado').classList.toggle('hide',$('repPeriodo').value!=='personalizado');
+});
+function getRepRango(){
+  var p=$('repPeriodo').value;
+  var ahora=new Date();
+  var desde, hasta=ahora.getTime()+86400000;
+  if(p==='hoy'){var d=new Date();d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='semana'){var d=new Date();d.setDate(d.getDate()-d.getDay());d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='mes'){var d=new Date();d.setDate(1);d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='ano'){var d=new Date();d.setMonth(0,1);d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='personalizado'){desde=new Date($('repDesde').value).getTime();hasta=new Date($('repHasta').value).getTime()+86400000;}
+  else{desde=0;}
+  return {desde:desde,hasta:hasta};
+}
+$('btnGenerarReporte').addEventListener('click',function(){
+  var rango=getRepRango();
+  var estadoFiltro=$('repEstadoFiltro').value;
+  var clienteFiltro=$('repClienteFiltro').value;
+  var vs=Object.values(ventas).filter(function(v){return v.fecha>=rango.desde&&v.fecha<=rango.hasta;});
+  if(estadoFiltro!=='all') vs=vs.filter(function(v){return v.estado===estadoFiltro;});
+  if(clienteFiltro!=='all') vs=vs.filter(function(v){return v.clienteId===clienteFiltro;});
+  var pagadas=vs.filter(function(v){return v.estado==='pagado';});
+  var pendientes=vs.filter(function(v){return v.estado==='pendiente';});
+  var mora=vs.filter(function(v){return v.estado==='mora';});
+  var usdCobrado=pagadas.reduce(function(a,v){return a+(v.totalUSD||0);},0);
+  var bsCobrado=pagadas.reduce(function(a,v){return a+(v.totalBs||0);},0);
+  var usdPend=pendientes.concat(mora).reduce(function(a,v){return a+(v.totalUSD||0);},0);
+  $('repTotalVentas').textContent=vs.length;
+  $('repTotalUSD').textContent='$'+usdCobrado.toFixed(2);
+  $('repTotalBs').textContent='Bs '+bsCobrado.toLocaleString('es-VE',{maximumFractionDigits:0});
+  $('repPendientes').textContent=pendientes.length;
+  $('repMora').textContent=mora.length;
+  $('repUSDPendiente').textContent='$'+usdPend.toFixed(2);
+  var periodo=$('repPeriodo').options[$('repPeriodo').selectedIndex].text;
+  var estado=$('repEstadoFiltro').options[$('repEstadoFiltro').selectedIndex].text;
+  var cliLabel=clienteFiltro!=='all'?(clientes[clienteFiltro]?clientes[clienteFiltro].nombre:''):'Todos';
+  $('repResumen').textContent='Periodo: '+periodo+' | Estado: '+estado+' | Cliente: '+cliLabel;
+  $('repBody').innerHTML=vs.map(function(v){
+    var est=v.estado==='pagado'?'Pagado':v.estado==='mora'?'Mora':'Pendiente';
+    return '<tr><td>'+new Date(v.fecha).toLocaleDateString('es-VE')+'</td>'
+      +'<td>'+(v.clienteNombre||'Consumidor final')+'</td>'
+      +'<td style="font-size:.72rem">'+((v.items||[]).map(function(i){return i.nombre+' '+i.ml+'ml';}).join(', '))+'</td>'
+      +'<td>$'+(v.totalUSD||0).toFixed(2)+'</td>'
+      +'<td>Bs '+(v.totalBs||0).toLocaleString('es-VE',{maximumFractionDigits:0})+'</td>'
+      +'<td>'+est+'</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="color:var(--gray)">Sin resultados.</td></tr>';
+  $('reporteResult').classList.remove('hide');
+});
+
+$('btnImprimirReporte').addEventListener('click',function(){
+  var win=window.open('','_blank');
+  var html='<html><head><title>Reporte Renuevo</title>'
+    +'<style>body{font-family:Arial,sans-serif;padding:20px;font-size:12px}h1{color:#1f7a4d}'
+    +'.cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}'
+    +'.card{border:1px solid #ddd;border-radius:8px;padding:10px 14px}'
+    +'.n{font-size:1.3rem;font-weight:800;color:#1f7a4d}.l{font-size:.7rem;color:#666}'
+    +'table{width:100%;border-collapse:collapse}'
+    +'th{background:#1f7a4d;color:#fff;padding:6px;text-align:left}'
+    +'td{padding:6px;border-bottom:1px solid #eee}'
+    +'</style></head><body>'
+    +'<h1>Renuevo - Reporte de Ventas</h1>'
+    +'<p>'+$('repResumen').textContent+' | Generado: '+new Date().toLocaleString('es-VE')+'</p>'
+    +'<div class="cards">'
+    +'<div class="card"><div class="n">'+$('repTotalVentas').textContent+'</div><div class="l">Ventas</div></div>'
+    +'<div class="card"><div class="n">'+$('repTotalUSD').textContent+'</div><div class="l">Cobrado USD</div></div>'
+    +'<div class="card"><div class="n">'+$('repTotalBs').textContent+'</div><div class="l">Cobrado Bs</div></div>'
+    +'<div class="card"><div class="n">'+$('repPendientes').textContent+'</div><div class="l">Pendientes</div></div>'
+    +'<div class="card"><div class="n">'+$('repMora').textContent+'</div><div class="l">Mora</div></div>'
+    +'<div class="card"><div class="n">'+$('repUSDPendiente').textContent+'</div><div class="l">USD por cobrar</div></div>'
+    +'</div>'
+    +'<table><thead><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>USD</th><th>Bs</th><th>Estado</th></tr></thead>'
+    +'<tbody>'+$('repBody').innerHTML+'</tbody></table>'
+    +'</body></html>';
+  win.document.write(html);
+  win.document.close();
+  setTimeout(function(){win.print();},500);
+});
+
+function renderFidelidad(){
+  loadFidConfig().then(function(){
+    var cont=$('fidCards');
+    if(!Object.keys(clientes).length){cont.innerHTML='<p style="color:var(--gray);font-size:.85rem">Sin clientes registrados.</p>';return;}
+    db.collection('canjes').get().then(function(canjesSnap){
+      var canjes={};
+      canjesSnap.forEach(function(d){var c=d.data();if(!canjes[c.clienteId])canjes[c.clienteId]=0;canjes[c.clienteId]+=(c.tarjetas||1);});
+      cont.innerHTML='';
+      Object.entries(clientes).forEach(function(e){
+        var id=e[0],c=e[1];
+        var res=calcSellosCliente(id);
+        var tarjetasCompletas=Math.floor(res.sellosAcum/(fidConfig.sellos||7));
+        var canjeados=canjes[id]||0;
+        var tarjetasPendientes=tarjetasCompletas-canjeados;
+        var sellosActuales=res.sellosAcum%(fidConfig.sellos||7);
+        var totalSellos=fidConfig.sellos||7;
+        var sellosHTML='';
+        for(var i=0;i<totalSellos;i++) sellosHTML+='<span class="sello">'+(i<sellosActuales?'&#11088;':'&#9734;')+'</span>';
+        var card=document.createElement('div');
+        card.className='fb'; card.style.margin='0';
+        var html='<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+          +'<div><b>'+c.nombre+(c.apellido?' '+c.apellido:'')+'</b>'
+          +'<div style="font-size:.72rem;color:var(--gray)">'+(c.telefono||'')+'</div></div>'
+          +(tarjetasPendientes>0?'<span class="badge badge-ok">'+tarjetasPendientes+' tarjeta'+(tarjetasPendientes>1?'s':'')+' lista'+(tarjetasPendientes>1?'s':'')+'</span>':'')
+          +'</div>'
+          +'<div style="margin:10px 0;display:flex;flex-wrap:wrap;gap:4px">'+sellosHTML+'</div>'
+          +'<div style="font-size:.75rem;color:var(--gray);margin-bottom:8px">'+sellosActuales+'/'+totalSellos+' sellos - '+res.sellosAcum+' totales - '+tarjetasCompletas+' completadas</div>';
+        if(tarjetasPendientes>0){
+          html+='<div style="background:#eef7f1;border-radius:8px;padding:8px;margin-bottom:8px"><b style="font-size:.8rem;color:var(--green-d)">Tiene '+tarjetasPendientes+' tarjeta'+(tarjetasPendientes>1?'s':'')+' para canjear!</b></div>'
+            +'<input id="premio_'+id+'" placeholder="Que premio le das?" style="margin-bottom:6px"/>'
+            +'<button class="btn btn-g btn-sm" data-canjear="'+id+'">Registrar canje</button>';
+        }
+        card.innerHTML=html;
+        cont.appendChild(card);
+      });
+      cont.querySelectorAll('[data-canjear]').forEach(function(b){b.addEventListener('click',function(){
+        var cid=b.dataset.canjear;
+        var premioEl=$('premio_'+cid);
+        if(!premioEl||!premioEl.value.trim()){alert('Indica el premio.');return;}
+        var premio=premioEl.value.trim();
+        var c=clientes[cid];
+        db.collection('canjes').add({clienteId:cid,clienteNombre:c.nombre+(c.apellido?' '+c.apellido:''),premio:premio,tarjetas:1,fecha:Date.now(),by:currentUser.email}).then(function(){
+          alert('Canje registrado para '+c.nombre+'. Premio: '+premio);
+          renderFidelidad();
+        });
+      });});
+      var tb=$('fidHistBody');
+      var todos=[];
+      canjesSnap.forEach(function(d){todos.push(d.data());});
+      todos.sort(function(a,b){return b.fecha-a.fecha;});
+      tb.innerHTML=todos.map(function(c){
+        return '<tr><td>'+new Date(c.fecha).toLocaleDateString('es-VE')+'</td>'
+          +'<td>'+(c.clienteNombre||'-')+'</td><td>'+(c.premio||'-')+'</td><td>'+(c.tarjetas||1)+'</td></tr>';
+      }).join('')||'<tr><td colspan="4" style="color:var(--gray)">Sin canjes aun.</td></tr>';
+    });
+  });
+}
+
+function calcSellosCliente(clienteId){
+  var ventasCliente=Object.values(ventas).filter(function(v){return v.clienteId===clienteId;});
+  var sellosAcum=0;
+  ventasCliente.forEach(function(v){
+    var totalLitros=(v.items||[]).reduce(function(a,i){return a+(i.litros||0);},0);
+    var sellosPorLitros=Math.floor(totalLitros/(fidConfig.litrosPorSello||4));
+    var sellosPorUSD=Math.floor((v.totalUSD||0)/(fidConfig.usdPorSello||5));
+    sellosAcum+=Math.max(sellosPorLitros,sellosPorUSD);
+  });
+  return {sellosAcum:sellosAcum};
+}
+
+function loadFidConfig(){
+  return db.collection('config').doc('fidelidad').get().then(function(doc){
+    if(doc.exists){
+      fidConfig=doc.data();
+      $('fidSellos').value=fidConfig.sellos||7;
+      $('fidLitros').value=fidConfig.litrosPorSello||4;
+      $('fidUSD').value=fidConfig.usdPorSello||5;
+    }
+  });
+}
+$('btnSaveFidConfig').addEventListener('click',function(){
+  fidConfig={sellos:parseInt($('fidSellos').value)||7,litrosPorSello:parseFloat($('fidLitros').value)||4,usdPorSello:parseFloat($('fidUSD').value)||5};
+  db.collection('config').doc('fidelidad').set(fidConfig).then(function(){
+    $('fidConfigMsg').style.color='var(--green-d)';
+    $('fidConfigMsg').textContent='Configuracion guardada.';
+    renderFidelidad();
+  });
+});
+
+function renderDashboard(){
+  var prods=Object.values(productos);
+  $('dCardProds').textContent=prods.length;
+  $('dCardBajo').textContent=prods.filter(function(p){return (p.stockLitros||0)<=(p.stockMin||0);}).length;
+  $('dCardClientes').textContent=Object.keys(clientes).length;
+  var hoy=new Date(); hoy.setHours(0,0,0,0);
+  $('dCardHoy').textContent=Object.values(ventas).filter(function(v){return v.fecha>=hoy.getTime();}).length;
+  $('dCardMora').textContent=Object.values(ventas).filter(function(v){return v.estado==='mora';}).length;
+  var low=prods.filter(function(p){return (p.stockLitros||0)<=(p.stockMin||0);});
+  $('dLowStock').innerHTML=low.length?low.map(function(p){return '* '+p.nombre+': '+(p.stockLitros||0).toFixed(1)+'L (min: '+(p.stockMin||0)+'L)';}).join('<br>'):'Inventario en niveles saludables.';
+  var pend=Object.entries(ventas).filter(function(e){return e[1].estado==='pendiente'||e[1].estado==='mora';}).slice(0,5);
+  $('dPendingPay').innerHTML=pend.length?pend.map(function(e){var v=e[1];return '* '+(v.clienteNombre||'Consumidor final')+' - $'+(v.totalUSD||0).toFixed(2)+' - <span class="badge '+(v.estado==='mora'?'badge-mora':'badge-pending')+'">'+v.estado+'</span>';}).join('<br>'):'Sin pagos pendientes.';
+  var last=Object.values(ventas).slice(0,5);
+  $('dLastSales').innerHTML=last.length?last.map(function(v){return '* '+new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})+' - '+(v.clienteNombre||'Consumidor final')+' - $'+(v.totalUSD||0).toFixed(2);}).join('<br>'):'Sin ventas aun.';
+}
+
+window.addEventListener('online',function(){$('offlineBanner').style.display='none';});
+window.addEventListener('offline',function(){$('offlineBanner').style.display='block';});
+if(!navigator.onLine) $('offlineBanner').style.display='block';
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});
+}
+</script>
+</body>
+</html>
++subtotal.toFixed(3)+'</b> (Bs '+(subtotal*tasa).toLocaleString('es-VE',{maximumFractionDigits:2})+')';
+      return {productoId:pid,nombre:p.nombre,ml:ml,litros:litros,envase:envTipo,costoEnvUSD:costoEnv,subtotal:subtotal,tipoVenta:'detal'};
+    }
   }).filter(Boolean);
 }
 
