@@ -93,7 +93,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <button id="btnLogin">Ingresar</button>
     <div id="loginErr"></div>
     <div id="loginMode">¿Primera vez? Crear cuenta admin</div>
-    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v64</div>
+    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v74</div>
   </div>
 </div>
 
@@ -346,30 +346,84 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
   </div>
 </div>
 
-<!-- REPORTES -->
+<!-- FIDELIDAD -->
+<div id="sec-fidelidad" class="section">
+  <div class="fb">
+    <h2>⚙️ Configuración del programa</h2>
+    <div class="row r3">
+      <div><label>Sellos para completar tarjeta</label><input type="number" id="fidSellos" value="7" min="1"/></div>
+      <div><label>Litros por sello</label><input type="number" id="fidLitros" value="4" step="0.5"/></div>
+      <div><label>USD mínimo por sello</label><input type="number" id="fidUSD" value="5" step="0.5"/></div>
+    </div>
+    <div class="info-note" style="margin-top:8px">Un sello se asigna automáticamente cuando una venta cumple con <b>cualquiera</b> de los dos criterios (litros O monto USD).</div>
+    <button class="btn btn-p btn-sm" id="btnSaveFidConfig" style="margin-top:10px">💾 Guardar configuración</button>
+    <div id="fidConfigMsg" style="font-size:.75rem;margin-top:6px"></div>
+  </div>
+  <div class="fb">
+    <h2>🎴 Tarjetas de clientes</h2>
+    <div id="fidCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px"></div>
+  </div>
+  <div class="fb">
+    <h2>🏆 Historial de canjes</h2>
+    <table><thead><tr><th>Fecha</th><th>Cliente</th><th>Premio</th><th>Tarjetas</th></tr></thead>
+    <tbody id="fidHistBody"></tbody></table>
+  </div>
+</div>
 <div id="sec-reportes" class="section">
   <div class="fb">
-    <h2>📊 Reporte de ventas</h2>
-    <div class="row r2">
-      <div><label>Desde</label><input type="date" id="repDesde"/></div>
-      <div><label>Hasta</label><input type="date" id="repHasta"/></div>
+    <h2>📊 Filtros del reporte</h2>
+    <div class="row r3">
+      <div>
+        <label>Período</label>
+        <select id="repPeriodo">
+          <option value="hoy">Hoy</option>
+          <option value="semana">Esta semana</option>
+          <option value="mes" selected>Este mes</option>
+          <option value="año">Este año</option>
+          <option value="personalizado">Rango personalizado</option>
+          <option value="todo">Todo el historial</option>
+        </select>
+      </div>
+      <div>
+        <label>Estado</label>
+        <select id="repEstadoFiltro">
+          <option value="all">Todos</option>
+          <option value="pagado">✅ Solo pagados</option>
+          <option value="pendiente">⏳ Solo pendientes</option>
+          <option value="mora">🔴 Solo mora</option>
+        </select>
+      </div>
+      <div>
+        <label>Cliente</label>
+        <select id="repClienteFiltro">
+          <option value="all">Todos los clientes</option>
+        </select>
+      </div>
     </div>
-    <button class="btn btn-p btn-sm" id="btnGenerarReporte" style="margin-top:8px">📊 Generar</button>
+    <div id="repRangoPersonalizado" class="hide" style="margin-top:8px">
+      <div class="row r2">
+        <div><label>Desde</label><input type="date" id="repDesde"/></div>
+        <div><label>Hasta</label><input type="date" id="repHasta"/></div>
+      </div>
+    </div>
+    <button class="btn btn-p btn-sm" id="btnGenerarReporte" style="margin-top:12px">📊 Generar reporte</button>
   </div>
   <div class="fb hide" id="reporteResult">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
       <h2 style="margin:0">Resultados</h2>
       <button class="btn btn-s btn-sm" onclick="imprimirReporte()">🖨️ Imprimir / PDF</button>
     </div>
+    <div id="repResumen" style="font-size:.78rem;color:var(--gray);margin-bottom:10px"></div>
     <div class="cards">
       <div class="card"><div class="n" id="repTotalVentas">0</div><div class="l">Total ventas</div></div>
-      <div class="card"><div class="n" id="repTotalUSD">$0</div><div class="l">Ingresos USD</div></div>
-      <div class="card"><div class="n" id="repTotalBs">Bs 0</div><div class="l">Ingresos Bs</div></div>
+      <div class="card"><div class="n" id="repTotalUSD">$0</div><div class="l">Cobrado USD</div></div>
+      <div class="card"><div class="n" id="repTotalBs">Bs 0</div><div class="l">Cobrado Bs</div></div>
       <div class="card warn"><div class="n" id="repPendientes">0</div><div class="l">Pendientes</div></div>
       <div class="card alert"><div class="n" id="repMora">0</div><div class="l">En mora</div></div>
+      <div class="card"><div class="n" id="repUSDPendiente">$0</div><div class="l">USD por cobrar</div></div>
     </div>
     <div style="overflow-x:auto"><table>
-      <thead><tr><th>Fecha</th><th>Cliente</th><th>Total USD</th><th>Total Bs</th><th>Estado</th></tr></thead>
+      <thead><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>Total USD</th><th>Total Bs</th><th>Estado</th></tr></thead>
       <tbody id="repBody"></tbody>
     </table></div>
   </div>
@@ -424,6 +478,7 @@ const NAV=[
   {id:'ventas',label:'🧾 Ventas',roles:['admin','vendedor']},
   {id:'inventario',label:'📦 Inventario',roles:['admin','vendedor']},
   {id:'clientes',label:'👥 Clientes',roles:['admin','vendedor']},
+  {id:'fidelidad',label:'🎴 Fidelidad',roles:['admin','vendedor']},
   {id:'tasas',label:'💱 Tasas',roles:['admin']},
   {id:'reportes',label:'📊 Reportes',roles:['admin']},
   {id:'config',label:'⚙️ Config',roles:['admin']}
@@ -449,7 +504,8 @@ function showSection(id){
   if(id==='inventario'){renderInvTable();fillCompraProdSelect();renderEnvasesPET();}
   if(id==='clientes') renderClientes();
   if(id==='tasas') renderTasasUI();
-  if(id==='reportes') setDefaultDates();
+  if(id==='reportes'){setDefaultDates();fillRepClienteFiltro();}
+  if(id==='fidelidad') renderFidelidad();
   if(id==='config') loadWAConfig();
 }
 
@@ -1070,29 +1126,262 @@ function renderUsers(rows){
   }));
 }
 
+// FIDELIDAD
+let fidConfig={sellos:7,litrosPorSello:4,usdPorSello:5};
+
+async function loadFidConfig(){
+  const doc=await db.collection('config').doc('fidelidad').get();
+  if(doc.exists){
+    fidConfig=doc.data();
+    $('fidSellos').value=fidConfig.sellos||7;
+    $('fidLitros').value=fidConfig.litrosPorSello||4;
+    $('fidUSD').value=fidConfig.usdPorSello||5;
+  }
+}
+$('btnSaveFidConfig').addEventListener('click',async()=>{
+  fidConfig={sellos:parseInt($('fidSellos').value)||7,litrosPorSello:parseFloat($('fidLitros').value)||4,usdPorSello:parseFloat($('fidUSD').value)||5};
+  await db.collection('config').doc('fidelidad').set(fidConfig);
+  $('fidConfigMsg').style.color='var(--green-d)';
+  $('fidConfigMsg').textContent='✅ Configuración guardada.';
+  renderFidelidad();
+});
+
+function calcSellosCliente(clienteId){
+  const ventasCliente=Object.values(ventas).filter(v=>v.clienteId===clienteId&&v.estado!=='cancelado');
+  let sellosAcum=0;
+  const detalle=[];
+  ventasCliente.forEach(v=>{
+    const totalLitros=(v.items||[]).reduce((a,i)=>a+(i.litros||0),0);
+    const sellosPorLitros=Math.floor(totalLitros/(fidConfig.litrosPorSello||4));
+    const sellosPorUSD=Math.floor((v.totalUSD||0)/(fidConfig.usdPorSello||5));
+    const sellosVenta=Math.max(sellosPorLitros,sellosPorUSD);
+    if(sellosVenta>0){sellosAcum+=sellosVenta;detalle.push({fecha:v.fecha,sellos:sellosVenta,totalUSD:v.totalUSD,litros:totalLitros});}
+  });
+  return{sellosAcum,detalle};
+}
+
+async function renderFidelidad(){
+  await loadFidConfig();
+  const cont=$('fidCards');
+  if(!Object.keys(clientes).length){cont.innerHTML='<p style="color:var(--gray);font-size:.85rem">Sin clientes registrados.</p>';return;}
+  const canjesSnap=await db.collection('canjes').get();
+  const canjes={};
+  canjesSnap.forEach(d=>{const c=d.data();if(!canjes[c.clienteId])canjes[c.clienteId]=0;canjes[c.clienteId]+=c.tarjetas||1;});
+  cont.innerHTML='';
+  Object.entries(clientes).forEach(([id,c])=>{
+    const{sellosAcum}=calcSellosCliente(id);
+    const tarjetasCompletas=Math.floor(sellosAcum/(fidConfig.sellos||7));
+    const canjeados=canjes[id]||0;
+    const tarjetasPendientes=tarjetasCompletas-canjeados;
+    const sellosEnTarjetaActual=sellosAcum%( fidConfig.sellos||7);
+    const totalSellos=fidConfig.sellos||7;
+    const card=document.createElement('div');
+    card.className='fb';card.style.margin='0';
+    const sellosHTML=Array.from({length:totalSellos},(_,i)=>`<span style="font-size:1.4rem">${i<sellosEnTarjetaActual?'⭐':'☆'}</span>`).join('');
+    card.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <b>${c.nombre}${c.apellido?' '+c.apellido:''}</b>
+          <div style="font-size:.72rem;color:var(--gray)">${c.telefono||''}</div>
+        </div>
+        ${tarjetasPendientes>0?`<span class="badge badge-ok">🏆 ${tarjetasPendientes} tarjeta${tarjetasPendientes>1?'s':''} lista${tarjetasPendientes>1?'s':''}</span>`:''}
+      </div>
+      <div style="margin:10px 0;display:flex;flex-wrap:wrap;gap:4px">${sellosHTML}</div>
+      <div style="font-size:.75rem;color:var(--gray);margin-bottom:8px">
+        ${sellosEnTarjetaActual}/${totalSellos} sellos — ${sellosAcum} sellos totales — ${tarjetasCompletas} tarjetas completadas
+      </div>
+      ${tarjetasPendientes>0?`
+        <div style="background:#eef7f1;border-radius:8px;padding:8px;margin-bottom:8px">
+          <b style="font-size:.8rem;color:var(--green-d)">🎁 ¡Tiene ${tarjetasPendientes} tarjeta${tarjetasPendientes>1?'s':''} para canjear!</b>
+        </div>
+        <input id="premio_${id}" placeholder="¿Qué premio le das?" style="margin-bottom:6px"/>
+        <button class="btn btn-g btn-sm" data-canjear="${id}">🎁 Registrar canje</button>`:''}
+    `;
+    cont.appendChild(card);
+  });
+  cont.querySelectorAll('[data-canjear]').forEach(b=>b.addEventListener('click',async()=>{
+    const cid=b.dataset.canjear;
+    const premio=$(`premio_${cid}`).value.trim();
+    if(!premio){alert('Indica el premio que le das al cliente.');return;}
+    const c=clientes[cid];
+    await db.collection('canjes').add({clienteId:cid,clienteNombre:`${c.nombre}${c.apellido?' '+c.apellido:''}`,premio,tarjetas:1,fecha:Date.now(),by:currentUser.email});
+    alert(`✅ Canje registrado para ${c.nombre}.\nPremio: ${premio}`);
+    renderFidelidad();
+  }));
+  // historial canjes
+  const tb=$('fidHistBody');
+  const todos=[];canjesSnap.forEach(d=>todos.push(d.data()));
+  todos.sort((a,b)=>b.fecha-a.fecha);
+  tb.innerHTML=todos.map(c=>`<tr>
+    <td>${new Date(c.fecha).toLocaleDateString('es-VE')}</td>
+    <td>${c.clienteNombre||'–'}</td>
+    <td>${c.premio||'–'}</td>
+    <td>${c.tarjetas||1}</td>
+  </tr>`).join('')||'<tr><td colspan="4" style="color:var(--gray)">Sin canjes aún.</td></tr>';
+}
+
 // REPORTES
 function setDefaultDates(){
-  const h=new Date(), d=new Date(h); d.setDate(1);
+  const h=new Date(),d=new Date(h);d.setDate(1);
   $('repDesde').value=d.toISOString().split('T')[0];
   $('repHasta').value=h.toISOString().split('T')[0];
 }
+function fillRepClienteFiltro(){
+  const s=$('repClienteFiltro');const v=s.value;
+  s.innerHTML='<option value="all">Todos los clientes</option>'+
+    Object.entries(clientes).map(([id,c])=>`<option value="${id}">${c.nombre}${c.apellido?' '+c.apellido:''}</option>`).join('');
+  if(v)s.value=v;
+}
+$('repPeriodo').addEventListener('change',()=>{
+  $('repRangoPersonalizado').classList.toggle('hide',$('repPeriodo').value!=='personalizado');
+});
+function getRepRango(){
+  const p=$('repPeriodo').value;
+  const ahora=new Date();
+  let desde,hasta=ahora.getTime()+86400000;
+  if(p==='hoy'){const d=new Date();d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='semana'){const d=new Date();d.setDate(d.getDate()-d.getDay());d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='mes'){const d=new Date();d.setDate(1);d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='año'){const d=new Date();d.setMonth(0,1);d.setHours(0,0,0,0);desde=d.getTime();}
+  else if(p==='personalizado'){desde=new Date($('repDesde').value).getTime();hasta=new Date($('repHasta').value).getTime()+86400000;}
+  else{desde=0;}
+  return{desde,hasta};
+}
 $('btnGenerarReporte').addEventListener('click',()=>{
-  const desde=new Date($('repDesde').value).getTime();
-  const hasta=new Date($('repHasta').value).getTime()+86400000;
-  const vs=Object.values(ventas).filter(v=>v.fecha>=desde&&v.fecha<=hasta);
+  const{desde,hasta}=getRepRango();
+  const estadoFiltro=$('repEstadoFiltro').value;
+  const clienteFiltro=$('repClienteFiltro').value;
+  let vs=Object.values(ventas).filter(v=>v.fecha>=desde&&v.fecha<=hasta);
+  if(estadoFiltro!=='all')vs=vs.filter(v=>v.estado===estadoFiltro);
+  if(clienteFiltro!=='all')vs=vs.filter(v=>v.clienteId===clienteFiltro);
   const pagadas=vs.filter(v=>v.estado==='pagado');
+  const pendientes=vs.filter(v=>v.estado==='pendiente');
+  const mora=vs.filter(v=>v.estado==='mora');
+  const usdCobrado=pagadas.reduce((a,v)=>a+(v.totalUSD||0),0);
+  const bsCobrado=pagadas.reduce((a,v)=>a+(v.totalBs||0),0);
+  const usdPendiente=[...pendientes,...mora].reduce((a,v)=>a+(v.totalUSD||0),0);
   $('repTotalVentas').textContent=vs.length;
-  $('repTotalUSD').textContent='$'+pagadas.reduce((a,v)=>a+(v.totalUSD||0),0).toFixed(2);
-  $('repTotalBs').textContent='Bs '+pagadas.reduce((a,v)=>a+(v.totalBs||0),0).toLocaleString('es-VE',{maximumFractionDigits:0});
-  $('repPendientes').textContent=vs.filter(v=>v.estado==='pendiente').length;
-  $('repMora').textContent=vs.filter(v=>v.estado==='mora').length;
+  $('repTotalUSD').textContent='
+function imprimirReporte(){
+  const win=window.open('','_blank');
+  win.document.write(`<html><head><title>Reporte Renuevo</title>
+  <style>body{font-family:Arial,sans-serif;padding:20px;font-size:12px}h1{color:#1f7a4d}
+  .cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.card{border:1px solid #ddd;border-radius:8px;padding:10px 14px}
+  .n{font-size:1.3rem;font-weight:800;color:#1f7a4d}.l{font-size:.7rem;color:#666}
+  table{width:100%;border-collapse:collapse}th{background:#1f7a4d;color:#fff;padding:6px;text-align:left}td{padding:6px;border-bottom:1px solid #eee}
+  </style></head><body>
+  <h1>♻️ Renuevo — Reporte de Ventas</h1>
+  <p>Generado: ${new Date().toLocaleString('es-VE')}</p>
+  <div class="cards">
+    <div class="card"><div class="n">${$('repTotalVentas').textContent}</div><div class="l">Ventas</div></div>
+    <div class="card"><div class="n">${$('repTotalUSD').textContent}</div><div class="l">Ingresos USD</div></div>
+    <div class="card"><div class="n">${$('repTotalBs').textContent}</div><div class="l">Ingresos Bs</div></div>
+    <div class="card"><div class="n">${$('repPendientes').textContent}</div><div class="l">Pendientes</div></div>
+    <div class="card"><div class="n">${$('repMora').textContent}</div><div class="l">Mora</div></div>
+  </div>
+  <table><thead><tr><th>Fecha</th><th>Cliente</th><th>USD</th><th>Bs</th><th>Estado</th></tr></thead>
+  <tbody>${$('repBody').innerHTML}</tbody></table>
+  </body></html>`);
+  win.document.close();
+  setTimeout(()=>win.print(),500);
+}
+
+// DASHBOARD
+function renderDashboard(){
+  const prods=Object.values(productos);
+  $('dCardProds').textContent=prods.length;
+  $('dCardBajo').textContent=prods.filter(p=>(p.stockLitros||0)<=(p.stockMin||0)).length;
+  $('dCardClientes').textContent=Object.keys(clientes).length;
+  const hoy=new Date();hoy.setHours(0,0,0,0);
+  $('dCardHoy').textContent=Object.values(ventas).filter(v=>v.fecha>=hoy.getTime()).length;
+  $('dCardMora').textContent=Object.values(ventas).filter(v=>v.estado==='mora').length;
+  const low=prods.filter(p=>(p.stockLitros||0)<=(p.stockMin||0));
+  $('dLowStock').innerHTML=low.length?low.map(p=>`• ${p.nombre}: ${(p.stockLitros||0).toFixed(1)}L (mín: ${p.stockMin||0}L)`).join('<br>'):'✅ Inventario en niveles saludables.';
+  const pend=Object.entries(ventas).filter(([,v])=>v.estado==='pendiente'||v.estado==='mora').slice(0,5);
+  $('dPendingPay').innerHTML=pend.length?pend.map(([,v])=>`• ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)} — <span class="badge ${v.estado==='mora'?'badge-mora':'badge-pending'}">${v.estado}</span>`).join('<br>'):'✅ Sin pagos pendientes.';
+  const last=Object.values(ventas).slice(0,5);
+  $('dLastSales').innerHTML=last.length?last.map(v=>`• ${new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})} — ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)}`).join('<br>'):'Sin ventas aún.';
+}
+
+// OFFLINE + PWA
+window.addEventListener('online',()=>$('offlineBanner').style.display='none');
+window.addEventListener('offline',()=>$('offlineBanner').style.display='block');
+if(!navigator.onLine) $('offlineBanner').style.display='block';
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
++usdCobrado.toFixed(2);
+  $('repTotalBs').textContent='Bs '+bsCobrado.toLocaleString('es-VE',{maximumFractionDigits:0});
+  $('repPendientes').textContent=pendientes.length;
+  $('repMora').textContent=mora.length;
+  $('repUSDPendiente').textContent='
+function imprimirReporte(){
+  const win=window.open('','_blank');
+  win.document.write(`<html><head><title>Reporte Renuevo</title>
+  <style>body{font-family:Arial,sans-serif;padding:20px;font-size:12px}h1{color:#1f7a4d}
+  .cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.card{border:1px solid #ddd;border-radius:8px;padding:10px 14px}
+  .n{font-size:1.3rem;font-weight:800;color:#1f7a4d}.l{font-size:.7rem;color:#666}
+  table{width:100%;border-collapse:collapse}th{background:#1f7a4d;color:#fff;padding:6px;text-align:left}td{padding:6px;border-bottom:1px solid #eee}
+  </style></head><body>
+  <h1>♻️ Renuevo — Reporte de Ventas</h1>
+  <p>Generado: ${new Date().toLocaleString('es-VE')}</p>
+  <div class="cards">
+    <div class="card"><div class="n">${$('repTotalVentas').textContent}</div><div class="l">Ventas</div></div>
+    <div class="card"><div class="n">${$('repTotalUSD').textContent}</div><div class="l">Ingresos USD</div></div>
+    <div class="card"><div class="n">${$('repTotalBs').textContent}</div><div class="l">Ingresos Bs</div></div>
+    <div class="card"><div class="n">${$('repPendientes').textContent}</div><div class="l">Pendientes</div></div>
+    <div class="card"><div class="n">${$('repMora').textContent}</div><div class="l">Mora</div></div>
+  </div>
+  <table><thead><tr><th>Fecha</th><th>Cliente</th><th>USD</th><th>Bs</th><th>Estado</th></tr></thead>
+  <tbody>${$('repBody').innerHTML}</tbody></table>
+  </body></html>`);
+  win.document.close();
+  setTimeout(()=>win.print(),500);
+}
+
+// DASHBOARD
+function renderDashboard(){
+  const prods=Object.values(productos);
+  $('dCardProds').textContent=prods.length;
+  $('dCardBajo').textContent=prods.filter(p=>(p.stockLitros||0)<=(p.stockMin||0)).length;
+  $('dCardClientes').textContent=Object.keys(clientes).length;
+  const hoy=new Date();hoy.setHours(0,0,0,0);
+  $('dCardHoy').textContent=Object.values(ventas).filter(v=>v.fecha>=hoy.getTime()).length;
+  $('dCardMora').textContent=Object.values(ventas).filter(v=>v.estado==='mora').length;
+  const low=prods.filter(p=>(p.stockLitros||0)<=(p.stockMin||0));
+  $('dLowStock').innerHTML=low.length?low.map(p=>`• ${p.nombre}: ${(p.stockLitros||0).toFixed(1)}L (mín: ${p.stockMin||0}L)`).join('<br>'):'✅ Inventario en niveles saludables.';
+  const pend=Object.entries(ventas).filter(([,v])=>v.estado==='pendiente'||v.estado==='mora').slice(0,5);
+  $('dPendingPay').innerHTML=pend.length?pend.map(([,v])=>`• ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)} — <span class="badge ${v.estado==='mora'?'badge-mora':'badge-pending'}">${v.estado}</span>`).join('<br>'):'✅ Sin pagos pendientes.';
+  const last=Object.values(ventas).slice(0,5);
+  $('dLastSales').innerHTML=last.length?last.map(v=>`• ${new Date(v.fecha).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'})} — ${v.clienteNombre||'Consumidor final'} — $${(v.totalUSD||0).toFixed(2)}`).join('<br>'):'Sin ventas aún.';
+}
+
+// OFFLINE + PWA
+window.addEventListener('online',()=>$('offlineBanner').style.display='none');
+window.addEventListener('offline',()=>$('offlineBanner').style.display='block');
+if(!navigator.onLine) $('offlineBanner').style.display='block';
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
++usdPendiente.toFixed(2);
+  const periodo=$('repPeriodo').options[$('repPeriodo').selectedIndex].text;
+  const estado=$('repEstadoFiltro').options[$('repEstadoFiltro').selectedIndex].text;
+  const cli=clienteFiltro!=='all'?(clientes[clienteFiltro]?.nombre||''):'Todos';
+  $('repResumen').textContent=`Período: ${periodo} | Estado: ${estado} | Cliente: ${cli}`;
   $('repBody').innerHTML=vs.map(v=>`<tr>
     <td>${new Date(v.fecha).toLocaleDateString('es-VE')}</td>
     <td>${v.clienteNombre||'Consumidor final'}</td>
-    <td>$${(v.totalUSD||0).toFixed(2)}</td>
+    <td style="font-size:.72rem">${(v.items||[]).map(i=>`${i.nombre} ${i.ml}ml`).join(', ')}</td>
+    <td>${(v.totalUSD||0).toFixed(2)}</td>
     <td>Bs ${(v.totalBs||0).toLocaleString('es-VE',{maximumFractionDigits:0})}</td>
     <td>${v.estado==='pagado'?'✅ Pagado':v.estado==='mora'?'🔴 Mora':'⏳ Pendiente'}</td>
-  </tr>`).join('');
+  </tr>`).join('')||'<tr><td colspan="6" style="color:var(--gray)">Sin resultados.</td></tr>';
   $('reporteResult').classList.remove('hide');
 });
 function imprimirReporte(){
