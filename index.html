@@ -108,7 +108,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <input type="password" id="loginPass" placeholder="********"/>
     <button id="btnLogin">Ingresar</button>
     <div id="loginErr"></div>
-    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v122</div>
+    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v124</div>
   </div>
 </div>
 
@@ -285,13 +285,13 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <input type="hidden" id="ventaEstado" value="pendiente"/>
     <div class="totBox" id="ventaTotales">Agrega productos para ver el total</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-      <button class="btn btn-p" id="btnGuardarVenta">Registrar venta</button>
-      <button class="btn btn-g hide" id="btnPreviewWA">Ver mensaje WhatsApp</button>
+      <button class="btn btn-p" id="btnGuardarVenta">&#128190; Registrar venta</button>
+      <button class="btn btn-g hide" id="btnPreviewWA">&#128241; Ver mensaje WhatsApp</button>
     </div>
     <div id="ventaMsg" style="font-size:.75rem;margin-top:8px"></div>
     <div id="waPreview" class="hide">
       <div class="wa-preview" id="waText"></div>
-      <button class="btn btn-g btn-sm" id="btnSendWA" style="margin-top:8px">Enviar por WhatsApp</button>
+      <button class="btn btn-g btn-sm" id="btnSendWA" style="margin-top:8px">&#128241; Enviar por WhatsApp</button>
     </div>
   </div>
   <div class="fb">
@@ -345,7 +345,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
       <div><label>Litros comprados</label><input type="number" step="0.1" id="compraLitros" placeholder="20"/></div>
       <div><label>Costo USD (opcional)</label><input type="number" step="0.01" id="compraCosto" placeholder="8.90"/></div>
     </div>
-    <button class="btn btn-p btn-sm" id="btnRegistrarCompra" style="margin-top:10px">Agregar al inventario</button>
+    <button class="btn btn-p btn-sm" id="btnRegistrarCompra" style="margin-top:10px">&#10133; Agregar al inventario</button>
     <div id="compraMsg" style="font-size:.75rem;margin-top:6px"></div>
   </div>
   <div class="fb">
@@ -367,13 +367,13 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     </div>
     <div class="info-note" id="prodPreview" style="margin-top:8px">Precio de venta se calculara aqui</div>
     <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn btn-p btn-sm" id="btnGuardarProd">Guardar producto</button>
+      <button class="btn btn-p btn-sm" id="btnGuardarProd">&#128190; Guardar producto</button>
       <button class="btn btn-o btn-sm hide" id="btnCancelEditProd">Cancelar</button>
     </div>
   </div>
   <div class="fb">
     <h2>Inventario actual (en litros)</h2>
-    <button class="btn btn-o btn-sm" id="btnCargarCatalogo" style="margin-bottom:10px">Cargar catalogo Pulizia</button>
+    <button class="btn btn-o btn-sm" id="btnCargarCatalogo" style="margin-bottom:10px">&#128229; Cargar catalogo Pulizia</button>
     <div id="catalogoMsg" style="font-size:.75rem;margin-bottom:8px"></div>
     <div style="overflow-x:auto"><table>
       <thead><tr><th>Producto</th><th>Costo/L</th><th>Margen</th><th>Precio detal/L</th><th>Precio mayor/L</th><th>Precio Bs</th><th>Stock (L)</th><th>Estado</th><th></th></tr></thead>
@@ -442,13 +442,13 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
   <div class="fb">
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
       <strong style="font-size:.85rem">Tasas de cambio (Bs por unidad)</strong>
-      <button class="btn btn-sm btn-p" id="btnAutoTasas">Auto BCV / Euro</button>
+      <button class="btn btn-p btn-sm" id="btnAutoTasas">&#128260; Auto BCV / Euro</button>
     </div>
     <div class="info-note">USDT: actualiza manualmente desde Binance P2P.</div>
     <div id="tasasContainer" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px"></div>
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center">
-      <button class="btn btn-p btn-sm" id="btnAddTasa">+ Agregar moneda</button>
-      <button class="btn btn-s btn-sm" id="btnSaveTasas">Guardar tasas</button>
+      <button class="btn btn-p btn-sm" id="btnAddTasa">&#10133; Agregar moneda</button>
+      <button class="btn btn-s btn-sm" id="btnSaveTasas">&#128190; Guardar tasas</button>
       <span style="font-size:.7rem;color:var(--gray)" id="tasasFecha"></span>
     </div>
   </div>
@@ -464,7 +464,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <textarea id="waPagoMovil" rows="4"></textarea>
     <label style="margin-top:10px">Costo envase reciclado (Bs)</label>
     <input type="number" id="costoEnvaseReciclado" value="50" step="1"/>
-    <button class="btn btn-p btn-sm" id="btnSaveWAConfig" style="margin-top:10px">Guardar configuracion</button>
+          <button class="btn btn-p btn-sm" id="btnSaveWAConfig" style="margin-top:10px">&#128190; Guardar configuracion</button>
     <div id="waConfigMsg" style="font-size:.75rem;margin-top:6px"></div>
   </div>
   <div class="fb">
@@ -516,12 +516,12 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
         <div><label>Hasta</label><input type="date" id="repHasta"/></div>
       </div>
     </div>
-    <button class="btn btn-p btn-sm" id="btnGenerarReporte" style="margin-top:12px">Generar reporte</button>
+    <button class="btn btn-p btn-sm" id="btnGenerarReporte" style="margin-top:12px">&#128200; Generar reporte</button>
   </div>
   <div class="fb hide" id="reporteResult">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
       <h2 style="margin:0">Resultados</h2>
-      <button class="btn btn-s btn-sm" id="btnImprimirReporte">Imprimir / PDF</button>
+      <button class="btn btn-s btn-sm" id="btnImprimirReporte">&#128424; Imprimir / PDF</button>
     </div>
     <div id="repResumen" style="font-size:.78rem;color:var(--gray);margin-bottom:10px"></div>
     <div class="cards">
@@ -557,7 +557,6 @@ var auth = firebase.auth();
 var db = firebase.firestore();
 
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-db.settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
 db.enablePersistence({ synchronizeTabs: true }).catch(function() {});
 
 function gid(id) { return document.getElementById(id); }
@@ -595,14 +594,14 @@ var ENVASES = [
 ];
 
 var NAV = [
-  { id: 'dashboard', label: 'Dashboard', roles: ['admin', 'vendedor'] },
-  { id: 'ventas', label: 'Ventas', roles: ['admin', 'vendedor'] },
-  { id: 'inventario', label: 'Inventario', roles: ['admin', 'vendedor'] },
-  { id: 'clientes', label: 'Clientes', roles: ['admin', 'vendedor'] },
-  { id: 'fidelidad', label: 'Fidelidad', roles: ['admin', 'vendedor'] },
-  { id: 'tasas', label: 'Tasas', roles: ['admin'] },
-  { id: 'reportes', label: 'Reportes', roles: ['admin'] },
-  { id: 'config', label: 'Config', roles: ['admin'] }
+  { id: 'dashboard', label: '&#128202; Dashboard', roles: ['admin', 'vendedor'] },
+  { id: 'ventas', label: '&#129534; Ventas', roles: ['admin', 'vendedor'] },
+  { id: 'inventario', label: '&#128230; Inventario', roles: ['admin', 'vendedor'] },
+  { id: 'clientes', label: '&#128101; Clientes', roles: ['admin', 'vendedor'] },
+  { id: 'fidelidad', label: '&#127924; Fidelidad', roles: ['admin', 'vendedor'] },
+  { id: 'tasas', label: '&#128178; Tasas', roles: ['admin'] },
+  { id: 'reportes', label: '&#128200; Reportes', roles: ['admin'] },
+  { id: 'config', label: '&#9881; Config', roles: ['admin'] }
 ];
 
 function buildNav() {
