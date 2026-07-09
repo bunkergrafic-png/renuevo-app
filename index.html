@@ -111,7 +111,7 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
     <input type="password" id="loginPass" placeholder="********"/>
     <button id="btnLogin">Ingresar</button>
     <div id="loginErr"></div>
-    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v117</div>
+    <div style="margin-top:16px;font-size:.65rem;color:#aaa">v119</div>
   </div>
 </div>
 
@@ -145,29 +145,108 @@ tr.lowstock{background:#fdecec}tr.mora{background:#fff8e1}
 </div>
 
 <main>
-<div id="offlineBanner">Sin conexion - los cambios se sincronizaran al reconectar.</div>
+<div id="offlineBanner" style="background:#f5b301;color:#3a2c00;text-align:center;font-size:.75rem;padding:8px 16px;display:none;position:sticky;top:56px;z-index:40">
+  Sin internet — trabajando con datos locales. Los cambios se sincronizaran automaticamente al reconectar.
+</div>
 
 <!-- DASHBOARD -->
 <div id="sec-dashboard" class="section active">
-  <div class="cards">
-    <div class="card" onclick="showSection('inventario')"><div class="n" id="dCardProds">0</div><div class="l">Productos</div></div>
-    <div class="card warn" onclick="showSection('inventario')"><div class="n" id="dCardBajo">0</div><div class="l">Stock bajo</div></div>
-    <div class="card" onclick="showSection('ventas')"><div class="n" id="dCardHoy">0</div><div class="l">Ventas hoy</div></div>
-    <div class="card alert" onclick="showSection('ventas');setTimeout(function(){ventaFiltro='mora';renderVentas();},300)"><div class="n" id="dCardMora">0</div><div class="l">En mora</div></div>
-    <div class="card" onclick="showSection('clientes')"><div class="n" id="dCardClientes">0</div><div class="l">Clientes</div></div>
+
+  <!-- Banner alertas -->
+  <div id="dashAlertBanner" class="hide" style="background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;cursor:pointer" onclick="showSection('inventario')">
+    <span style="font-size:1.2rem">&#9888;</span>
+    <div>
+      <b style="color:var(--red);font-size:.85rem">Stock bajo en productos</b>
+      <div id="dashAlertText" style="font-size:.75rem;color:#991b1b"></div>
+    </div>
+    <span style="margin-left:auto;color:var(--red);font-size:.8rem">Ver inventario &rarr;</span>
   </div>
-  <div class="fb" style="cursor:pointer" onclick="showSection('inventario')">
-    <h2>Stock bajo</h2>
-    <div id="dLowStock" style="font-size:.82rem;color:var(--gray)">Cargando...</div>
+
+  <!-- Banner mora -->
+  <div id="dashMoraBanner" class="hide" style="background:#fff8e1;border:1px solid #f5b301;border-radius:12px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;cursor:pointer" onclick="showSection('ventas');setTimeout(function(){ventaFiltro='mora';renderVentas();},300)">
+    <span style="font-size:1.2rem">&#128276;</span>
+    <div>
+      <b style="color:#856404;font-size:.85rem">Clientes en mora</b>
+      <div id="dashMoraText" style="font-size:.75rem;color:#856404"></div>
+    </div>
+    <span style="margin-left:auto;color:#856404;font-size:.8rem">Ver deudas &rarr;</span>
   </div>
-  <div class="fb" style="cursor:pointer" onclick="showSection('ventas');setTimeout(function(){ventaFiltro='pendiente';renderVentas();},300)">
-    <h2>Pendientes y mora</h2>
-    <div id="dPendingPay" style="font-size:.82rem;color:var(--gray)">Cargando...</div>
+
+  <!-- Metricas del mes -->
+  <div style="font-size:.72rem;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Resumen del mes</div>
+  <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
+    <div class="card" onclick="showSection('ventas')">
+      <div style="font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Ventas mes</div>
+      <div class="n" id="dMesVentasUSD">$0.00</div>
+      <div class="l" id="dMesVentasBs">Bs 0</div>
+      <div style="font-size:.68rem;color:var(--gray);margin-top:4px" id="dMesVentasCount">0 ventas</div>
+    </div>
+    <div class="card" onclick="showSection('ventas');setTimeout(function(){ventaFiltro='pagado';renderVentas();},300)">
+      <div style="font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Cobrado</div>
+      <div class="n" style="color:#16a34a" id="dMesCobrado">$0.00</div>
+      <div class="l" id="dMesCobradoBs">Bs 0</div>
+      <div style="font-size:.68rem;color:var(--gray);margin-top:4px" id="dMesPagadasCount">0 pagadas</div>
+    </div>
+    <div class="card warn" onclick="showSection('ventas');setTimeout(function(){ventaFiltro='pendiente';renderVentas();},300)">
+      <div style="font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Por cobrar</div>
+      <div class="n" id="dMesPorCobrar">$0.00</div>
+      <div class="l" id="dMesPendientesCount">0 pendientes</div>
+    </div>
+    <div class="card alert" onclick="showSection('ventas');setTimeout(function(){ventaFiltro='mora';renderVentas();},300)">
+      <div style="font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">En mora</div>
+      <div class="n" id="dMesMoraUSD">$0.00</div>
+      <div class="l" id="dMesMoraCount">0 clientes</div>
+    </div>
+    <div class="card" onclick="showSection('ventas')">
+      <div style="font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Detal vs Mayor</div>
+      <div style="display:flex;gap:6px;align-items:center;margin-top:6px">
+        <span style="background:#e3f5ea;color:var(--green-d);font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:20px" id="dDetalCount">0</span>
+        <span style="font-size:.7rem;color:var(--gray)">vs</span>
+        <span style="background:#dbeafe;color:var(--blue);font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:20px" id="dMayorCount">0</span>
+      </div>
+      <div class="l" style="margin-top:4px">detal / mayor</div>
+    </div>
+    <div class="card" onclick="showSection('clientes')">
+      <div style="font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Clientes</div>
+      <div class="n" id="dCardClientes">0</div>
+      <div class="l">registrados</div>
+    </div>
   </div>
-  <div class="fb" style="cursor:pointer" onclick="showSection('ventas')">
-    <h2>Ultimas ventas</h2>
-    <div id="dLastSales" style="font-size:.82rem;color:var(--gray)">Cargando...</div>
+
+  <!-- Metricas inventario -->
+  <div style="font-size:.72rem;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;margin-top:4px">Inventario</div>
+  <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
+    <div class="card" onclick="showSection('inventario')">
+      <div style="font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Productos</div>
+      <div class="n" id="dCardProds">0</div>
+      <div class="l">en catalogo</div>
+    </div>
+    <div class="card warn" onclick="showSection('inventario')">
+      <div style="font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Stock bajo</div>
+      <div class="n" id="dCardBajo">0</div>
+      <div class="l">productos</div>
+    </div>
+    <div class="card" onclick="showSection('ventas')">
+      <div style="font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Ventas hoy</div>
+      <div class="n" id="dCardHoy">0</div>
+      <div class="l" id="dHoyUSD">$0.00</div>
+    </div>
   </div>
+
+  <!-- Ultimas transacciones -->
+  <div class="fb">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h2 style="margin:0">Ultimas transacciones</h2>
+      <button class="btn btn-o btn-sm" onclick="showSection('ventas')">Ver todas &rarr;</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Fecha</th><th>Cliente</th><th>Tipo</th><th>USD</th><th>Bs</th><th>Estado</th></tr></thead>
+        <tbody id="dLastSales"></tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 
 <!-- VENTAS -->
@@ -487,6 +566,19 @@ firebase.initializeApp(FB_CFG);
 var auth = firebase.auth();
 var db = firebase.firestore();
 
+// Persistencia local completa para trabajar offline
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+db.enablePersistence({ synchronizeTabs: true }).catch(function(err) {
+  if (err.code === 'failed-precondition') {
+    // Multiples tabs abiertas - usar sin sincronizacion entre tabs
+    db.enablePersistence().catch(function() {});
+  }
+});
+
+// Configurar cache ilimitado
+db.settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
+
 function gid(id) { return document.getElementById(id); }
 
 var currentUser = null;
@@ -675,8 +767,21 @@ function attachListeners() {
   }
 }
 
+// Lectura inteligente: intenta servidor, si falla usa cache local
+function getDoc(ref) {
+  return ref.get({ source: 'default' }).catch(function() {
+    return ref.get({ source: 'cache' });
+  });
+}
+
+function getCollection(ref) {
+  return ref.get({ source: 'default' }).catch(function() {
+    return ref.get({ source: 'cache' });
+  });
+}
+
 function recargarProductos() {
-  return db.collection('productos').get().then(function(snap) {
+  return getCollection(db.collection('productos')).then(function(snap) {
     productos = {};
     snap.forEach(function(d) { productos[d.id] = d.data(); });
     renderInvTable(); fillCompraProdSelect(); renderDashboard();
@@ -750,7 +855,9 @@ gid('btnGuardarProd').addEventListener('click', function() {
   };
   gid('btnGuardarProd').disabled = true;
   gid('btnGuardarProd').textContent = 'Guardando...';
-  var p = id ? db.collection('productos').doc(id).update(data) : db.collection('productos').add(Object.assign({}, data, { stockLitros: 0 }));
+  var p = id
+    ? db.collection('productos').doc(id).update(data)
+    : db.collection('productos').add(Object.assign({}, data, { stockLitros: 0 }));
   p.then(recargarProductos).then(function() {
     gid('prodPreview').style.color = 'var(--green-d)';
     gid('prodPreview').textContent = id ? 'Producto actualizado.' : 'Producto agregado.';
@@ -791,7 +898,7 @@ gid('btnRegistrarCompra').addEventListener('click', function() {
   gid('btnRegistrarCompra').disabled = true;
   gid('btnRegistrarCompra').textContent = 'Guardando...';
   var ref = db.collection('productos').doc(pid);
-  ref.get().then(function(snap) {
+  getDoc(ref).then(function(snap) {
     if (!snap.exists) { gid('compraMsg').textContent = 'Producto no encontrado.'; return; }
     var p = snap.data();
     var nuevo = parseFloat(((p.stockLitros || p.stock || 0) + litros).toFixed(3));
@@ -1051,7 +1158,7 @@ gid('btnGuardarVenta').addEventListener('click', function() {
     vendedor: currentUser.email
   }).then(function() {
     var ps = r.items.map(function(it) {
-      return db.collection('productos').doc(it.productoId).get().then(function(snap) {
+      return getDoc(db.collection('productos').doc(it.productoId)).then(function(snap) {
         if (!snap.exists) return;
         var curr = snap.data();
         return db.collection('productos').doc(it.productoId).update({ stockLitros: parseFloat(((curr.stockLitros || curr.stock || 0) - it.litros).toFixed(3)) });
@@ -1507,24 +1614,174 @@ gid('btnImprimirReporte').addEventListener('click', function() {
 // DASHBOARD
 function renderDashboard() {
   var prods = Object.values(productos);
-  gid('dCardProds').textContent = prods.length;
-  gid('dCardBajo').textContent = prods.filter(function(p) { return (p.stockLitros || 0) <= (p.stockMin || 0); }).length;
+  var allVentas = Object.values(ventas);
+
+  // Rango del mes actual
+  var hoy = new Date();
+  var inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1).getTime();
+  var inicioDia = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()).getTime();
+  var ventasMes = allVentas.filter(function(v) { return v.fecha >= inicioMes; });
+  var ventasHoy = allVentas.filter(function(v) { return v.fecha >= inicioDia; });
+
+  // Totales mes
+  var totalMesUSD = ventasMes.reduce(function(a, v) { return a + (v.totalUSD || 0); }, 0);
+  var totalMesBs = ventasMes.reduce(function(a, v) { return a + (v.totalBs || 0); }, 0);
+  var pagadas = ventasMes.filter(function(v) { return v.estado === 'pagado'; });
+  var pendientes = ventasMes.filter(function(v) { return v.estado === 'pendiente'; });
+  var mora = allVentas.filter(function(v) { return v.estado === 'mora'; });
+  var cobradoUSD = pagadas.reduce(function(a, v) { return a + (v.totalUSD || 0); }, 0);
+  var cobradoBs = pagadas.reduce(function(a, v) { return a + (v.totalBs || 0); }, 0);
+  var porCobrarUSD = pendientes.reduce(function(a, v) { return a + (v.totalUSD || 0); }, 0);
+  var moraUSD = mora.reduce(function(a, v) { return a + (v.totalUSD || 0); }, 0);
+  var detalCount = ventasMes.filter(function(v) { return v.tipoVenta !== 'mayor'; }).length;
+  var mayorCount = ventasMes.filter(function(v) { return v.tipoVenta === 'mayor'; }).length;
+  var totalHoyUSD = ventasHoy.reduce(function(a, v) { return a + (v.totalUSD || 0); }, 0);
+
+  // Cards mes
+  gid('dMesVentasUSD').textContent = '
+
+// OFFLINE + PWA
+window.addEventListener('online', function() { gid('offlineBanner').style.display = 'none'; });
+window.addEventListener('offline', function() { gid('offlineBanner').style.display = 'block'; });
+if (!navigator.onLine) gid('offlineBanner').style.display = 'block';
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() { navigator.serviceWorker.register('./sw.js').catch(function() {}); });
+}
+</script>
+</body>
+</html>
+ + totalMesUSD.toFixed(2);
+  gid('dMesVentasBs').textContent = 'Bs ' + totalMesBs.toLocaleString('es-VE', { maximumFractionDigits: 0 });
+  gid('dMesVentasCount').textContent = ventasMes.length + ' ventas';
+  gid('dMesCobrado').textContent = '
+
+// OFFLINE + PWA
+window.addEventListener('online', function() { gid('offlineBanner').style.display = 'none'; });
+window.addEventListener('offline', function() { gid('offlineBanner').style.display = 'block'; });
+if (!navigator.onLine) gid('offlineBanner').style.display = 'block';
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() { navigator.serviceWorker.register('./sw.js').catch(function() {}); });
+}
+</script>
+</body>
+</html>
+ + cobradoUSD.toFixed(2);
+  gid('dMesCobradoBs').textContent = 'Bs ' + cobradoBs.toLocaleString('es-VE', { maximumFractionDigits: 0 });
+  gid('dMesPagadasCount').textContent = pagadas.length + ' pagadas';
+  gid('dMesPorCobrar').textContent = '
+
+// OFFLINE + PWA
+window.addEventListener('online', function() { gid('offlineBanner').style.display = 'none'; });
+window.addEventListener('offline', function() { gid('offlineBanner').style.display = 'block'; });
+if (!navigator.onLine) gid('offlineBanner').style.display = 'block';
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() { navigator.serviceWorker.register('./sw.js').catch(function() {}); });
+}
+</script>
+</body>
+</html>
+ + porCobrarUSD.toFixed(2);
+  gid('dMesPendientesCount').textContent = pendientes.length + ' pendientes';
+  gid('dMesMoraUSD').textContent = '
+
+// OFFLINE + PWA
+window.addEventListener('online', function() { gid('offlineBanner').style.display = 'none'; });
+window.addEventListener('offline', function() { gid('offlineBanner').style.display = 'block'; });
+if (!navigator.onLine) gid('offlineBanner').style.display = 'block';
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() { navigator.serviceWorker.register('./sw.js').catch(function() {}); });
+}
+</script>
+</body>
+</html>
+ + moraUSD.toFixed(2);
+  gid('dMesMoraCount').textContent = mora.length + ' clientes';
+  gid('dDetalCount').textContent = detalCount;
+  gid('dMayorCount').textContent = mayorCount;
   gid('dCardClientes').textContent = Object.keys(clientes).length;
-  var hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-  gid('dCardHoy').textContent = Object.values(ventas).filter(function(v) { return v.fecha >= hoy.getTime(); }).length;
-  gid('dCardMora').textContent = Object.values(ventas).filter(function(v) { return v.estado === 'mora'; }).length;
+
+  // Cards inventario
+  gid('dCardProds').textContent = prods.length;
   var low = prods.filter(function(p) { return (p.stockLitros || 0) <= (p.stockMin || 0); });
-  gid('dLowStock').innerHTML = low.length
-    ? low.map(function(p) { return '* ' + p.nombre + ': ' + (p.stockLitros || 0).toFixed(1) + 'L (min: ' + (p.stockMin || 0) + 'L)'; }).join('<br>')
-    : 'Inventario en niveles saludables.';
-  var pend = Object.entries(ventas).filter(function(e) { return e[1].estado === 'pendiente' || e[1].estado === 'mora'; }).slice(0, 5);
-  gid('dPendingPay').innerHTML = pend.length
-    ? pend.map(function(e) { var v = e[1]; return '* ' + (v.clienteNombre || 'Consumidor final') + ' - $' + (v.totalUSD || 0).toFixed(2) + ' - <span class="badge ' + (v.estado === 'mora' ? 'badge-mora' : 'badge-pending') + '">' + v.estado + '</span>'; }).join('<br>')
-    : 'Sin pagos pendientes.';
-  var last = Object.values(ventas).slice(0, 5);
-  gid('dLastSales').innerHTML = last.length
-    ? last.map(function(v) { return '* ' + new Date(v.fecha).toLocaleString('es-VE', { dateStyle: 'short', timeStyle: 'short' }) + ' - ' + (v.clienteNombre || 'Consumidor final') + ' - $' + (v.totalUSD || 0).toFixed(2); }).join('<br>')
-    : 'Sin ventas aun.';
+  gid('dCardBajo').textContent = low.length;
+  gid('dCardHoy').textContent = ventasHoy.length;
+  gid('dHoyUSD').textContent = '
+
+// OFFLINE + PWA
+window.addEventListener('online', function() { gid('offlineBanner').style.display = 'none'; });
+window.addEventListener('offline', function() { gid('offlineBanner').style.display = 'block'; });
+if (!navigator.onLine) gid('offlineBanner').style.display = 'block';
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() { navigator.serviceWorker.register('./sw.js').catch(function() {}); });
+}
+</script>
+</body>
+</html>
+ + totalHoyUSD.toFixed(2);
+
+  // Banner stock bajo
+  if (low.length > 0) {
+    gid('dashAlertBanner').classList.remove('hide');
+    gid('dashAlertText').textContent = low.map(function(p) { return p.nombre + ' (' + (p.stockLitros || 0).toFixed(1) + 'L)'; }).join(' · ');
+  } else {
+    gid('dashAlertBanner').classList.add('hide');
+  }
+
+  // Banner mora
+  if (mora.length > 0) {
+    gid('dashMoraBanner').classList.remove('hide');
+    var nombresMora = [];
+    mora.forEach(function(v) { if (v.clienteNombre && nombresMora.indexOf(v.clienteNombre) < 0) nombresMora.push(v.clienteNombre); });
+    gid('dashMoraText').textContent = nombresMora.slice(0, 4).join(', ') + (nombresMora.length > 4 ? '...' : '') + ' — Total: 
+
+// OFFLINE + PWA
+window.addEventListener('online', function() { gid('offlineBanner').style.display = 'none'; });
+window.addEventListener('offline', function() { gid('offlineBanner').style.display = 'block'; });
+if (!navigator.onLine) gid('offlineBanner').style.display = 'block';
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() { navigator.serviceWorker.register('./sw.js').catch(function() {}); });
+}
+</script>
+</body>
+</html>
+ + moraUSD.toFixed(2);
+  } else {
+    gid('dashMoraBanner').classList.add('hide');
+  }
+
+  // Tabla ultimas transacciones
+  var tb = gid('dLastSales');
+  var last = allVentas.slice(0, 8);
+  tb.innerHTML = last.map(function(v) {
+    var est = v.estado === 'pagado'
+      ? '<span class="badge badge-paid">Pagado</span>'
+      : v.estado === 'mora'
+      ? '<span class="badge badge-mora">Mora</span>'
+      : '<span class="badge badge-pending">Pendiente</span>';
+    var tipo = v.tipoVenta === 'mayor'
+      ? '<span class="badge badge-mayor">Mayor</span>'
+      : '<span style="font-size:.68rem;color:var(--gray)">Detal</span>';
+    return '<tr>'
+      + '<td style="white-space:nowrap">' + new Date(v.fecha).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) + '</td>'
+      + '<td>' + (v.clienteNombre || 'Consumidor final') + '</td>'
+      + '<td>' + tipo + '</td>'
+      + '<td><b>
+
+// OFFLINE + PWA
+window.addEventListener('online', function() { gid('offlineBanner').style.display = 'none'; });
+window.addEventListener('offline', function() { gid('offlineBanner').style.display = 'block'; });
+if (!navigator.onLine) gid('offlineBanner').style.display = 'block';
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() { navigator.serviceWorker.register('./sw.js').catch(function() {}); });
+}
+</script>
+</body>
+</html>
+ + (v.totalUSD || 0).toFixed(2) + '</b></td>'
+      + '<td>Bs ' + (v.totalBs || 0).toLocaleString('es-VE', { maximumFractionDigits: 0 }) + '</td>'
+      + '<td>' + est + '</td>'
+      + '</tr>';
+  }).join('') || '<tr><td colspan="6" style="color:var(--gray);text-align:center;padding:20px">Sin ventas aun.</td></tr>';
 }
 
 // OFFLINE + PWA
